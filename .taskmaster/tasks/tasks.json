@@ -1,0 +1,260 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Next.js 15 Project with PWA Setup",
+        "description": "Set up the project repository with Next.js 15, configure App Router, Tailwind CSS, Shadcn UI, and next-pwa for PWA capabilities.",
+        "details": "Create a new Next.js 15 project. Integrate Tailwind CSS for styling, Shadcn UI for components, and configure next-pwa for offline support. Set up the App Router structure. Initialize Git repository and configure Vercel deployment settings.",
+        "testStrategy": "Verify project builds and runs locally and on Vercel. Confirm PWA manifest and service worker registration. Check offline availability of the landing page.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Design and Implement Database Schema in Supabase",
+        "description": "Model PostgreSQL schema for users, roles, inventory, transactions, assignments, customers, expenses, and audit logs.",
+        "details": "Define tables: users, roles, cylinders (full/empty), transactions, assignments, customers, expenses, audit_logs. Set up foreign keys, indexes, and RLS policies. Use Supabase migration scripts for versioning.",
+        "testStrategy": "Run migration scripts on a test database. Validate schema relationships, constraints, and RLS enforcement. Check data integrity with sample data.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Integrate Supabase Auth with JWT and Role-Based Access",
+        "description": "Implement authentication using Supabase Auth, JWT session management, and enforce role-based access control.",
+        "details": "Configure Supabase Auth for email/password login. Store JWT securely. Implement middleware for route protection and automatic role-based routing. Enforce RLS in Supabase for data security.",
+        "testStrategy": "Test login/logout flows, session persistence, and role-based redirects. Attempt unauthorized access to protected routes and verify denial.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Develop Real-Time Dashboard (Panel En Ruta) with Supabase Realtime",
+        "description": "Create a live dashboard for Jefe showing vendor performance, inventory, sales, and expenses with real-time updates.",
+        "details": "Use Supabase Realtime WebSockets to subscribe to relevant tables. Display vendor cards with assigned/sold/remaining cylinders, sales/expense totals, and progress bars with color coding. Implement daily reset logic.",
+        "testStrategy": "Simulate transactions and verify dashboard updates within 1 second. Test color coding and daily reset functionality.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Inventory Management Module",
+        "description": "Build inventory tracking for full and empty cylinders, categorized by type, brand, and color, with real-time updates and low stock alerts.",
+        "details": "Create inventory views and update logic. Integrate with transaction and truck arrival modules for automatic adjustments. Implement low stock notification triggers.",
+        "testStrategy": "Perform transactions and truck arrivals; verify inventory updates and low stock alerts. Test edge cases for negative inventory prevention.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Develop Mobile-Optimized Sales Transaction Form",
+        "description": "Create a responsive sales form for Vendedor with support for exchange, complete sale, and empty sale transaction types.",
+        "details": "Use React Hook Form with Zod validation. Auto-populate vendor info. Validate required fields. Integrate with IndexedDB for offline queuing. Add receipt photo upload (camera/library).",
+        "testStrategy": "Test form accessibility within 1-2 taps, field validation, offline queuing, and photo upload. Confirm successful submission and error handling.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement Offline Transaction Queuing and Sync",
+        "description": "Enable offline transaction recording using IndexedDB and synchronize with Supabase when online.",
+        "details": "Wrap IndexedDB for local storage. Queue transactions offline. Implement service worker for sync. Handle optimistic UI updates and conflict resolution. Provide manual sync trigger.",
+        "testStrategy": "Simulate offline mode, record transactions, and verify local storage. Restore connectivity and confirm sync. Test conflict scenarios and error messages.",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Integrate Receipt Photo Upload with Supabase Storage",
+        "description": "Allow Vendedor to upload and sync receipt images with transactions, supporting camera and gallery input.",
+        "details": "Integrate device camera and file picker. Compress images before upload. Store images in Supabase Storage and link to transaction records. Sync images with transactions when online.",
+        "testStrategy": "Upload photos via camera and gallery. Check image compression, upload success, and association with transactions. Test offline/online sync.",
+        "priority": "medium",
+        "dependencies": [
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Build Truck Arrival Management Interface",
+        "description": "Develop Jefe-only interface for recording truck arrivals, including cylinder counts, costs, and invoice details.",
+        "details": "Create form for full/empty cylinder counts, unit costs, invoice total, and freight. On submission, update inventory and recalculate cost basis. Trigger margin analysis update.",
+        "testStrategy": "Submit truck arrivals and verify inventory/cost updates. Validate invoice calculations and margin recalculation.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Implement Daily Assignment System for Cylinder Distribution",
+        "description": "Enable Jefe to assign cylinders to vendors, manage STANDBY state, and automate end-of-day resets.",
+        "details": "Build assignment interface for Jefe. Track assignments by vendor and cylinder type. Implement STANDBY state logic and automated reset to return unassigned cylinders.",
+        "testStrategy": "Assign cylinders, verify vendor visibility, and test end-of-day reset. Confirm inventory consistency.",
+        "priority": "medium",
+        "dependencies": [
+          5,
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Develop Edit Request Workflow for Transactions",
+        "description": "Allow vendors to request transaction edits and Jefe to approve/reject with audit trail and inventory reversal.",
+        "details": "Create edit request form pre-filled with transaction data. Implement approval/rejection interface for Jefe with comment system. Log all actions in audit trail and reverse inventory on approval.",
+        "testStrategy": "Submit edit requests, process approvals/rejections, and verify audit logs and inventory adjustments.",
+        "priority": "medium",
+        "dependencies": [
+          6,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Build Reporting and Analytics Module",
+        "description": "Provide period-based, multi-dimensional reports with cost, margin, and performance analytics. Support filtering and historical data.",
+        "details": "Implement reporting backend queries and frontend UI. Support filters by date, vendor, product, sale type, and route. Calculate margins and aggregate metrics. Ensure report generation within 5 seconds.",
+        "testStrategy": "Generate reports with various filters. Validate data accuracy, performance, and historical access.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          5,
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Data Export Capabilities (CSV, XLSX, PDF)",
+        "description": "Enable exporting of report data in CSV, XLSX, and PDF formats with metadata and formatting.",
+        "details": "Integrate libraries for CSV, XLSX, and PDF export. Format exports with charts where applicable. Include metadata (generation date, filters). Ensure accessibility and professional appearance.",
+        "testStrategy": "Export reports in all formats. Check data completeness, formatting, and metadata inclusion.",
+        "priority": "medium",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Develop Customer Management Module",
+        "description": "Create customer database with contact info, custom pricing, purchase history, and location mapping.",
+        "details": "Implement customer CRUD operations. Integrate search by name/phone. Track purchase history and apply custom pricing. Add location mapping using geolocation APIs.",
+        "testStrategy": "Add, search, and update customers. Verify purchase history and custom pricing application. Test location mapping.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement Expense Tracking and Approval Workflow",
+        "description": "Allow vendors to record expenses with category, amount, description, and receipt photo. Route for approval and include in profitability.",
+        "details": "Build expense form with category selection and photo upload. Implement approval workflow for managers. Integrate approved expenses into daily totals and profitability calculations.",
+        "testStrategy": "Record expenses, upload receipts, process approvals, and verify inclusion in reports.",
+        "priority": "medium",
+        "dependencies": [
+          8,
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Develop Goals and Performance Tracking System",
+        "description": "Enable Jefe to set daily/weekly sales targets per vendor, track progress, and send achievement notifications.",
+        "details": "Create UI for setting targets. Track sales against targets in real-time. Implement notifications for achievements and maintain historical performance records.",
+        "testStrategy": "Set targets, simulate sales, and verify progress tracking and notifications. Review historical data.",
+        "priority": "low",
+        "dependencies": [
+          4,
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Implement Notification System (In-App, Push, Email)",
+        "description": "Provide in-app notification center, push notifications for critical events, and email notifications for reports.",
+        "details": "Integrate push notification APIs and email service. Trigger notifications for low inventory, edit requests, truck arrivals, sync errors, and report generation. Build notification center UI.",
+        "testStrategy": "Trigger all notification types and verify delivery (in-app, push, email). Test notification center display and accessibility.",
+        "priority": "low",
+        "dependencies": [
+          5,
+          11,
+          9,
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Establish Error Handling, Backup, and Recovery Procedures",
+        "description": "Implement robust error handling, user-friendly messages, automated backups, and point-in-time recovery.",
+        "details": "Add error boundaries and user guidance for network/validation/system errors. Set up daily automated backups in Supabase. Document and test backup restoration and recovery processes.",
+        "testStrategy": "Simulate errors and verify user feedback. Test backup creation, restoration, and recovery from data loss scenarios.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-27T07:25:24.241Z",
+      "updated": "2025-08-27T07:25:24.241Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

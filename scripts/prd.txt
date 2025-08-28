@@ -1,0 +1,547 @@
+# Gas Control - Gas Cylinder Management System Product Requirements Document
+
+## 1. Introduction
+
+This Product Requirements Document (PRD) defines the functional and technical requirements for Gas Pardo, a comprehensive gas cylinder management system designed to streamline sales operations, inventory tracking, and real-time monitoring for gas distribution businesses. The system will support both management oversight (Jefe) and field sales operations (Vendedor) through a unified platform with role-based access controls.
+
+The document serves as the primary reference for development teams, stakeholders, and quality assurance personnel to ensure successful delivery of the minimum viable product (MVP) and establish a foundation for future enhancements.
+
+## 2. Product overview
+
+Gas Pardo is a real-time gas cylinder management platform that addresses the operational challenges faced by gas distribution companies. The system provides comprehensive inventory management, sales tracking, and performance monitoring capabilities through a responsive web application with progressive web app (PWA) capabilities for mobile users.
+
+### 2.1 Key value propositions
+
+- Real-time inventory tracking and automated updates based on transaction types
+- Offline-capable mobile sales interface for field operations
+- Live performance monitoring through the "Panel En Ruta" dashboard
+- Automated cost calculations and margin analysis
+- Comprehensive reporting and export capabilities
+- Audit trail for all transactions and modifications
+
+### 2.2 Business context
+
+The gas distribution industry requires precise inventory management due to the physical nature of cylinder exchanges, varying product types, and the need for accurate cost tracking. Gas Pardo addresses these challenges by providing automated inventory adjustments, real-time visibility into field operations, and robust offline capabilities to ensure continuous operation regardless of connectivity.
+
+## 3. Goals and objectives
+
+### 3.1 Primary objectives
+
+- **Operational efficiency**: Reduce manual inventory tracking efforts by 80% through automated transaction processing
+- **Real-time visibility**: Provide instant updates on vendor performance and inventory levels
+- **Data accuracy**: Eliminate inventory discrepancies through systematic transaction recording
+- **Mobile accessibility**: Enable seamless field operations with offline capabilities
+- **Financial transparency**: Deliver accurate cost analysis and margin calculations
+
+### 3.2 Success metrics
+
+- **Performance**: Initial application load ≤ 3 seconds, sales recording response ≤ 2 seconds
+- **Availability**: 99.5% uptime during business hours (6:00-20:00)
+- **User adoption**: 100% vendor adoption within 30 days of deployment
+- **Data integrity**: Zero negative inventory instances post-implementation
+- **Sync reliability**: 99%+ successful offline transaction synchronization rate
+
+### 3.3 Business impact
+
+- Reduced operational overhead through automated processes
+- Improved customer service through faster transaction processing
+- Enhanced profitability through accurate margin tracking
+- Increased accountability through comprehensive audit trails
+
+## 4. Target audience
+
+### 4.1 Primary users
+
+**Jefe (Management/Supervisor)**
+- Role: Oversees daily operations, manages inventory, assigns cylinders to vendors
+- Technical proficiency: Intermediate
+- Primary device: Desktop/tablet
+- Key needs: Real-time monitoring, inventory management, performance analytics
+
+**Vendedor (Field Sales Representative)**
+- Role: Conducts field sales, processes customer transactions, manages assigned inventory
+- Technical proficiency: Basic to intermediate
+- Primary device: Mobile phone/tablet
+- Key needs: Quick transaction entry, offline functionality, assignment visibility
+
+### 4.2 Secondary users
+
+**Business owner/Administrator**
+- Role: Strategic oversight, financial analysis, system configuration
+- Primary needs: Comprehensive reporting, export capabilities, audit trails
+
+## 5. Features and requirements
+
+### 5.1 Core features
+
+#### 5.1.1 Authentication and authorization
+- Supabase Auth integration with JWT session management
+- Role-based access control (Jefe/Vendedor)
+- Automatic role-based routing upon login
+- Session persistence and automatic renewal
+
+#### 5.1.2 Real-time dashboard (Panel "En Ruta")
+- Live vendor performance cards displaying:
+  - Assigned cylinders count
+  - Sold cylinders count
+  - Remaining inventory
+  - Daily sales total
+  - Daily expenses total
+  - Progress indicators with color coding (green/yellow/red)
+- Real-time updates via Supabase Realtime WebSockets
+- Daily reset functionality for assignment tracking
+
+#### 5.1.3 Inventory management
+- **Full cylinders inventory**:
+  - Product type tracking (33lb, 40lb, 100lb)
+  - Brand and color classification
+  - Real-time quantity updates
+  - Low stock notifications
+- **Empty cylinders inventory**:
+  - Separate tracking by brand and color
+  - Integration with exchange transactions
+  - Return processing capabilities
+
+#### 5.1.4 Sales transaction processing
+- Mobile-optimized sales form (1-2 tap access)
+- Transaction types:
+  - **Exchange**: Customer brings empty, receives full cylinder
+  - **Complete sale**: New customer purchase
+  - **Empty sale**: Empty cylinder only
+- Automated inventory adjustments based on transaction type
+- Customer information capture (name, phone, location)
+- Receipt photo upload capability
+- Offline transaction queuing and synchronization
+
+#### 5.1.5 Truck arrival management
+- Jefe-only truck arrival recording interface
+- Fields for:
+  - Full cylinder counts by type
+  - Empty cylinder counts
+  - Unit cost per product type
+  - Invoice total
+  - Freight costs
+- Automatic inventory updates and cost recalculation
+- Margin analysis updates
+
+#### 5.1.6 Daily assignment system
+- Cylinder assignment interface for Jefe
+- STANDBY state creation for assigned cylinders
+- Vendor-specific assignment visibility
+- End-of-day automated reset process
+
+#### 5.1.7 Edit request workflow
+- Vendor-initiated edit requests for completed transactions
+- Jefe approval/rejection interface
+- Comment system for edit decisions
+- Comprehensive audit trail logging
+
+#### 5.1.8 Reporting and analytics
+- Period-based reporting (daily, weekly, monthly, custom range)
+- Multi-dimensional analysis:
+  - By vendor performance
+  - By product type
+  - By sale type
+  - By route/location
+- Financial reporting:
+  - Cost vs. price analysis
+  - Margin calculations per sale
+  - Aggregate profit margins
+- Export capabilities (CSV, XLSX, PDF)
+
+#### 5.1.9 Offline capabilities
+- Local IndexedDB storage for transaction queuing
+- Service worker implementation for PWA functionality
+- Optimistic UI updates with conflict resolution
+- Automatic synchronization upon reconnection
+- Manual sync trigger option
+
+### 5.2 Secondary features
+
+#### 5.2.1 Customer management
+- Customer database with contact information
+- Custom pricing configuration per customer
+- Purchase history tracking
+- Location mapping capabilities
+
+#### 5.2.2 Expense tracking
+- Vendor expense recording (fuel, meals, repairs)
+- Category-based expense classification
+- Receipt upload and storage
+- Expense approval workflow
+
+#### 5.2.3 Goals and performance tracking
+- Daily/weekly sales targets by vendor
+- Performance metrics and KPI tracking
+- Achievement notifications and alerts
+- Historical performance analysis
+
+#### 5.2.4 Notification system
+- In-app notification center
+- Push notifications for critical events:
+  - Low inventory alerts
+  - Edit request submissions
+  - Truck arrival confirmations
+  - Sync error notifications
+- Email notifications for management reports
+
+## 6. User stories and acceptance criteria
+
+### 6.1 Authentication and access control
+
+**ST-101: Secure user authentication**
+As a system user, I want to securely log into the application using my credentials so that I can access role-appropriate features.
+
+*Acceptance criteria:*
+- User can log in with email and password
+- Invalid credentials display appropriate error messages
+- Successful login redirects to role-specific dashboard
+- Session tokens are securely stored and managed
+- Logout functionality clears all session data
+
+**ST-102: Role-based access control**
+As a system administrator, I want users to be restricted to their assigned role capabilities so that system security is maintained.
+
+*Acceptance criteria:*
+- Jefe users can access management dashboard and all features
+- Vendedor users can only access mobile sales interface and assigned data
+- Unauthorized access attempts are blocked and logged
+- Role verification occurs on each protected route access
+
+### 6.2 Database modeling and data management
+
+**ST-103: Comprehensive data model implementation**
+As a developer, I want a robust database schema that supports all business operations so that data integrity is maintained.
+
+*Acceptance criteria:*
+- All required tables are created with proper relationships
+- Foreign key constraints are enforced
+- Data types and lengths are appropriate for business needs
+- Indexes are created for performance optimization
+- Migration scripts handle schema changes safely
+
+**ST-104: Data synchronization and consistency**
+As a system user, I want my data to be consistent across all interfaces so that I can trust the information displayed.
+
+*Acceptance criteria:*
+- Real-time updates are reflected immediately across all connected clients
+- Offline data is properly synchronized when connection is restored
+- Concurrent updates are handled with appropriate conflict resolution
+- Data validation prevents invalid states
+
+### 6.3 Inventory management
+
+**ST-105: Real-time inventory tracking**
+As a Jefe, I want to see real-time inventory levels so that I can make informed operational decisions.
+
+*Acceptance criteria:*
+- Full and empty cylinder counts update automatically after each transaction
+- Inventory displays are categorized by product type, brand, and color
+- Low stock notifications are triggered at configurable thresholds
+- Inventory adjustments from truck arrivals are immediately reflected
+
+**ST-106: Automated inventory adjustments**
+As a Vendedor, I want inventory to update automatically when I record a sale so that manual tracking is eliminated.
+
+*Acceptance criteria:*
+- Exchange transactions decrease full inventory by 1 and increase empty inventory by 1
+- Complete sales decrease full inventory by 1 only
+- Empty sales increase empty inventory by 1 only
+- Invalid transactions are prevented when insufficient inventory exists
+
+### 6.4 Sales transaction processing
+
+**ST-107: Mobile sales form**
+As a Vendedor, I want to quickly record sales transactions on my mobile device so that I can serve customers efficiently.
+
+*Acceptance criteria:*
+- Sales form is accessible within 1-2 taps from main screen
+- Form auto-populates vendor information from session
+- All required fields are validated before submission
+- Success confirmation is displayed after successful submission
+
+**ST-108: Offline transaction recording**
+As a Vendedor, I want to record sales even when offline so that poor connectivity doesn't interrupt my work.
+
+*Acceptance criteria:*
+- Transactions are saved locally when offline
+- User is notified of offline status and queued transactions
+- Queued transactions sync automatically when connection is restored
+- Failed sync attempts provide clear error messages and retry options
+
+**ST-109: Receipt photo upload**
+As a Vendedor, I want to upload receipt photos for transactions so that complete records are maintained.
+
+*Acceptance criteria:*
+- Camera integration allows direct photo capture
+- Photo library selection is available as alternative
+- Images are compressed and optimized for storage
+- Photos sync with transactions when online
+
+### 6.5 Real-time monitoring
+
+**ST-110: Panel "En Ruta" dashboard**
+As a Jefe, I want to monitor all vendor activities in real-time so that I can provide support when needed.
+
+*Acceptance criteria:*
+- Individual vendor cards display assigned, sold, and remaining cylinder counts
+- Daily sales and expense totals are updated live
+- Progress bars show completion percentage with color coding
+- Updates appear within 1 second of transaction completion
+
+**ST-111: Daily assignment tracking**
+As a Jefe, I want to assign cylinders to vendors at the start of each day so that inventory accountability is maintained.
+
+*Acceptance criteria:*
+- Assignment interface allows selection of cylinders by type and quantity
+- Assigned cylinders enter STANDBY state until first sale
+- Vendor assignment is visible in mobile interface
+- Unassigned cylinders return to general inventory at day end
+
+### 6.6 Truck arrival management
+
+**ST-112: Truck arrival processing**
+As a Jefe, I want to record truck deliveries so that inventory and costs are updated accurately.
+
+*Acceptance criteria:*
+- Form captures full and empty cylinder counts by type
+- Unit costs and freight charges are recorded
+- Invoice total is validated against calculated amounts
+- Inventory and cost basis are updated immediately upon submission
+
+**ST-113: Cost calculation updates**
+As a Jefe, I want costs to be recalculated when new inventory arrives so that margin analysis remains accurate.
+
+*Acceptance criteria:*
+- Weighted average cost is calculated for each product type
+- Historical transaction margins are preserved
+- New transaction margins use updated cost basis
+- Cost changes trigger margin report recalculation
+
+### 6.7 Edit request workflow
+
+**ST-114: Vendor edit requests**
+As a Vendedor, I want to request edits to completed transactions so that mistakes can be corrected.
+
+*Acceptance criteria:*
+- Edit request form pre-populates with original transaction data
+- Reason for edit is required and recorded
+- Request status is visible to requesting vendor
+- Inventory adjustments are reversed if edit is approved
+
+**ST-115: Management edit approval**
+As a Jefe, I want to review and approve edit requests so that data integrity is maintained.
+
+*Acceptance criteria:*
+- Pending edit requests are clearly visible in dashboard
+- Original and requested changes are displayed side-by-side
+- Approval or rejection includes mandatory comment
+- All edit decisions are logged in audit trail
+
+### 6.8 Reporting and analytics
+
+**ST-116: Standard reporting**
+As a Jefe, I want to generate performance reports so that I can analyze business operations.
+
+*Acceptance criteria:*
+- Reports can be filtered by date range, vendor, product type, and sale type
+- Data includes transaction counts, revenue totals, and margin analysis
+- Report generation completes within 5 seconds for typical date ranges
+- Historical data is preserved and accessible
+
+**ST-117: Data export capabilities**
+As a business owner, I want to export report data so that I can perform external analysis.
+
+*Acceptance criteria:*
+- CSV export maintains data formatting and includes all report columns
+- XLSX export provides formatted spreadsheet with charts where applicable
+- PDF export creates professional-looking reports suitable for presentations
+- Export files include metadata (generation date, filter criteria, etc.)
+
+### 6.9 Customer management
+
+**ST-118: Customer database**
+As a Vendedor, I want to access customer information so that I can provide personalized service.
+
+*Acceptance criteria:*
+- Customer search by name or phone number returns accurate results
+- New customer creation is available during transaction entry
+- Customer history displays previous purchases and preferences
+- Custom pricing is applied automatically when configured
+
+### 6.10 Expense tracking
+
+**ST-119: Vendor expense recording**
+As a Vendedor, I want to record business expenses so that accurate profitability is calculated.
+
+*Acceptance criteria:*
+- Expense form captures category, amount, description, and receipt photo
+- Expenses are included in daily totals on Panel "En Ruta"
+- Expense approval workflow routes to appropriate manager
+- Approved expenses are included in profitability calculations
+
+### 6.11 Performance monitoring
+
+**ST-120: Goals and targets**
+As a Jefe, I want to set performance targets so that vendor productivity can be measured.
+
+*Acceptance criteria:*
+- Daily and weekly sales targets can be configured per vendor
+- Progress toward goals is displayed in real-time
+- Achievement notifications are sent when targets are met
+- Historical goal performance is tracked and reportable
+
+### 6.12 System administration
+
+**ST-121: Error handling and recovery**
+As a system user, I want clear error messages and recovery options so that I can resolve issues independently.
+
+*Acceptance criteria:*
+- Network errors display clear messages with retry options
+- Validation errors highlight specific fields and provide correction guidance
+- System errors are logged for debugging while displaying user-friendly messages
+- Critical errors provide contact information for support
+
+**ST-122: Data backup and recovery**
+As a system administrator, I want automated data backups so that business continuity is ensured.
+
+*Acceptance criteria:*
+- Daily automated backups are created and verified
+- Point-in-time recovery is available for recent data
+- Backup restoration procedures are documented and tested
+- Critical data loss scenarios have defined recovery processes
+
+## 7. Technical requirements / Stack
+
+### 7.1 Frontend architecture
+- **Framework**: Next.js 15 with App Router architecture
+- **Styling**: Tailwind CSS for utility-first styling
+- **Component library**: Shadcn UI components for consistent design system
+- **Form handling**: React Hook Form with Zod schema validation
+- **State management**: Zustand for global state, React Context for component-level state
+- **PWA capabilities**: next-pwa plugin for offline functionality and mobile app-like experience
+
+### 7.2 Backend and database
+- **Database**: PostgreSQL via Supabase
+- **Authentication**: Supabase Auth with JWT token management
+- **Real-time updates**: Supabase Realtime WebSockets
+- **File storage**: Supabase Storage for receipt images and document uploads
+- **API**: Supabase auto-generated REST APIs with Row Level Security (RLS)
+
+### 7.3 Local storage and offline capabilities
+- **Offline storage**: IndexedDB with thin wrapper for transaction queuing
+- **Service worker**: Custom implementation for offline-first architecture
+- **Sync strategy**: Optimistic UI updates with conflict resolution
+- **Cache management**: Automated cache invalidation and refresh strategies
+
+### 7.4 Infrastructure and deployment
+- **Frontend hosting**: Vercel platform for Next.js optimization
+- **Backend infrastructure**: Supabase managed infrastructure
+- **SSL/TLS**: Automatic HTTPS enforcement across all endpoints
+- **CDN**: Global content delivery for optimal performance
+- **Environment management**: Separate development, staging, and production environments
+
+### 7.5 Monitoring and analytics
+- **Error tracking**: Sentry for exception monitoring and performance insights
+- **Application monitoring**: Built-in Next.js analytics and performance monitoring
+- **Database monitoring**: Supabase built-in monitoring and alerting
+- **Custom logging**: Structured logging for audit trails and debugging
+
+### 7.6 Security requirements
+- **Authentication**: Multi-factor authentication capability
+- **Authorization**: Role-based access control with Row Level Security
+- **Data encryption**: Encryption at rest and in transit
+- **API security**: Rate limiting, input validation, and SQL injection prevention
+- **Audit logging**: Comprehensive activity logging for compliance
+
+### 7.7 Performance specifications
+- **Load time**: Initial application load ≤ 3 seconds on 3G connection
+- **Response time**: API responses ≤ 2 seconds for standard operations
+- **Real-time updates**: ≤ 1 second latency for live dashboard updates
+- **Concurrent users**: Support for 50+ simultaneous active users
+- **Data throughput**: Handle 1000+ transactions per day without performance degradation
+
+### 7.8 Browser and device compatibility
+- **Desktop browsers**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+- **Mobile browsers**: iOS Safari 14+, Android Chrome 90+
+- **PWA support**: Full progressive web app functionality on supported browsers
+- **Responsive design**: Optimal experience across phone, tablet, and desktop screen sizes
+
+## 8. Design and user interface
+
+### 8.1 Design principles
+- **Mobile-first approach**: Primary interface optimized for mobile devices with desktop enhancement
+- **Accessibility compliance**: WCAG 2.1 AA standard compliance for inclusive design
+- **Performance-focused**: Lightweight components and optimized asset loading
+- **Consistency**: Unified design system across all interfaces and user roles
+
+### 8.2 Visual design system
+
+#### 8.2.1 Color palette
+- **Primary colors**: Professional blue palette for trustworthiness and reliability
+- **Status colors**: 
+  - Green (#10B981): Success states, positive performance indicators
+  - Yellow (#F59E0B): Warning states, attention-required items
+  - Red (#EF4444): Error states, critical alerts, poor performance
+- **Neutral colors**: Gray scale for text, borders, and background elements
+- **Accessibility**: All color combinations meet WCAG AA contrast requirements
+
+#### 8.2.2 Typography
+- **Primary font**: System font stack for optimal performance and readability
+- **Hierarchy**: Clear heading levels (H1-H6) with appropriate sizing and spacing
+- **Body text**: Optimized line height and letter spacing for mobile reading
+- **Interactive elements**: Distinct styling for buttons, links, and form controls
+
+#### 8.2.3 Iconography
+- **Icon library**: Lucide React for consistent, scalable icons
+- **Usage guidelines**: Icons accompany text labels for clarity
+- **Accessibility**: All icons include appropriate alt text and ARIA labels
+
+### 8.3 Layout specifications
+
+#### 8.3.1 Mobile interface (Vendedor)
+- **Navigation**: Bottom tab bar for primary functions (Sales, Assignments, Profile)
+- **Sales form**: Full-screen overlay with optimized input controls
+- **Quick actions**: Prominent floating action button for new sale entry
+- **Status indicators**: Clear visual feedback for online/offline status and sync state
+
+#### 8.3.2 Desktop interface (Jefe)
+- **Navigation**: Top navigation bar with dropdown menus for feature access
+- **Dashboard**: Grid layout for Panel "En Ruta" cards with responsive columns
+- **Data tables**: Sortable, filterable tables for inventory and transaction lists
+- **Modal windows**: Overlay forms for truck arrival, assignments, and detailed views
+
+### 8.4 User experience specifications
+
+#### 8.4.1 Interaction patterns
+- **Touch targets**: Minimum 44px touch targets for mobile accessibility
+- **Loading states**: Skeleton screens and progress indicators for all async operations
+- **Feedback**: Immediate visual feedback for all user actions
+- **Error states**: Inline validation with clear correction guidance
+
+#### 8.4.2 Information architecture
+- **Navigation depth**: Maximum 3 levels deep for any feature access
+- **Content organization**: Logical grouping of related functions and data
+- **Search functionality**: Global search across customers, transactions, and inventory
+- **Contextual help**: In-app guidance and tooltips for complex features
+
+#### 8.4.3 Responsive behavior
+- **Breakpoints**: Mobile (320px+), Tablet (768px+), Desktop (1024px+)
+- **Layout adaptation**: Flexible grid systems that reflow based on screen size
+- **Content prioritization**: Most important information remains visible across all screen sizes
+- **Touch optimization**: Appropriate spacing and sizing for touch interactions on all devices
+
+### 8.5 Accessibility features
+- **Keyboard navigation**: Full application functionality available via keyboard
+- **Screen reader support**: Proper semantic HTML and ARIA attributes
+- **Visual indicators**: High contrast mode support and focus indicators
+- **Alternative text**: Descriptive alt text for all images and uploaded receipts
+- **Error identification**: Clear error messages with correction suggestions
+
+### 8.6 Performance optimization
+- **Image optimization**: Automatic compression and next-gen format serving
+- **Code splitting**: Dynamic imports for feature-based code splitting
+- **Lazy loading**: Progressive loading of non-critical components and images
+- **Caching strategy**: Efficient caching of static assets and API responses
+
+This comprehensive PRD provides the foundation for developing the Gas Pardo gas cylinder management system, ensuring all stakeholder needs are addressed while maintaining technical feasibility and user experience excellence.
