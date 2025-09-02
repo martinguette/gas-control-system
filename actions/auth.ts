@@ -31,25 +31,10 @@ export async function signUp(formData: FormData) {
   });
 
   if (authError) {
-    redirect(`/error?message=${encodeURIComponent(authError.message)}`);
+    redirect(`/log-in?message=${encodeURIComponent(authError.message)}`);
   }
 
-  if (authData.user) {
-    // Create user profile in profiles table
-    const { error: profileError } = await supabase.from('profiles').insert([
-      {
-        id: authData.user.id,
-        full_name: credentials.full_name,
-        email: credentials.email,
-        role: credentials.role,
-      },
-    ]);
-
-    if (profileError) {
-      console.error('Error creating profile:', profileError);
-      // Don't redirect on profile error, user can still sign in
-    }
-  }
+  // Profile creation is handled by DB trigger on auth.users insert
 
   revalidatePath('/', 'layout');
   redirect(
