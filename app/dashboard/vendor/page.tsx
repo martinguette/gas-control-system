@@ -23,9 +23,20 @@ export default async function VendorDashboard() {
   }
 
   const role = (user.user_metadata as Record<string, unknown> | null)?.role;
-
   if (role !== 'vendedor') {
     redirect('/dashboard/admin');
+  }
+
+  // Resolve full name from metadata, fallback to profiles
+  let fullName = (user.user_metadata as Record<string, unknown> | null)
+    ?.full_name as string | undefined;
+  if (!fullName) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single();
+    if (profile?.full_name) fullName = profile.full_name;
   }
 
   return (
@@ -34,7 +45,7 @@ export default async function VendorDashboard() {
         {/* Welcome Header */}
         <div className="space-y-3">
           <h1 className="text-2xl font-bold text-foreground">
-            ¡Bienvenido Vendedor!
+            ¡Bienvenido{fullName ? `, ${fullName}` : ''}!
           </h1>
           <p className="text-base text-muted-foreground">
             Tus credenciales fueron verificadas exitosamente

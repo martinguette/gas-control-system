@@ -22,9 +22,20 @@ export default async function AdminDashboard() {
   }
 
   const role = (user.user_metadata as Record<string, unknown> | null)?.role;
-
   if (role !== 'jefe') {
     redirect('/dashboard/vendor');
+  }
+
+  // Resolve full name from metadata, fallback to profiles
+  let fullName = (user.user_metadata as Record<string, unknown> | null)
+    ?.full_name as string | undefined;
+  if (!fullName) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single();
+    if (profile?.full_name) fullName = profile.full_name;
   }
 
   return (
@@ -33,7 +44,7 @@ export default async function AdminDashboard() {
         {/* Welcome Header */}
         <div className="space-y-2">
           <h1 className="text-3xl font-bold text-foreground">
-            ¡Bienvenido Admin!
+            ¡Bienvenido{fullName ? `, ${fullName}` : ''}!
           </h1>
           <p className="text-lg text-muted-foreground">
             Tus credenciales fueron verificadas exitosamente
