@@ -65,7 +65,9 @@ export async function logIn(formData: FormData) {
   };
 
   const { error } = await supabase.auth.signInWithPassword(credentials);
-  if (error) redirect('/error');
+  if (error) {
+    redirect(`/log-in?message=${encodeURIComponent(error.message)}`);
+  }
 
   // Get user and determine role-based redirect
   const {
@@ -74,7 +76,9 @@ export async function logIn(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    redirect('/error');
+    redirect(
+      `/log-in?message=${encodeURIComponent('No se pudo recuperar la sesión')}`
+    );
   }
 
   const metaRole = (user.user_metadata as Record<string, unknown> | null)
@@ -102,7 +106,6 @@ export async function logIn(formData: FormData) {
   } else if (role === 'vendedor') {
     redirect('/dashboard/vendor');
   } else {
-    // Unknown role, send to generic dashboard or login
     redirect('/dashboard');
   }
 }
@@ -112,5 +115,5 @@ export async function logOut() {
   const { error } = await supabase.auth.signOut();
   if (error) redirect('/error');
   revalidatePath('/', 'layout');
-  redirect('/');
+  redirect('/log-in');
 }

@@ -1,7 +1,7 @@
-"use client"
+'use client';
 
-import type { ReactNode } from "react"
-import { useRouter } from "next/navigation"
+import type { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   BarChart3,
   Users,
@@ -11,22 +11,18 @@ import {
   LayoutDashboard as Dashboard,
   FileText,
   TrendingUp,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useAuth } from "@/hooks/use-auth"
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/use-auth';
+import { logOut } from '@/actions/auth';
 
 interface AdminLayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const { authState, logout } = useAuth()
-  const router = useRouter()
-
-  const handleLogout = () => {
-    logout()
-    router.push("/")
-  }
+  const { authState } = useAuth();
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,8 +36,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <Fuel className="w-6 h-6 text-sidebar-accent-foreground" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-sidebar-foreground">Gas Control</h2>
-                <p className="text-sm text-muted-foreground">Panel Administrativo</p>
+                <h2 className="text-lg font-semibold text-sidebar-foreground">
+                  Gas Control
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Panel Administrativo
+                </p>
               </div>
             </div>
           </div>
@@ -77,13 +77,24 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {/* User Info & Logout */}
           <div className="p-4 border-t border-sidebar-border">
             <div className="mb-3">
-              <p className="text-sm font-medium text-sidebar-foreground">{authState.user?.name}</p>
-              <p className="text-xs text-muted-foreground">{authState.user?.email}</p>
+              <p className="text-sm font-medium text-sidebar-foreground">
+                {authState.user?.full_name}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {authState.user?.email}
+              </p>
             </div>
-            <Button variant="outline" size="sm" className="w-full bg-transparent" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Cerrar Sesión
-            </Button>
+            <form action={logOut}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full bg-transparent"
+                type="submit"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Cerrar Sesión
+              </Button>
+            </form>
           </div>
         </div>
       </div>
@@ -93,5 +104,5 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <main className="p-6">{children}</main>
       </div>
     </div>
-  )
+  );
 }

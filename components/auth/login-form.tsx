@@ -23,14 +23,16 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useAuth } from '@/hooks/use-auth';
 import { loginSchema, type LoginFormData } from '@/lib/validations';
 import { logIn } from '@/actions/auth';
+import { useSearchParams } from 'next/navigation';
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const { authState, login } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const message = searchParams.get('message');
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -39,21 +41,6 @@ export default function LoginForm() {
       password: '',
     },
   });
-
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      await login(data);
-
-      // Redirect based on role
-      if (authState.user?.role === 'jefe') {
-        router.push('/dashboard/admin');
-      } else if (authState.user?.role === 'vendedor') {
-        router.push('/dashboard/vendor');
-      }
-    } catch (error) {
-      // Error is handled by the auth hook
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
@@ -73,14 +60,13 @@ export default function LoginForm() {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {authState.error && (
-            <Alert variant="destructive">
-              <AlertDescription>{authState.error}</AlertDescription>
+          {message && (
+            <Alert>
+              <AlertDescription>{message}</AlertDescription>
             </Alert>
           )}
-
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form className="space-y-4" onSubmit={() => setIsSubmitting(true)}>
               <FormField
                 control={form.control}
                 name="email"
@@ -93,7 +79,7 @@ export default function LoginForm() {
                         type="email"
                         placeholder="usuario@gaspardo.com"
                         className="h-11"
-                        disabled={authState.isLoading}
+                        disabled={isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -114,7 +100,7 @@ export default function LoginForm() {
                           type={showPassword ? 'text' : 'password'}
                           placeholder="••••••••"
                           className="h-11 pr-10"
-                          disabled={authState.isLoading}
+                          disabled={isSubmitting}
                         />
                         <Button
                           type="button"
@@ -122,7 +108,7 @@ export default function LoginForm() {
                           size="sm"
                           className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                           onClick={() => setShowPassword(!showPassword)}
-                          disabled={authState.isLoading}
+                          disabled={isSubmitting}
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -141,9 +127,9 @@ export default function LoginForm() {
                 type="submit"
                 formAction={logIn}
                 className="w-full h-11 text-base font-medium"
-                disabled={authState.isLoading}
+                disabled={isSubmitting}
               >
-                {authState.isLoading ? (
+                {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Iniciando sesión...
@@ -165,6 +151,18 @@ export default function LoginForm() {
               </p>
               <p>
                 <strong>Vendedor:</strong> vendor@gaspardo.com / vendor123
+              </p>
+            </div>
+            <div className="pt-2">
+              <p className="text-sm text-muted-foreground">
+                ¿No tienes una cuenta?{' '}
+                <Button
+                  variant="link"
+                  className="p-0 h-auto font-normal text-primary hover:underline"
+                  onClick={() => router.push('/sign-up')}
+                >
+                  Regístrate aquí
+                </Button>
               </p>
             </div>
           </div>

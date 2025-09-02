@@ -8,11 +8,12 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get('token_hash');
   const type = searchParams.get('type') as EmailOtpType | null;
-  const next = '/dashboard';
+
+  // default target
+  let nextPath = '/dashboard';
 
   // Create redirect link without the secret token
   const redirectTo = request.nextUrl.clone();
-  redirectTo.pathname = next;
   redirectTo.searchParams.delete('token_hash');
   redirectTo.searchParams.delete('type');
 
@@ -23,7 +24,35 @@ export async function GET(request: NextRequest) {
       type,
       token_hash,
     });
+
     if (!error) {
+      // Determine role-based redirect
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const metaRole = (user.user_metadata as Record<string, unknown> | null)
+          ?.role as 'jefe' | 'vendedor' | undefined;
+
+        let role: 'jefe' | 'vendedor' | undefined = metaRole;
+
+        if (!role) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+          if (profile?.role === 'jefe' || profile?.role === 'vendedor') {
+            role = profile.role;
+          }
+        }
+
+        if (role === 'jefe') nextPath = '/dashboard/admin';
+        else if (role === 'vendedor') nextPath = '/dashboard/vendor';
+      }
+
+      redirectTo.pathname = nextPath;
       redirectTo.searchParams.delete('next');
       return NextResponse.redirect(redirectTo);
     }
