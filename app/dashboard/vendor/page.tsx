@@ -1,35 +1,31 @@
-"use client"
+import { redirect } from 'next/navigation';
+import { createClient } from '@/utils/supabase/server';
+import VendorLayout from '@/components/layout/vendor-layout';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { BarChart3, Clock, ShoppingCart, Target } from 'lucide-react';
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ShoppingCart, BarChart3, Target, Clock } from "lucide-react"
-import VendorLayout from "@/components/layout/vendor-layout"
-import { useAuth } from "@/hooks/use-auth"
+export default async function VendorDashboard() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-export default function VendorDashboard() {
-  const { authState } = useAuth()
-  const router = useRouter()
+  if (!user) {
+    redirect('/log-in');
+  }
 
-  useEffect(() => {
-    if (!authState.isLoading && !authState.isAuthenticated) {
-      router.push("/")
-    } else if (authState.user?.role !== "vendedor") {
-      router.push("/dashboard/admin")
-    }
-  }, [authState, router])
+  const role = (user.user_metadata as Record<string, unknown> | null)?.role;
 
-  if (authState.isLoading || !authState.isAuthenticated || authState.user?.role !== "vendedor") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Cargando...</p>
-        </div>
-      </div>
-    )
+  if (role !== 'vendedor') {
+    redirect('/dashboard/admin');
   }
 
   return (
@@ -37,8 +33,12 @@ export default function VendorDashboard() {
       <div className="space-y-6">
         {/* Welcome Header */}
         <div className="space-y-3">
-          <h1 className="text-2xl font-bold text-foreground">¡Bienvenido Vendedor!</h1>
-          <p className="text-base text-muted-foreground">Tus credenciales fueron verificadas exitosamente</p>
+          <h1 className="text-2xl font-bold text-foreground">
+            ¡Bienvenido Vendedor!
+          </h1>
+          <p className="text-base text-muted-foreground">
+            Tus credenciales fueron verificadas exitosamente
+          </p>
           <Badge variant="secondary" className="text-sm">
             Rol: Vendedor - Panel Móvil
           </Badge>
@@ -77,18 +77,28 @@ export default function VendorDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Acciones Rápidas</CardTitle>
-            <CardDescription>Herramientas optimizadas para vendedores móviles</CardDescription>
+            <CardDescription>
+              Herramientas optimizadas para vendedores móviles
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <Button className="w-full justify-start h-12" size="lg">
               <ShoppingCart className="mr-3 h-5 w-5" />
               Nueva Venta
             </Button>
-            <Button variant="outline" className="w-full justify-start h-12 bg-transparent" size="lg">
+            <Button
+              variant="outline"
+              className="w-full justify-start h-12 bg-transparent"
+              size="lg"
+            >
               <BarChart3 className="mr-3 h-5 w-5" />
               Ver Reportes
             </Button>
-            <Button variant="outline" className="w-full justify-start h-12 bg-transparent" size="lg">
+            <Button
+              variant="outline"
+              className="w-full justify-start h-12 bg-transparent"
+              size="lg"
+            >
               <Clock className="mr-3 h-5 w-5" />
               Historial de Ventas
             </Button>
@@ -99,7 +109,9 @@ export default function VendorDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Panel Vendedor</CardTitle>
-            <CardDescription>Diseño optimizado para dispositivos móviles</CardDescription>
+            <CardDescription>
+              Diseño optimizado para dispositivos móviles
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -125,5 +137,5 @@ export default function VendorDashboard() {
         </Card>
       </div>
     </VendorLayout>
-  )
+  );
 }
