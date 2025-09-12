@@ -2,258 +2,1703 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
-        "title": "Initialize Next.js 15 Project with PWA Setup",
-        "description": "Set up the project repository with Next.js 15, configure App Router, Tailwind CSS, Shadcn UI, and next-pwa for PWA capabilities.",
-        "details": "Create a new Next.js 15 project. Integrate Tailwind CSS for styling, Shadcn UI for components, and configure next-pwa for offline support. Set up the App Router structure. Initialize Git repository and configure Vercel deployment settings.",
-        "testStrategy": "Verify project builds and runs locally and on Vercel. Confirm PWA manifest and service worker registration. Check offline availability of the landing page.",
+        "id": 19,
+        "title": "Configuración inicial del repositorio y entorno",
+        "description": "Crear el repositorio principal, configurar Next.js 15, Tailwind CSS, Shadcn UI, y establecer la estructura de carpetas.",
+        "details": "Inicializar el proyecto con Next.js 15 (App Router), instalar Tailwind CSS, Shadcn UI, React Hook Form, Zod, Zustand y Lucide React. Configurar next-pwa para PWA y preparar scripts de linting y formateo. Definir estructura de carpetas para frontend y lógica compartida.",
+        "testStrategy": "Verificar que la aplicación arranca, que el entorno de desarrollo funciona y que los estilos y componentes básicos se renderizan correctamente.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Crear el repositorio principal y configurar control de versiones",
+            "description": "Inicializar un nuevo repositorio Git, crear el archivo .gitignore adecuado y realizar el primer commit con la estructura base.",
+            "dependencies": [],
+            "details": "Ejecutar 'git init', agregar archivos iniciales como README.md y .gitignore (incluyendo node_modules, .next, .env, etc.), y subir el repositorio a la plataforma elegida (GitHub, GitLab, etc.).",
+            "status": "done",
+            "testStrategy": "Verificar que el repositorio esté accesible y que los archivos ignorados no se suban al control de versiones."
+          },
+          {
+            "id": 2,
+            "title": "Inicializar proyecto Next.js 15 con App Router",
+            "description": "Crear el proyecto base con Next.js 15, asegurando el uso del App Router y la estructura recomendada.",
+            "dependencies": [
+              "19.1"
+            ],
+            "details": "Ejecutar 'npx create-next-app@latest' seleccionando la opción de App Router. Confirmar que la estructura incluya el directorio 'app', archivos 'page.js' y 'layout.js', y que el servidor de desarrollo funcione correctamente[1][3].",
+            "status": "done",
+            "testStrategy": "Arrancar el servidor con 'npm run dev' y comprobar que la aplicación responde en localhost:3000."
+          },
+          {
+            "id": 3,
+            "title": "Instalar y configurar Tailwind CSS, Shadcn UI y librerías adicionales",
+            "description": "Agregar Tailwind CSS, Shadcn UI, React Hook Form, Zod, Zustand, Lucide React y configurar sus archivos base.",
+            "dependencies": [
+              "19.2"
+            ],
+            "details": "Seguir las guías oficiales para instalar y configurar Tailwind CSS (incluyendo tailwind.config.js y postcss.config.js), instalar Shadcn UI y las demás dependencias mediante npm o pnpm. Verificar que los estilos y componentes básicos se renderizan correctamente.",
+            "status": "done",
+            "testStrategy": "Crear un componente de prueba usando Tailwind y Shadcn UI, y verificar su visualización en la app."
+          },
+          {
+            "id": 4,
+            "title": "Configurar next-pwa y scripts de linting/formateo",
+            "description": "Instalar y configurar next-pwa para soporte PWA, y preparar scripts de linting y formateo (ESLint, Prettier).",
+            "dependencies": [
+              "19.3"
+            ],
+            "details": "Agregar next-pwa y configurar el archivo next.config.js para habilitar PWA. Instalar ESLint y Prettier, crear sus archivos de configuración y agregar scripts en package.json.",
+            "status": "done",
+            "testStrategy": "Ejecutar los scripts de linting y formateo, y verificar que la app puede instalarse como PWA en el navegador."
+          },
+          {
+            "id": 5,
+            "title": "Definir y documentar la estructura de carpetas para frontend y lógica compartida",
+            "description": "Establecer la estructura de carpetas recomendada para rutas, componentes, estilos y lógica compartida según las mejores prácticas de Next.js 15.",
+            "dependencies": [
+              "19.4"
+            ],
+            "details": "Crear carpetas como /app, /components, /styles, /lib o /shared, y documentar la organización en el README. Asegurar la separación entre Server y Client Components según la arquitectura de Next.js 15[1][3].",
+            "status": "done",
+            "testStrategy": "Revisar que la estructura permita escalar la aplicación y que los archivos estén correctamente ubicados según su función."
+          }
+        ]
       },
       {
-        "id": 2,
-        "title": "Design and Implement Database Schema in Supabase",
-        "description": "Model PostgreSQL schema for users, roles, inventory, transactions, assignments, customers, expenses, and audit logs.",
-        "details": "Define tables: users, roles, cylinders (full/empty), transactions, assignments, customers, expenses, audit_logs. Set up foreign keys, indexes, and RLS policies. Use Supabase migration scripts for versioning.",
-        "testStrategy": "Run migration scripts on a test database. Validate schema relationships, constraints, and RLS enforcement. Check data integrity with sample data.",
+        "id": 20,
+        "title": "Modelado y migraciones de base de datos en Supabase",
+        "description": "Diseñar el esquema de base de datos en PostgreSQL para soportar inventario, usuarios, transacciones, clientes, gastos y auditoría.",
+        "details": "Crear tablas: users, roles, cylinders, inventory, transactions, customers, expenses, assignments, trucks, audit_logs. Definir relaciones, claves foráneas, índices y restricciones. Usar migraciones SQL y herramientas de Supabase Studio.",
+        "testStrategy": "Ejecutar migraciones en entorno de staging, validar integridad referencial y rendimiento de consultas básicas.",
         "priority": "high",
         "dependencies": [
-          1
+          19
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseño del esquema de base de datos",
+            "description": "Definir la estructura de las tablas principales (users, roles, cylinders, inventory, transactions, customers, expenses, assignments, trucks, audit_logs) y sus campos en PostgreSQL, considerando las necesidades del sistema.",
+            "dependencies": [],
+            "details": "Utilizar herramientas como Supabase Studio Visual Schema Designer para crear y organizar tablas y campos de manera visual, asegurando claridad en la estructura inicial del modelo de datos.\n<info added on 2025-09-12T21:02:02.507Z>\nTabla 'profiles' implementada con estructura completa, RLS y triggers. Siguiente acción: crear e implementar las tablas restantes del sistema (users, roles, cylinders, inventory, transactions, customers, expenses, assignments, trucks, audit_logs) según el PRD, asegurando definición de campos, relaciones, claves foráneas, restricciones e índices necesarios.\n</info added on 2025-09-12T21:02:02.507Z>",
+            "status": "done",
+            "testStrategy": "Revisar visualmente el diagrama de entidad-relación y validar que todas las entidades y atributos requeridos estén representados correctamente."
+          },
+          {
+            "id": 2,
+            "title": "Definición de relaciones y restricciones",
+            "description": "Establecer relaciones entre tablas (uno a uno, uno a muchos, muchos a muchos), claves foráneas, índices y restricciones de integridad referencial.",
+            "dependencies": [
+              "20.1"
+            ],
+            "details": "Configurar relaciones en Supabase Studio y definir claves foráneas e índices para optimizar consultas y garantizar la integridad de los datos.\n<info added on 2025-09-12T21:13:42.978Z>\nAgregar las siguientes tablas principales al esquema de base de datos en Supabase Studio, asegurando que cada una tenga los campos y tipos de datos especificados:\n\ninventory_full: id (uuid), type ('33lb'|'40lb'|'100lb'), quantity (number), unit_cost (decimal), updated_at (timestamp)\ninventory_empty: id (uuid), type ('33lb'|'40lb'|'100lb'), brand (string), color (string), quantity (number), updated_at (timestamp)\ncustomers: id (uuid), name (string), phone (string), location (string), custom_prices (json), created_at (timestamp)\nsales: id (uuid), vendor_id (uuid), customer_id (uuid), customer_name (string), customer_phone (string), customer_location (string), product_type ('33lb'|'40lb'|'100lb'), sale_type ('intercambio'|'completa'|'venta_vacios'), empty_brand (string), empty_color (string), amount_charged (decimal), payment_method ('efectivo'|'transferencia'|'credito'), created_at (timestamp)\nexpenses: id (uuid), vendor_id (uuid), type ('gasolina'|'comida'|'reparaciones'|'otros'), amount (decimal), description (text), created_at (timestamp)\ntruck_arrivals: id (uuid), cylinders_received (json), cylinders_delivered (json), unit_cost (decimal), total_invoice (decimal), freight_cost (decimal), created_at (timestamp)\ndaily_assignments: id (uuid), vendor_id (uuid), date (date), assigned_cylinders (json), created_at (timestamp)\ngoals: id (uuid), type ('general'|'individual'), vendor_id (uuid), period ('semanal'|'mensual'|'semestral'|'anual'), target_kg (number), start_date (date), end_date (date), created_at (timestamp)\n\nConfigurar las siguientes relaciones críticas mediante claves foráneas en Supabase Studio:\nsales.vendor_id → profiles.id\nsales.customer_id → customers.id\nexpenses.vendor_id → profiles.id\ndaily_assignments.vendor_id → profiles.id\ngoals.vendor_id → profiles.id (opcional para metas generales)\n\nDefinir índices en los campos utilizados frecuentemente en búsquedas y filtros, como vendor_id, customer_id, type y created_at, para optimizar el rendimiento de las consultas.\n\nAsegurar la integridad referencial activando restricciones ON DELETE y ON UPDATE según la lógica de negocio (por ejemplo, ON DELETE SET NULL o RESTRICT en claves foráneas críticas).\n\nUtilizar el diseñador visual de esquemas de Supabase Studio para mapear gráficamente las relaciones uno a muchos y uno a uno entre las tablas, facilitando la validación visual del modelo y la colaboración entre el equipo.\n</info added on 2025-09-12T21:13:42.978Z>\n<info added on 2025-09-12T21:23:01.064Z>\n✅ COMPLETADO: Archivo SQL generado e incluye todas las tablas principales y la tabla audit_logs. Se implementaron relaciones, claves foráneas, índices, triggers, RLS, políticas de seguridad por rol, funciones auxiliares, realtime y datos iniciales. Listo para ejecutar en Supabase Studio.\n</info added on 2025-09-12T21:23:01.064Z>",
+            "status": "done",
+            "testStrategy": "Intentar insertar y eliminar registros que violen restricciones para verificar que la base de datos rechaza operaciones inválidas."
+          },
+          {
+            "id": 3,
+            "title": "Creación de migraciones SQL versionadas",
+            "description": "Generar archivos de migración SQL para crear y modificar el esquema de base de datos de forma controlada y reproducible.",
+            "dependencies": [
+              "20.2"
+            ],
+            "details": "Utilizar la CLI de Supabase o herramientas equivalentes para crear migraciones versionadas que reflejen los cambios en el esquema y permitan su despliegue en diferentes entornos.\n<info added on 2025-09-12T21:25:12.064Z>\n✅ COMPLETADO: Migraciones SQL versionadas creadas\n\nARCHIVOS CREADOS:\n1. supabase/migrations/20241212_212300_create_additional_tables.sql - Migración principal\n2. supabase/migrations/README.md - Documentación completa\n\nCARACTERÍSTICAS DE LA MIGRACIÓN:\n- Versionado cronológico con timestamp\n- Idempotente - se puede ejecutar múltiples veces\n- Documentación completa con instrucciones\n- Verificación post-migración incluida\n- Troubleshooting documentado\n\nESTRUCTURA DE MIGRACIÓN:\n- Orden de ejecución definido\n- Dependencias claras (database-setup.sql primero)\n- Verificaciones de integridad\n- Instrucciones paso a paso\n\nPRÓXIMO PASO: Ejecutar la migración en Supabase Studio\n</info added on 2025-09-12T21:25:12.064Z>",
+            "status": "done",
+            "testStrategy": "Aplicar las migraciones en un entorno de staging y verificar que todas las tablas, relaciones y restricciones se crean correctamente."
+          },
+          {
+            "id": 4,
+            "title": "Implementación de políticas de seguridad y auditoría",
+            "description": "Configurar Row Level Security (RLS) y definir triggers para el registro de auditoría en la tabla audit_logs.",
+            "dependencies": [
+              "20.3"
+            ],
+            "details": "Definir políticas RLS para controlar el acceso a los datos según roles y crear triggers que automaticen el registro de acciones relevantes en audit_logs.\n<info added on 2025-09-12T21:26:13.607Z>\n✅ COMPLETADO: Políticas de seguridad y auditoría implementadas\n\nARCHIVO CREADO:\n- supabase/migrations/20241212_212400_audit_functions.sql - Funciones avanzadas de auditoría\n\nFUNCIONES DE AUDITORÍA IMPLEMENTADAS:\n- audit_trigger_function() - Registra cambios en todas las tablas críticas\n- Triggers de auditoría para 8 tablas principales\n- get_record_history() - Historial de cambios por registro\n- get_audit_stats() - Estadísticas de auditoría\n- cleanup_old_audit_logs() - Limpieza de logs antiguos\n\nFUNCIONES DE SEGURIDAD:\n- is_jefe() - Verificación de rol jefe\n- is_vendedor() - Verificación de rol vendedor\n- get_user_role() - Obtener rol del usuario\n- Políticas RLS mejoradas con validación de roles\n\nVALIDACIONES DE NEGOCIO:\n- validate_assignment_not_self() - Jefe no puede asignarse cilindros\n- validate_sale_ownership() - Vendedores solo pueden crear sus ventas\n- validate_expense_ownership() - Vendedores solo pueden crear sus gastos\n\nÍNDICES OPTIMIZADOS:\n- Índices compuestos para consultas de auditoría\n- Índices por tabla, usuario y acción\n- Comentarios documentados en todas las funciones\n\nPRÓXIMO PASO: Ejecutar la migración de auditoría en Supabase Studio\n</info added on 2025-09-12T21:26:13.607Z>",
+            "status": "done",
+            "testStrategy": "Probar accesos con diferentes roles y validar que solo se permite el acceso autorizado; revisar que las acciones críticas se registran en audit_logs."
+          },
+          {
+            "id": 5,
+            "title": "Validación y optimización del rendimiento",
+            "description": "Ejecutar pruebas de integridad referencial y rendimiento de consultas básicas sobre el esquema implementado.",
+            "dependencies": [
+              "20.4"
+            ],
+            "details": "Realizar consultas de inserción, actualización y búsqueda en tablas clave, midiendo tiempos de respuesta y verificando la integridad de los datos.\n<info added on 2025-09-12T21:27:53.209Z>\n✅ COMPLETADO: Validación y optimización del rendimiento implementada\n\nARCHIVOS CREADOS:\n1. supabase/migrations/20241212_212500_validation_and_optimization.sql - Optimizaciones y validaciones\n2. supabase/migrations/test_queries.sql - Scripts de prueba completos\n\nVALIDACIONES IMPLEMENTADAS:\n- validate_positive_inventory() - Previene inventario negativo\n- validate_goal_dates() - Valida fechas de metas coherentes\n- validate_daily_assignment_unique() - Previene asignaciones duplicadas\n- Triggers de validación para todas las tablas críticas\n\nOPTIMIZACIONES DE RENDIMIENTO:\n- Índices compuestos para consultas frecuentes\n- Configuración de auto-vacuum optimizada\n- Estadísticas mejoradas para columnas críticas\n- Índices por tabla, usuario y acción\n\nFUNCIONES DE ANÁLISIS:\n- analyze_query_performance() - Análisis de consultas costosas\n- get_index_usage_stats() - Estadísticas de uso de índices\n- get_table_sizes() - Monitoreo de tamaño de tablas\n- get_system_stats() - Estadísticas generales del sistema\n\nFUNCIONES DE MANTENIMIENTO:\n- cleanup_old_data() - Limpieza de datos obsoletos\n- validate_referential_integrity() - Validación de integridad referencial\n\nSCRIPTS DE PRUEBA:\n- 23 consultas de prueba para validación completa\n- Pruebas de integridad referencial\n- Pruebas de rendimiento con EXPLAIN ANALYZE\n- Pruebas de funciones y triggers\n- Pruebas de inserción y actualización\n- Pruebas de auditoría y seguridad\n- Pruebas de Realtime\n\nPRÓXIMO PASO: Ejecutar las migraciones y scripts de prueba en Supabase Studio\n</info added on 2025-09-12T21:27:53.209Z>",
+            "status": "done",
+            "testStrategy": "Comparar resultados de consultas con los datos esperados y analizar métricas de rendimiento para identificar posibles cuellos de botella."
+          }
+        ]
       },
       {
-        "id": 3,
-        "title": "Integrate Supabase Auth with JWT and Role-Based Access",
-        "description": "Implement authentication using Supabase Auth, JWT session management, and enforce role-based access control.",
-        "details": "Configure Supabase Auth for email/password login. Store JWT securely. Implement middleware for route protection and automatic role-based routing. Enforce RLS in Supabase for data security.",
-        "testStrategy": "Test login/logout flows, session persistence, and role-based redirects. Attempt unauthorized access to protected routes and verify denial.",
+        "id": 21,
+        "title": "Implementación de autenticación y control de acceso",
+        "description": "Integrar Supabase Auth con JWT, roles y persistencia de sesión, incluyendo MFA opcional.",
+        "details": "Configurar Supabase Auth, definir roles (Jefe, Vendedor), implementar lógica de login/logout, persistencia de sesión segura (httpOnly cookies), y rutas protegidas con verificación de rol. Usar Row Level Security (RLS) en Supabase.",
+        "testStrategy": "Probar login/logout, acceso a rutas según rol, expiración y renovación de sesión, y MFA.",
         "priority": "high",
         "dependencies": [
-          1,
-          2
+          20
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configuración inicial de Supabase Auth y JWT",
+            "description": "Configurar Supabase Auth en el proyecto, habilitar autenticación con JWT y establecer los métodos de autenticación requeridos (correo, OTP, etc.).",
+            "dependencies": [],
+            "details": "Registrar la aplicación en Supabase, obtener las claves necesarias, activar los proveedores de autenticación y verificar la emisión y validación de JWT para los usuarios.",
+            "status": "done",
+            "testStrategy": "Crear usuarios de prueba y verificar que se emitan JWT válidos al iniciar sesión."
+          },
+          {
+            "id": 2,
+            "title": "Definición y asignación de roles personalizados",
+            "description": "Definir los roles 'Jefe' y 'Vendedor' en Supabase, asignar estos roles a los usuarios mediante claims personalizados en JWT.",
+            "dependencies": [
+              "21.1"
+            ],
+            "details": "Modificar el campo raw_app_metadata de los usuarios para incluir el claim de rol y asegurar que el JWT lo refleje correctamente.",
+            "status": "done",
+            "testStrategy": "Verificar que los JWT de usuarios de prueba incluyan el claim de rol correcto y que se asignen adecuadamente al registrarse o actualizarse."
+          },
+          {
+            "id": 3,
+            "title": "Implementación de lógica de login, logout y persistencia de sesión segura",
+            "description": "Desarrollar la lógica de inicio y cierre de sesión, asegurando la persistencia de sesión mediante cookies httpOnly y manejo seguro del token JWT.",
+            "dependencies": [
+              "21.1"
+            ],
+            "details": "Configurar el almacenamiento del JWT en cookies httpOnly, implementar endpoints de login/logout y gestionar la expiración y renovación del token.",
+            "status": "done",
+            "testStrategy": "Probar el flujo de login/logout, verificar la creación y eliminación de cookies httpOnly y la persistencia de sesión tras recargar la página."
+          },
+          {
+            "id": 4,
+            "title": "Protección de rutas y verificación de acceso por rol",
+            "description": "Implementar middleware o lógica en el backend/frontend para proteger rutas y verificar el rol del usuario antes de permitir el acceso.",
+            "dependencies": [
+              "21.2",
+              "21.3"
+            ],
+            "details": "Desarrollar lógica que valide el JWT y el claim de rol en cada ruta protegida, retornando error o redireccionando si el usuario no tiene permisos.",
+            "status": "done",
+            "testStrategy": "Intentar acceder a rutas protegidas con diferentes roles y sin autenticación, verificando que solo los usuarios autorizados accedan."
+          },
+          {
+            "id": 5,
+            "title": "Configuración de Row Level Security (RLS) y MFA opcional",
+            "description": "Configurar políticas de Row Level Security en Supabase para restringir el acceso a datos según el rol y habilitar MFA opcional para usuarios.",
+            "dependencies": [
+              "21.2"
+            ],
+            "details": "Definir políticas RLS en las tablas relevantes usando claims de rol del JWT y activar MFA en Supabase Auth para usuarios que lo requieran.",
+            "status": "done",
+            "testStrategy": "Probar acceso a datos con diferentes roles y activar/desactivar MFA, verificando que las restricciones y el flujo MFA funcionen correctamente."
+          }
+        ]
       },
       {
-        "id": 4,
-        "title": "Develop Real-Time Dashboard (Panel En Ruta) with Supabase Realtime",
-        "description": "Create a live dashboard for Jefe showing vendor performance, inventory, sales, and expenses with real-time updates.",
-        "details": "Use Supabase Realtime WebSockets to subscribe to relevant tables. Display vendor cards with assigned/sold/remaining cylinders, sales/expense totals, and progress bars with color coding. Implement daily reset logic.",
-        "testStrategy": "Simulate transactions and verify dashboard updates within 1 second. Test color coding and daily reset functionality.",
+        "id": 22,
+        "title": "Implementación de Panel 'En Ruta' en tiempo real",
+        "description": "Desarrollar el dashboard de monitoreo en tiempo real para Jefe, mostrando KPIs y tarjetas de vendedores.",
+        "details": "Usar Supabase Realtime WebSockets para actualizar tarjetas de vendedores (asignados, vendidos, inventario, ventas, gastos, indicadores de progreso). Implementar lógica de reseteo diario y colorimetría según estado.",
+        "testStrategy": "Simular transacciones y verificar actualización en menos de 1 segundo en el dashboard.",
         "priority": "high",
         "dependencies": [
-          2,
-          3
+          21
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseño de la estructura del dashboard y tarjetas de vendedores",
+            "description": "Definir la estructura visual y lógica del dashboard, incluyendo la disposición de KPIs y tarjetas individuales para cada vendedor, asegurando que se muestren los datos requeridos (asignados, vendidos, inventario, ventas, gastos, indicadores de progreso).",
+            "dependencies": [],
+            "details": "Crear wireframes y especificaciones de componentes para el dashboard y las tarjetas, considerando la escalabilidad y la claridad visual para el usuario Jefe.\n<info added on 2025-09-12T21:02:09.588Z>\n✅ COMPLETADO: Estructura básica del dashboard implementada:\n- AdminLayout con sidebar y navegación para Jefe\n- VendorLayout con navegación móvil para Vendedor\n- Dashboard admin con tarjetas de estadísticas básicas\n- Navegación por roles funcional\n- Estructura visual preparada para KPIs\n\nPróximo paso: Implementar datos reales y actualización en tiempo real con Supabase Realtime.\n</info added on 2025-09-12T21:02:09.588Z>",
+            "status": "done",
+            "testStrategy": "Revisar con stakeholders los wireframes y prototipos interactivos para validar que cumplen los requisitos funcionales y de usabilidad."
+          },
+          {
+            "id": 2,
+            "title": "Integración de Supabase Realtime WebSockets para actualización en tiempo real",
+            "description": "Configurar la suscripción a cambios en las tablas relevantes de la base de datos usando Supabase Realtime y WebSockets, de modo que las tarjetas de vendedores se actualicen instantáneamente ante cualquier cambio.",
+            "dependencies": [
+              "22.1"
+            ],
+            "details": "Habilitar Realtime en las tablas necesarias, implementar la lógica de suscripción y manejo de eventos (INSERT, UPDATE, DELETE) en el frontend, y asegurar la conexión estable mediante heartbeats periódicos.\n<info added on 2025-09-12T21:14:21.683Z>\nAgregar especificaciones detalladas para las tarjetas individuales de vendedores en el panel \"En Ruta\", mostrando únicamente datos del día actual: nombre del vendedor, ruta asignada, cantidad de cilindros asignados (por tipo), vendidos y restantes, progreso visual del porcentaje vendido, total de ventas, total de gastos (en rojo) y margen del día. Implementar actualización instantánea de cada card ante ventas o gastos, reseteo automático de datos a las 00:00, código de colores (verde, amarillo, rojo) según estado, y devolución automática de cilindros no vendidos al inventario al final del día. Integrar suscripción en tiempo real a las tablas sales, expenses y daily_assignments mediante Supabase Realtime, asegurando que las cards se actualicen automáticamente sin refrescar la página y con una latencia máxima de 1 segundo.\n</info added on 2025-09-12T21:14:21.683Z>",
+            "status": "pending",
+            "testStrategy": "Simular cambios en la base de datos y verificar que las tarjetas se actualizan en menos de 1 segundo en el dashboard."
+          },
+          {
+            "id": 3,
+            "title": "Implementación de lógica de reseteo diario de indicadores",
+            "description": "Desarrollar la lógica que reinicia los KPIs y métricas de las tarjetas de vendedores al inicio de cada día, asegurando la consistencia de los datos mostrados.",
+            "dependencies": [
+              "22.2"
+            ],
+            "details": "Programar un proceso automático (cron job o función programada) que ejecute el reseteo diario, y actualizar el frontend para reflejar los valores reiniciados.",
+            "status": "pending",
+            "testStrategy": "Simular el cambio de día y verificar que todos los indicadores se reinician correctamente en el dashboard."
+          },
+          {
+            "id": 4,
+            "title": "Aplicación de colorimetría dinámica según estado de los vendedores",
+            "description": "Implementar reglas de colorimetría en las tarjetas para reflejar visualmente el estado de cada vendedor (por ejemplo: verde para objetivos cumplidos, amarillo para advertencia, rojo para bajo rendimiento).",
+            "dependencies": [
+              "22.3"
+            ],
+            "details": "Definir criterios de colorimetría y aplicarlos dinámicamente en el frontend según los datos de cada tarjeta.",
+            "status": "pending",
+            "testStrategy": "Probar distintos escenarios de datos y verificar que la colorimetría se aplica correctamente en tiempo real."
+          },
+          {
+            "id": 5,
+            "title": "Pruebas integrales y optimización de rendimiento del dashboard",
+            "description": "Realizar pruebas end-to-end para asegurar la actualización instantánea, la correcta visualización de KPIs, el reseteo diario y la colorimetría, optimizando el rendimiento y la experiencia de usuario.",
+            "dependencies": [
+              "22.4"
+            ],
+            "details": "Ejecutar pruebas de carga, medir tiempos de actualización, identificar cuellos de botella y optimizar el uso de recursos en el frontend y la suscripción a eventos.",
+            "status": "pending",
+            "testStrategy": "Simular múltiples usuarios y transacciones concurrentes, verificando que el dashboard mantiene la actualización en menos de 1 segundo y sin degradación visual."
+          }
+        ]
       },
       {
-        "id": 5,
-        "title": "Implement Inventory Management Module",
-        "description": "Build inventory tracking for full and empty cylinders, categorized by type, brand, and color, with real-time updates and low stock alerts.",
-        "details": "Create inventory views and update logic. Integrate with transaction and truck arrival modules for automatic adjustments. Implement low stock notification triggers.",
-        "testStrategy": "Perform transactions and truck arrivals; verify inventory updates and low stock alerts. Test edge cases for negative inventory prevention.",
+        "id": 23,
+        "title": "Gestión de inventario de cilindros llenos y vacíos",
+        "description": "Implementar lógica y UI para seguimiento de inventario por tipo, marca y color, con notificaciones de bajo stock.",
+        "details": "Crear vistas y lógica para mostrar inventario en tiempo real, clasificar por tipo, marca y color. Configurar triggers para notificaciones de bajo stock usando Supabase Functions y notificaciones push.",
+        "testStrategy": "Registrar transacciones y llegadas de camión, verificar actualización y alertas de stock.",
         "priority": "high",
         "dependencies": [
-          2,
-          3
+          22
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseñar y crear la estructura de base de datos para inventario de cilindros",
+            "description": "Definir y crear tablas en Supabase para gestionar cilindros llenos y vacíos, incluyendo atributos de tipo, marca y color.",
+            "dependencies": [],
+            "details": "La estructura debe permitir clasificar y consultar cilindros por tipo, marca y color, y registrar el estado (lleno/vacío) de cada unidad.\n<info added on 2025-09-12T21:13:54.400Z>\nSeparar el inventario en dos tablas: una para cilindros llenos (solo marca Roscogas, tipos 33lb, 40lb, 100lb; campos: id, type, quantity, unit_cost, updated_at) y otra para cilindros vacíos (todas las marcas y colores, tipos 33lb, 40lb, 100lb; campos: id, type, brand, color, quantity, updated_at). Registrar y actualizar inventario únicamente ante las siguientes operaciones: venta intercambio (-1 lleno, +1 vacío), venta completa (-1 lleno), venta de vacíos (-1 vacío), compra de vacíos (+1 vacío), llegada de camión (+llenos recibidos, -vacíos entregados). Excluir de afectación de inventario las asignaciones a vendedores (estado STANDBY), salidas para ruta y devoluciones al final del día; los cilindros en estado STANDBY se gestionan aparte y no modifican el inventario principal hasta la venta, generando cards informativos en la sección \"En Ruta\".\n</info added on 2025-09-12T21:13:54.400Z>",
+            "status": "pending",
+            "testStrategy": "Verificar la creación de tablas y relaciones, y realizar inserciones y consultas básicas para asegurar la integridad de los datos."
+          },
+          {
+            "id": 2,
+            "title": "Implementar lógica de actualización y consulta en tiempo real",
+            "description": "Configurar Supabase Realtime para reflejar cambios instantáneos en el inventario y permitir consultas filtradas por tipo, marca y color.",
+            "dependencies": [
+              "23.1"
+            ],
+            "details": "Activar la funcionalidad Realtime en las tablas relevantes y desarrollar lógica para mostrar el inventario actualizado en la UI según los filtros seleccionados.",
+            "status": "pending",
+            "testStrategy": "Simular transacciones de entrada y salida de cilindros y verificar que la UI se actualiza en tiempo real con los filtros aplicados."
+          },
+          {
+            "id": 3,
+            "title": "Desarrollar vistas de usuario para visualización y clasificación del inventario",
+            "description": "Crear interfaces que permitan visualizar el inventario en tiempo real y clasificarlo dinámicamente por tipo, marca y color.",
+            "dependencies": [
+              "23.2"
+            ],
+            "details": "Diseñar componentes de UI que muestren listas y tablas con filtros interactivos, asegurando una experiencia clara y responsiva.",
+            "status": "pending",
+            "testStrategy": "Probar la navegación, la aplicación de filtros y la actualización automática de los datos en la interfaz."
+          },
+          {
+            "id": 4,
+            "title": "Configurar triggers y funciones para notificaciones de bajo stock",
+            "description": "Implementar triggers en la base de datos y funciones en Supabase para detectar niveles bajos de inventario y generar eventos de notificación.",
+            "dependencies": [
+              "23.1"
+            ],
+            "details": "Definir umbrales de stock, crear triggers SQL y funciones serverless que envíen eventos cuando el inventario de un tipo/marca/color caiga por debajo del mínimo.",
+            "status": "pending",
+            "testStrategy": "Reducir el stock de prueba por debajo del umbral y verificar que se dispara la función y se genera el evento esperado."
+          },
+          {
+            "id": 5,
+            "title": "Integrar notificaciones push para alertas de bajo stock",
+            "description": "Desarrollar la lógica para recibir y mostrar notificaciones push en la aplicación cuando se detecte bajo stock.",
+            "dependencies": [
+              "23.4"
+            ],
+            "details": "Configurar el canal de notificaciones push y enlazarlo con los eventos generados por Supabase Functions para alertar a los usuarios responsables.",
+            "status": "pending",
+            "testStrategy": "Simular condiciones de bajo stock y comprobar que las notificaciones push se reciben y visualizan correctamente en los dispositivos."
+          }
+        ]
       },
       {
-        "id": 6,
-        "title": "Develop Mobile-Optimized Sales Transaction Form",
-        "description": "Create a responsive sales form for Vendedor with support for exchange, complete sale, and empty sale transaction types.",
-        "details": "Use React Hook Form with Zod validation. Auto-populate vendor info. Validate required fields. Integrate with IndexedDB for offline queuing. Add receipt photo upload (camera/library).",
-        "testStrategy": "Test form accessibility within 1-2 taps, field validation, offline queuing, and photo upload. Confirm successful submission and error handling.",
+        "id": 24,
+        "title": "Procesamiento de transacciones de venta y ajustes automáticos",
+        "description": "Desarrollar el formulario móvil de ventas y lógica de ajuste automático de inventario según tipo de transacción.",
+        "details": "Formularios optimizados con React Hook Form y Zod. Lógica para Exchange, Venta Completa y Venta Vacía. Validación de inventario y actualización automática en Supabase. Manejo de errores y feedback inmediato.",
+        "testStrategy": "Probar cada tipo de transacción, validar ajustes de inventario y mensajes de error.",
         "priority": "high",
         "dependencies": [
-          3,
-          5
+          23
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseño y validación del formulario móvil de ventas",
+            "description": "Crear el formulario móvil utilizando React Hook Form y definir los esquemas de validación con Zod para los diferentes tipos de transacción (Exchange, Venta Completa, Venta Vacía).",
+            "dependencies": [],
+            "details": "Implementar campos requeridos, validaciones de formato y reglas específicas según el tipo de transacción. Integrar Zod con React Hook Form usando zodResolver para asegurar validación en tiempo real.\n<info added on 2025-09-12T21:14:07.324Z>\nAgregar lógica condicional en el esquema de validación para los cuatro tipos de transacción: intercambio, venta completa, venta de vacíos y compra de vacíos. Para \"intercambio\", exigir los campos adicionales empty_brand y empty_color. Configurar los impactos de inventario según el tipo de transacción: intercambio (-1 lleno, +1 vacío), venta completa (-1 lleno), venta de vacíos (-1 vacío), compra de vacíos (+1 vacío). Todos los formularios deben incluir los campos obligatorios: vendedor (auto-asignado), cliente (nombre, teléfono, ubicación), producto (tipo de cilindro), tipo de venta, valor cobrado, método de pago y timestamp automático. Incluir advertencia para que los comprobantes de transferencia sean enviados al jefe por WhatsApp.\n</info added on 2025-09-12T21:14:07.324Z>",
+            "status": "pending",
+            "testStrategy": "Probar la validación de cada campo y tipo de transacción, verificando mensajes de error personalizados y bloqueo de envío ante datos inválidos."
+          },
+          {
+            "id": 2,
+            "title": "Implementación de lógica de procesamiento de transacciones",
+            "description": "Desarrollar la lógica para procesar cada tipo de transacción (Exchange, Venta Completa, Venta Vacía) y preparar los datos para el ajuste de inventario.",
+            "dependencies": [
+              "24.1"
+            ],
+            "details": "Determinar el flujo de datos y las acciones necesarias según el tipo de transacción seleccionada, asegurando que los datos estén listos para la validación y actualización de inventario.",
+            "status": "pending",
+            "testStrategy": "Simular cada tipo de transacción y verificar que los datos generados sean correctos y completos para el siguiente paso."
+          },
+          {
+            "id": 3,
+            "title": "Validación y actualización automática de inventario en Supabase",
+            "description": "Implementar la lógica para validar el inventario disponible y actualizarlo automáticamente en Supabase según la transacción realizada.",
+            "dependencies": [
+              "24.2"
+            ],
+            "details": "Consultar el inventario en Supabase antes de confirmar la transacción, validar disponibilidad y realizar el ajuste automático (descuento o incremento) según corresponda.",
+            "status": "pending",
+            "testStrategy": "Ejecutar transacciones con diferentes escenarios de inventario (suficiente, insuficiente, límite) y verificar que los ajustes sean correctos y consistentes en la base de datos."
+          },
+          {
+            "id": 4,
+            "title": "Manejo de errores y feedback inmediato al usuario",
+            "description": "Desarrollar mecanismos para capturar errores en validación, procesamiento o actualización de inventario y mostrar mensajes claros e inmediatos al usuario.",
+            "dependencies": [
+              "24.3"
+            ],
+            "details": "Implementar manejo de errores tanto en frontend como en backend, mostrando feedback visual (mensajes, alertas) y previniendo acciones no válidas.",
+            "status": "pending",
+            "testStrategy": "Forzar errores en cada etapa (validación, procesamiento, actualización) y verificar que el usuario reciba mensajes claros y no se complete la transacción errónea."
+          },
+          {
+            "id": 5,
+            "title": "Pruebas integrales de flujo y validación de casos límite",
+            "description": "Realizar pruebas end-to-end del flujo completo de transacciones y ajustes automáticos, incluyendo casos límite y validación de integridad de datos.",
+            "dependencies": [
+              "24.4"
+            ],
+            "details": "Simular múltiples escenarios de usuario, tipos de transacción y estados de inventario para asegurar la robustez y confiabilidad del sistema.",
+            "status": "pending",
+            "testStrategy": "Ejecutar pruebas automatizadas y manuales cubriendo todos los tipos de transacción, validando ajustes de inventario, mensajes de error y feedback en tiempo real."
+          }
+        ]
       },
       {
-        "id": 7,
-        "title": "Implement Offline Transaction Queuing and Sync",
-        "description": "Enable offline transaction recording using IndexedDB and synchronize with Supabase when online.",
-        "details": "Wrap IndexedDB for local storage. Queue transactions offline. Implement service worker for sync. Handle optimistic UI updates and conflict resolution. Provide manual sync trigger.",
-        "testStrategy": "Simulate offline mode, record transactions, and verify local storage. Restore connectivity and confirm sync. Test conflict scenarios and error messages.",
+        "id": 25,
+        "title": "Gestión de llegadas de camión y actualización de costos",
+        "description": "Crear interfaz para Jefe para registrar llegadas de camión, actualizar inventario y recalcular costos/márgenes.",
+        "details": "Formulario con campos para cantidades, costos unitarios, flete, total de factura. Lógica para actualizar inventario y recalcular costo promedio ponderado. Actualización de reportes de margen.",
+        "testStrategy": "Registrar llegada, verificar actualización de inventario y recálculo de márgenes en reportes.",
         "priority": "high",
         "dependencies": [
-          6
+          23
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseño y desarrollo del formulario de registro de llegada de camión",
+            "description": "Crear una interfaz para que el Jefe registre la llegada de camiones, incluyendo campos para cantidades, costos unitarios, flete y total de factura.",
+            "dependencies": [],
+            "details": "El formulario debe ser intuitivo, permitir la entrada de todos los datos relevantes y validar la información antes de su envío.\n<info added on 2025-09-12T21:14:42.201Z>\nAgregar los siguientes campos obligatorios al formulario de registro de llegada de camión:\n\n- Fecha y hora de llegada\n- Cantidad de cilindros llenos recibidos, desglosada por tipo (33lb, 40lb, 100lb)\n- Cantidad de cilindros vacíos entregados, especificando marca y color\n- Precio unitario del día por cilindro\n- Valor total de la factura de compra\n- Costo de flete (pagado por separado, no con dinero del sistema)\n- Observaciones (opcional)\n\nLa información registrada debe permitir la actualización automática del inventario y el recálculo inmediato de la rentabilidad, considerando el nuevo precio de compra. Se debe guardar el historial de variaciones de costo para cada llegada. El precio de compra del gas es el principal factor que determina la ganancia: a menor precio, mayor rentabilidad en ventas.\n</info added on 2025-09-12T21:14:42.201Z>",
+            "status": "pending",
+            "testStrategy": "Completar el formulario con datos de prueba y verificar que todos los campos se registran correctamente."
+          },
+          {
+            "id": 2,
+            "title": "Implementación de la lógica de actualización de inventario",
+            "description": "Desarrollar la lógica que, tras registrar la llegada, actualiza automáticamente el inventario con las nuevas cantidades recibidas.",
+            "dependencies": [
+              "25.1"
+            ],
+            "details": "El sistema debe sumar las cantidades ingresadas al inventario existente y reflejar los cambios en tiempo real.",
+            "status": "pending",
+            "testStrategy": "Registrar una llegada y comprobar que el inventario se actualiza correctamente en la base de datos y en la interfaz."
+          },
+          {
+            "id": 3,
+            "title": "Cálculo y actualización del costo promedio ponderado",
+            "description": "Programar el recálculo automático del costo promedio ponderado del inventario al registrar nuevas llegadas y costos.",
+            "dependencies": [
+              "25.2"
+            ],
+            "details": "El sistema debe considerar el costo unitario, el flete y las cantidades para recalcular el costo promedio de cada producto.",
+            "status": "pending",
+            "testStrategy": "Registrar llegadas con diferentes costos y verificar que el costo promedio ponderado se actualiza correctamente."
+          },
+          {
+            "id": 4,
+            "title": "Actualización automática de reportes de margen",
+            "description": "Actualizar los reportes de margen de manera automática tras cada registro de llegada y recálculo de costos.",
+            "dependencies": [
+              "25.3"
+            ],
+            "details": "Los reportes deben reflejar los nuevos márgenes considerando los costos actualizados y estar disponibles para consulta inmediata.",
+            "status": "pending",
+            "testStrategy": "Registrar una llegada, verificar el recálculo de márgenes y comprobar que los reportes muestran los valores correctos."
+          },
+          {
+            "id": 5,
+            "title": "Validación integral y pruebas de flujo completo",
+            "description": "Realizar pruebas de extremo a extremo para asegurar que el registro de llegadas, actualización de inventario, recálculo de costos y actualización de reportes funcionan como un flujo integrado.",
+            "dependencies": [
+              "25.4"
+            ],
+            "details": "Simular escenarios reales de llegada de camión y verificar la consistencia y exactitud de todos los procesos y reportes involucrados.",
+            "status": "pending",
+            "testStrategy": "Ejecutar casos de prueba completos, revisar logs y validar que no existan inconsistencias en inventario, costos ni reportes."
+          }
+        ]
       },
       {
-        "id": 8,
-        "title": "Integrate Receipt Photo Upload with Supabase Storage",
-        "description": "Allow Vendedor to upload and sync receipt images with transactions, supporting camera and gallery input.",
-        "details": "Integrate device camera and file picker. Compress images before upload. Store images in Supabase Storage and link to transaction records. Sync images with transactions when online.",
-        "testStrategy": "Upload photos via camera and gallery. Check image compression, upload success, and association with transactions. Test offline/online sync.",
+        "id": 26,
+        "title": "Sistema de asignación diaria de cilindros",
+        "description": "Desarrollar interfaz y lógica para asignar cilindros a vendedores, con estado STANDBY y reseteo automático.",
+        "details": "Interfaz para Jefe para seleccionar cilindros por tipo/cantidad, lógica para estado STANDBY, visibilidad en móvil para Vendedor, y proceso automático de devolución a inventario general al final del día.",
+        "testStrategy": "Asignar cilindros, verificar visibilidad y reseteo al cierre del día.",
         "priority": "medium",
         "dependencies": [
-          6,
-          7
+          23
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseño de interfaz para selección y asignación de cilindros",
+            "description": "Crear la interfaz para que el Jefe pueda seleccionar cilindros por tipo y cantidad, y asignarlos a cada vendedor.",
+            "dependencies": [],
+            "details": "La interfaz debe permitir filtrar cilindros por tipo y cantidad disponible, mostrar inventario actualizado y facilitar la asignación diaria a cada vendedor.",
+            "status": "pending",
+            "testStrategy": "Simular selección y asignación de cilindros, verificando que la interfaz muestre correctamente los datos y registre la asignación."
+          },
+          {
+            "id": 2,
+            "title": "Implementación de lógica de estado STANDBY para cilindros asignados",
+            "description": "Desarrollar la lógica que marque los cilindros asignados como STANDBY durante el día, evitando su reasignación o devolución manual.",
+            "dependencies": [
+              "26.1"
+            ],
+            "details": "Al asignar un cilindro, su estado debe cambiar automáticamente a STANDBY y permanecer así hasta el reseteo diario.",
+            "status": "pending",
+            "testStrategy": "Asignar cilindros y verificar que su estado cambie a STANDBY y no puedan ser reasignados manualmente."
+          },
+          {
+            "id": 3,
+            "title": "Visibilidad de cilindros asignados en la aplicación móvil del vendedor",
+            "description": "Desarrollar la vista móvil para que cada vendedor pueda consultar en tiempo real los cilindros asignados y su estado.",
+            "dependencies": [
+              "26.2"
+            ],
+            "details": "La aplicación móvil debe mostrar la lista de cilindros asignados, tipo, cantidad y estado, actualizándose automáticamente ante cambios.",
+            "status": "pending",
+            "testStrategy": "Asignar cilindros desde la interfaz de Jefe y verificar que el vendedor los visualice correctamente en su aplicación móvil."
+          },
+          {
+            "id": 4,
+            "title": "Automatización del proceso de reseteo y devolución de cilindros al inventario general",
+            "description": "Implementar un proceso automático que, al final del día, devuelva todos los cilindros en estado STANDBY al inventario general y actualice su estado.",
+            "dependencies": [
+              "26.3"
+            ],
+            "details": "El sistema debe ejecutar el reseteo a una hora programada, cambiando el estado de los cilindros y actualizando el inventario disponible.",
+            "status": "pending",
+            "testStrategy": "Simular el cierre de día y verificar que todos los cilindros asignados vuelvan al inventario general y su estado se actualice correctamente."
+          },
+          {
+            "id": 5,
+            "title": "Validación integral y pruebas de flujo completo de asignación y reseteo",
+            "description": "Realizar pruebas de extremo a extremo para validar la asignación, visibilidad, estado y reseteo automático de cilindros.",
+            "dependencies": [
+              "26.4"
+            ],
+            "details": "El flujo debe cubrir desde la asignación inicial hasta la devolución automática, asegurando la integridad de datos y la experiencia de usuario.",
+            "status": "pending",
+            "testStrategy": "Ejecutar casos de prueba que incluyan asignación, consulta móvil, cambios de estado y reseteo, verificando resultados esperados en cada etapa."
+          }
+        ]
       },
       {
-        "id": 9,
-        "title": "Build Truck Arrival Management Interface",
-        "description": "Develop Jefe-only interface for recording truck arrivals, including cylinder counts, costs, and invoice details.",
-        "details": "Create form for full/empty cylinder counts, unit costs, invoice total, and freight. On submission, update inventory and recalculate cost basis. Trigger margin analysis update.",
-        "testStrategy": "Submit truck arrivals and verify inventory/cost updates. Validate invoice calculations and margin recalculation.",
+        "id": 27,
+        "title": "Flujo de solicitudes de edición de transacciones",
+        "description": "Permitir que Vendedor solicite edición de transacciones y que Jefe apruebe/rechace con comentarios y auditoría.",
+        "details": "Formulario de solicitud prellenado, lógica de reversión de inventario si se aprueba, interfaz de revisión para Jefe, comentarios obligatorios y registro en audit_logs.",
+        "testStrategy": "Solicitar edición, aprobar/rechazar, verificar ajustes y registro en auditoría.",
         "priority": "medium",
         "dependencies": [
-          5
+          24
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseño y desarrollo del formulario de solicitud de edición",
+            "description": "Crear un formulario prellenado que permita al Vendedor solicitar la edición de una transacción, capturando todos los datos relevantes y justificativos.",
+            "dependencies": [],
+            "details": "El formulario debe mostrar los datos actuales de la transacción y permitir la edición de los campos permitidos, además de un campo obligatorio para justificar la solicitud.",
+            "status": "pending",
+            "testStrategy": "Completar y enviar el formulario con diferentes escenarios de edición, verificando que los datos se capturen correctamente y que la justificación sea obligatoria."
+          },
+          {
+            "id": 2,
+            "title": "Implementación del flujo de aprobación y revisión para Jefe",
+            "description": "Desarrollar la interfaz y lógica para que el Jefe revise, apruebe o rechace las solicitudes de edición, incluyendo la obligatoriedad de comentarios.",
+            "dependencies": [
+              "27.1"
+            ],
+            "details": "La interfaz debe mostrar la solicitud, los cambios propuestos y permitir al Jefe aprobar o rechazar, exigiendo un comentario en ambos casos.",
+            "status": "pending",
+            "testStrategy": "Simular solicitudes y verificar que el Jefe pueda aprobar o rechazar, y que no sea posible finalizar sin comentarios."
+          },
+          {
+            "id": 3,
+            "title": "Lógica de reversión y actualización de inventario",
+            "description": "Implementar la lógica que revierta o ajuste el inventario automáticamente si la solicitud de edición es aprobada.",
+            "dependencies": [
+              "27.2"
+            ],
+            "details": "Al aprobarse una edición, el sistema debe revertir los movimientos de inventario originales y aplicar los nuevos, garantizando la integridad de los datos.",
+            "status": "pending",
+            "testStrategy": "Aprobar solicitudes de edición y verificar que los movimientos de inventario se ajusten correctamente según los cambios."
+          },
+          {
+            "id": 4,
+            "title": "Registro de acciones y comentarios en audit_logs",
+            "description": "Registrar todas las acciones del flujo (solicitud, aprobación/rechazo, comentarios, cambios de inventario) en el sistema de auditoría.",
+            "dependencies": [
+              "27.2",
+              "27.3"
+            ],
+            "details": "Cada acción relevante debe generar una entrada en audit_logs, incluyendo usuario, acción, timestamp, comentarios y detalles de los cambios.",
+            "status": "pending",
+            "testStrategy": "Revisar audit_logs tras cada acción y validar que la información registrada sea completa y precisa."
+          },
+          {
+            "id": 5,
+            "title": "Validación integral del flujo y feedback al usuario",
+            "description": "Realizar pruebas end-to-end del flujo completo, asegurando la correcta interacción entre formularios, lógica de negocio, auditoría y feedback al usuario.",
+            "dependencies": [
+              "27.1",
+              "27.2",
+              "27.3",
+              "27.4"
+            ],
+            "details": "El usuario debe recibir notificaciones claras sobre el estado de su solicitud y los resultados de la aprobación o rechazo.",
+            "status": "pending",
+            "testStrategy": "Ejecutar casos de prueba completos desde la solicitud hasta la resolución, verificando mensajes, integridad de datos y registros de auditoría."
+          }
+        ]
       },
       {
-        "id": 10,
-        "title": "Implement Daily Assignment System for Cylinder Distribution",
-        "description": "Enable Jefe to assign cylinders to vendors, manage STANDBY state, and automate end-of-day resets.",
-        "details": "Build assignment interface for Jefe. Track assignments by vendor and cylinder type. Implement STANDBY state logic and automated reset to return unassigned cylinders.",
-        "testStrategy": "Assign cylinders, verify vendor visibility, and test end-of-day reset. Confirm inventory consistency.",
+        "id": 28,
+        "title": "Módulo de reportes y analítica multidimensional",
+        "description": "Implementar generación de reportes filtrables por periodo, vendedor, tipo de producto, tipo de venta y ruta.",
+        "details": "Consultas optimizadas en Supabase, generación de reportes en frontend con tablas y gráficos (usando Chart.js o similar). Filtros avanzados y exportación de datos.",
+        "testStrategy": "Generar reportes con diferentes filtros, validar tiempos de respuesta y exactitud de datos.",
         "priority": "medium",
         "dependencies": [
-          5,
-          4
+          25
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Definir estructura de datos y modelo multidimensional en Supabase",
+            "description": "Diseñar y documentar la estructura de tablas y relaciones necesarias en Supabase para soportar consultas multidimensionales (periodo, vendedor, tipo de producto, tipo de venta, ruta).",
+            "dependencies": [],
+            "details": "Incluye la creación de índices y vistas necesarias para optimizar las consultas y soportar los filtros requeridos.",
+            "status": "pending",
+            "testStrategy": "Verificar que las tablas y relaciones permiten consultas eficientes con todos los filtros requeridos."
+          },
+          {
+            "id": 2,
+            "title": "Implementar consultas optimizadas y endpoints para reportes filtrables",
+            "description": "Desarrollar funciones y endpoints en Supabase que permitan obtener datos filtrados según los criterios definidos (periodo, vendedor, tipo de producto, tipo de venta, ruta).",
+            "dependencies": [
+              "28.1"
+            ],
+            "details": "Asegurar que las consultas sean eficientes y devuelvan los datos necesarios para la generación de reportes en frontend.",
+            "status": "pending",
+            "testStrategy": "Probar los endpoints con diferentes combinaciones de filtros y medir tiempos de respuesta y exactitud de los datos."
+          },
+          {
+            "id": 3,
+            "title": "Desarrollar interfaz de usuario para selección de filtros avanzados",
+            "description": "Crear componentes de frontend que permitan al usuario seleccionar y combinar filtros de periodo, vendedor, tipo de producto, tipo de venta y ruta.",
+            "dependencies": [
+              "28.2"
+            ],
+            "details": "La interfaz debe ser intuitiva y permitir la selección múltiple y combinada de filtros, actualizando los datos en tiempo real.",
+            "status": "pending",
+            "testStrategy": "Validar que la selección de filtros actualiza correctamente los datos mostrados y que la experiencia de usuario es fluida."
+          },
+          {
+            "id": 4,
+            "title": "Generar reportes visuales con tablas y gráficos dinámicos",
+            "description": "Implementar la visualización de los datos filtrados mediante tablas y gráficos interactivos usando Chart.js o una biblioteca similar.",
+            "dependencies": [
+              "28.3"
+            ],
+            "details": "Asegurar que los gráficos y tablas se actualicen dinámicamente al cambiar los filtros y que sean responsivos.",
+            "status": "pending",
+            "testStrategy": "Probar la actualización dinámica de los gráficos y tablas con diferentes filtros y validar la correspondencia de los datos."
+          },
+          {
+            "id": 5,
+            "title": "Implementar funcionalidad de exportación de datos filtrados",
+            "description": "Desarrollar la opción para exportar los reportes generados (tablas y gráficos) en formatos estándar (CSV, XLSX, PDF) incluyendo los filtros aplicados como metadatos.",
+            "dependencies": [
+              "28.4"
+            ],
+            "details": "Integrar bibliotecas como papaparse, SheetJS y jsPDF para la exportación y asegurar que los archivos incluyan los datos y metadatos correctos.",
+            "status": "pending",
+            "testStrategy": "Exportar reportes en cada formato, abrir los archivos y validar la integridad, formato y presencia de metadatos y filtros."
+          }
+        ]
       },
       {
-        "id": 11,
-        "title": "Develop Edit Request Workflow for Transactions",
-        "description": "Allow vendors to request transaction edits and Jefe to approve/reject with audit trail and inventory reversal.",
-        "details": "Create edit request form pre-filled with transaction data. Implement approval/rejection interface for Jefe with comment system. Log all actions in audit trail and reverse inventory on approval.",
-        "testStrategy": "Submit edit requests, process approvals/rejections, and verify audit logs and inventory adjustments.",
+        "id": 29,
+        "title": "Exportación de reportes (CSV, XLSX, PDF)",
+        "description": "Permitir exportar reportes en formatos CSV, XLSX y PDF con metadatos y formato profesional.",
+        "details": "Usar bibliotecas como papaparse (CSV), SheetJS (XLSX) y jsPDF (PDF). Incluir metadatos (fecha, filtros) y gráficos en PDF.",
+        "testStrategy": "Exportar cada formato, abrir archivos y validar integridad y formato.",
         "priority": "medium",
         "dependencies": [
-          6,
-          5
+          28
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Definir estructura de datos y metadatos para exportación",
+            "description": "Establecer la estructura de los datos a exportar, incluyendo los metadatos requeridos (fecha de generación, filtros aplicados) y el formato estándar para todos los tipos de reporte.",
+            "dependencies": [],
+            "details": "Documentar los campos obligatorios y opcionales, así como el formato de los metadatos que deben incluirse en cada archivo exportado.",
+            "status": "pending",
+            "testStrategy": "Validar que la estructura de datos y metadatos esté correctamente definida y documentada para su uso en los siguientes subtasks."
+          },
+          {
+            "id": 2,
+            "title": "Implementar exportación a CSV usando papaparse",
+            "description": "Desarrollar la funcionalidad para exportar reportes en formato CSV utilizando la biblioteca papaparse, asegurando la inclusión de metadatos.",
+            "dependencies": [
+              "29.1"
+            ],
+            "details": "Configurar papaparse para generar archivos CSV con los datos y metadatos definidos, aplicando formato profesional en encabezados y separadores.",
+            "status": "pending",
+            "testStrategy": "Exportar un reporte de prueba a CSV, abrir el archivo y verificar la presencia y formato de los metadatos y datos."
+          },
+          {
+            "id": 3,
+            "title": "Implementar exportación a XLSX usando SheetJS",
+            "description": "Desarrollar la funcionalidad para exportar reportes en formato XLSX utilizando SheetJS, incluyendo metadatos y formato profesional.",
+            "dependencies": [
+              "29.1"
+            ],
+            "details": "Configurar SheetJS para crear archivos XLSX con hojas, encabezados, metadatos y estilos básicos para presentación profesional.",
+            "status": "pending",
+            "testStrategy": "Exportar un reporte de prueba a XLSX, abrir el archivo en Excel y validar la estructura, metadatos y formato."
+          },
+          {
+            "id": 4,
+            "title": "Implementar exportación a PDF con jsPDF incluyendo gráficos",
+            "description": "Desarrollar la funcionalidad para exportar reportes en PDF usando jsPDF, asegurando la inclusión de metadatos, formato profesional y gráficos generados (por ejemplo, con Chart.js).",
+            "dependencies": [
+              "29.1"
+            ],
+            "details": "Integrar jsPDF y, si es necesario, plugins para gráficos. Incluir metadatos, tablas de datos y gráficos en el PDF exportado.",
+            "status": "pending",
+            "testStrategy": "Exportar un reporte de prueba a PDF, abrir el archivo y verificar la presencia de metadatos, formato profesional y gráficos."
+          },
+          {
+            "id": 5,
+            "title": "Validar integridad y formato de archivos exportados",
+            "description": "Realizar pruebas de exportación en los tres formatos (CSV, XLSX, PDF), abriendo los archivos generados y verificando la integridad de los datos, metadatos y formato profesional.",
+            "dependencies": [
+              "29.2",
+              "29.3",
+              "29.4"
+            ],
+            "details": "Definir casos de prueba para distintos escenarios de datos y filtros. Documentar los resultados y corregir inconsistencias detectadas.",
+            "status": "pending",
+            "testStrategy": "Ejecutar exportaciones con diferentes configuraciones y revisar manualmente los archivos generados para asegurar cumplimiento de los requisitos."
+          }
+        ]
       },
       {
-        "id": 12,
-        "title": "Build Reporting and Analytics Module",
-        "description": "Provide period-based, multi-dimensional reports with cost, margin, and performance analytics. Support filtering and historical data.",
-        "details": "Implement reporting backend queries and frontend UI. Support filters by date, vendor, product, sale type, and route. Calculate margins and aggregate metrics. Ensure report generation within 5 seconds.",
-        "testStrategy": "Generate reports with various filters. Validate data accuracy, performance, and historical access.",
+        "id": 30,
+        "title": "Capacidades offline y sincronización",
+        "description": "Implementar almacenamiento local con IndexedDB, service worker y lógica de sincronización optimista.",
+        "details": "Usar idb-keyval o Dexie.js para IndexedDB, implementar service worker personalizado con next-pwa, lógica de cola de transacciones offline y resolución de conflictos. Sincronización automática y manual.",
+        "testStrategy": "Simular operaciones offline, reconectar y verificar sincronización y resolución de conflictos.",
+        "priority": "high",
+        "dependencies": [
+          24
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configurar almacenamiento local con IndexedDB",
+            "description": "Implementar la capa de almacenamiento local utilizando IndexedDB, empleando idb-keyval o Dexie.js para gestionar datos offline.",
+            "dependencies": [],
+            "details": "Seleccionar y configurar la librería (idb-keyval o Dexie.js), definir los esquemas de datos y métodos CRUD necesarios para la aplicación.",
+            "status": "pending",
+            "testStrategy": "Realizar operaciones CRUD en modo offline y verificar persistencia y recuperación de datos tras recarga o reconexión."
+          },
+          {
+            "id": 2,
+            "title": "Implementar service worker personalizado con next-pwa",
+            "description": "Desarrollar y configurar un service worker personalizado usando next-pwa para habilitar capacidades offline y gestión de caché.",
+            "dependencies": [
+              "30.1"
+            ],
+            "details": "Configurar next-pwa en el proyecto Next.js, personalizar el service worker para controlar el cacheo de recursos y la interceptación de solicitudes.",
+            "status": "pending",
+            "testStrategy": "Simular desconexión de red y verificar acceso a recursos y rutas cacheadas, así como la correcta activación y actualización del service worker."
+          },
+          {
+            "id": 3,
+            "title": "Desarrollar lógica de cola de transacciones offline",
+            "description": "Implementar una cola local para almacenar transacciones realizadas en modo offline, asegurando su persistencia y posterior sincronización.",
+            "dependencies": [
+              "30.1"
+            ],
+            "details": "Diseñar la estructura de la cola, interceptar operaciones que requieran sincronización y almacenarlas localmente hasta que haya conectividad.",
+            "status": "pending",
+            "testStrategy": "Ejecutar operaciones en modo offline, verificar que se almacenan en la cola y que no se pierden tras recarga o cierre de la app."
+          },
+          {
+            "id": 4,
+            "title": "Implementar lógica de sincronización optimista y resolución de conflictos",
+            "description": "Desarrollar la lógica para sincronizar automáticamente y manualmente las transacciones pendientes, resolviendo posibles conflictos de datos.",
+            "dependencies": [
+              "30.3"
+            ],
+            "details": "Detectar reconexión, enviar transacciones pendientes al backend, aplicar estrategias de resolución de conflictos (por ejemplo, last-write-wins o merge manual).",
+            "status": "pending",
+            "testStrategy": "Simular conflictos de datos entre cliente y servidor, verificar la correcta resolución y consistencia final de los datos."
+          },
+          {
+            "id": 5,
+            "title": "Integrar y validar sincronización automática y manual",
+            "description": "Unificar la lógica de sincronización para soportar tanto disparo automático al recuperar conectividad como sincronización manual por parte del usuario.",
+            "dependencies": [
+              "30.4"
+            ],
+            "details": "Implementar triggers de sincronización al detectar conexión y exponer controles UI para sincronización manual; asegurar feedback al usuario sobre el estado.",
+            "status": "pending",
+            "testStrategy": "Probar escenarios de reconexión automática y sincronización manual, verificando que todas las transacciones pendientes se procesan correctamente y se informa al usuario."
+          }
+        ]
+      },
+      {
+        "id": 31,
+        "title": "Gestión de clientes y precios personalizados",
+        "description": "Desarrollar base de datos de clientes, historial de compras y lógica de precios personalizados.",
+        "details": "CRUD de clientes, búsqueda por nombre/teléfono, historial de compras, configuración de precios personalizados y aplicación automática en ventas.",
+        "testStrategy": "Crear, buscar y editar clientes, registrar compras y validar aplicación de precios personalizados.",
         "priority": "medium",
         "dependencies": [
-          2,
-          5,
-          9
+          24
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseño y desarrollo de la base de datos de clientes",
+            "description": "Crear la estructura de la base de datos para almacenar información relevante de los clientes, incluyendo datos personales y de contacto.",
+            "dependencies": [],
+            "details": "Definir los campos necesarios (nombre, teléfono, dirección, etc.), establecer relaciones con otras tablas (historial de compras, precios personalizados) y asegurar la integridad de los datos.",
+            "status": "pending",
+            "testStrategy": "Crear y editar registros de clientes, verificar almacenamiento y recuperación correcta de los datos."
+          },
+          {
+            "id": 2,
+            "title": "Implementación de funcionalidades CRUD y búsqueda avanzada de clientes",
+            "description": "Desarrollar las operaciones de alta, baja, modificación y consulta de clientes, incluyendo búsqueda por nombre y teléfono.",
+            "dependencies": [
+              "31.1"
+            ],
+            "details": "Crear interfaces y endpoints para gestionar clientes, implementar filtros y búsquedas eficientes por campos clave.",
+            "status": "pending",
+            "testStrategy": "Registrar, modificar, eliminar y buscar clientes por nombre y teléfono, validando resultados y rendimiento."
+          },
+          {
+            "id": 3,
+            "title": "Registro y visualización del historial de compras de cada cliente",
+            "description": "Desarrollar la lógica y las interfaces para registrar cada compra realizada por los clientes y mostrar su historial.",
+            "dependencies": [
+              "31.1",
+              "31.2"
+            ],
+            "details": "Relacionar compras con clientes, almacenar detalles de cada transacción y permitir la consulta cronológica del historial.",
+            "status": "pending",
+            "testStrategy": "Registrar compras, consultar historial por cliente y verificar exactitud de los datos mostrados."
+          },
+          {
+            "id": 4,
+            "title": "Configuración y gestión de precios personalizados por cliente",
+            "description": "Implementar la lógica para asignar y modificar precios personalizados para productos específicos de cada cliente.",
+            "dependencies": [
+              "31.1",
+              "31.2"
+            ],
+            "details": "Permitir la configuración de precios especiales por cliente y producto, almacenar reglas y condiciones de aplicación.",
+            "status": "pending",
+            "testStrategy": "Asignar precios personalizados, modificar y validar que se reflejen correctamente en la base de datos."
+          },
+          {
+            "id": 5,
+            "title": "Aplicación automática de precios personalizados en el proceso de venta",
+            "description": "Desarrollar el mecanismo que detecte y aplique automáticamente los precios personalizados al realizar una venta.",
+            "dependencies": [
+              "31.3",
+              "31.4"
+            ],
+            "details": "Integrar la lógica de precios personalizados en el flujo de ventas, asegurando que se utilicen los precios correctos según el cliente.",
+            "status": "pending",
+            "testStrategy": "Simular ventas con clientes que tienen precios personalizados y verificar que se apliquen correctamente en la transacción."
+          }
+        ]
       },
       {
-        "id": 13,
-        "title": "Implement Data Export Capabilities (CSV, XLSX, PDF)",
-        "description": "Enable exporting of report data in CSV, XLSX, and PDF formats with metadata and formatting.",
-        "details": "Integrate libraries for CSV, XLSX, and PDF export. Format exports with charts where applicable. Include metadata (generation date, filters). Ensure accessibility and professional appearance.",
-        "testStrategy": "Export reports in all formats. Check data completeness, formatting, and metadata inclusion.",
+        "id": 32,
+        "title": "Registro y aprobación de gastos de vendedor",
+        "description": "Permitir a Vendedor registrar gastos con foto de recibo y flujo de aprobación por Jefe.",
+        "details": "Formulario de gastos con categorías, monto, descripción y carga de foto (usando Supabase Storage). Flujo de aprobación y visualización en Panel 'En Ruta'.",
+        "testStrategy": "Registrar gasto, subir recibo, aprobar/rechazar y verificar inclusión en reportes.",
         "priority": "medium",
         "dependencies": [
-          12
+          24
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseño e implementación del formulario de registro de gastos",
+            "description": "Crear un formulario para que el vendedor registre gastos, incluyendo campos para categoría, monto, descripción y carga de foto del recibo.",
+            "dependencies": [],
+            "details": "El formulario debe permitir la selección de categorías predefinidas, ingreso de monto y descripción, y la carga de fotos utilizando Supabase Storage.\n<info added on 2025-09-12T21:15:00.530Z>\nCAMPOS OBLIGATORIOS:\n- Tipo de gasto: gasolina, comida, imprevistos, reparaciones, otros (selección obligatoria)\n- Valor del gasto: campo numérico obligatorio para ingresar el monto exacto\n- Descripción detallada: campo de texto obligatorio para explicar el gasto\n- Timestamp: registro automático de fecha y hora al guardar el gasto\n- Vendedor: asignación automática al usuario logueado\n\nCARACTERÍSTICAS ESPECIALES:\n- Visualización: los gastos registrados se muestran en color rojo para rápida identificación\n- Comprobantes: al registrar el gasto, el recibo se envía automáticamente al jefe por WhatsApp\n- Categorización: el sistema clasifica automáticamente cada gasto según el tipo seleccionado\n- Aprobación: los gastos ingresan a un flujo de aprobación por parte del jefe\n- Integración: los gastos se visualizan en el Panel \"En Ruta\" para seguimiento diario\n\nTIPOS DE GASTOS:\n- Gasolina: combustible para vehículos\n- Comida: alimentación durante la ruta\n- Imprevistos: gastos no planificados\n- Reparaciones: mantenimiento de vehículos/equipos\n- Otros: gastos diversos no categorizados\n\nIMPACTO EN EL SISTEMA:\n- Los registros se almacenan en la tabla expenses\n- Se consideran en el cálculo del margen diario\n- Se muestran en tiempo real en el Panel \"En Ruta\"\n- Se incluyen en los reportes financieros\n</info added on 2025-09-12T21:15:00.530Z>",
+            "status": "pending",
+            "testStrategy": "Registrar un gasto de prueba, verificar que todos los campos se almacenan correctamente y que la foto se sube y vincula al gasto."
+          },
+          {
+            "id": 2,
+            "title": "Integración de almacenamiento seguro de recibos",
+            "description": "Configurar la carga y almacenamiento seguro de fotos de recibos en Supabase Storage, asegurando la vinculación con cada gasto registrado.",
+            "dependencies": [
+              "32.1"
+            ],
+            "details": "Implementar la funcionalidad para que el vendedor pueda tomar o seleccionar una foto y subirla, garantizando compresión y seguridad.",
+            "status": "pending",
+            "testStrategy": "Subir varias fotos de recibos desde diferentes dispositivos, verificar compresión, almacenamiento y acceso seguro."
+          },
+          {
+            "id": 3,
+            "title": "Configuración del flujo de aprobación de gastos",
+            "description": "Establecer el proceso por el cual el jefe recibe notificaciones de nuevos gastos, revisa la información y aprueba o rechaza cada gasto.",
+            "dependencies": [
+              "32.1",
+              "32.2"
+            ],
+            "details": "Definir reglas de notificación, visualización y acciones de aprobación/rechazo, registrando el estado y comentarios del jefe.",
+            "status": "pending",
+            "testStrategy": "Registrar un gasto, simular la recepción por parte del jefe, aprobar/rechazar y verificar el cambio de estado y registro de comentarios."
+          },
+          {
+            "id": 4,
+            "title": "Visualización de gastos en el Panel 'En Ruta'",
+            "description": "Desarrollar la interfaz para que tanto vendedores como jefes puedan visualizar los gastos registrados y su estado en el panel correspondiente.",
+            "dependencies": [
+              "32.1",
+              "32.3"
+            ],
+            "details": "Mostrar lista de gastos con filtros por estado, categoría y fecha, incluyendo acceso a la foto del recibo y detalles del gasto.",
+            "status": "pending",
+            "testStrategy": "Registrar y aprobar/rechazar gastos, verificar que se muestran correctamente en el panel con todos los datos y filtros funcionales."
+          },
+          {
+            "id": 5,
+            "title": "Validación e inclusión de gastos en reportes",
+            "description": "Asegurar que los gastos aprobados se incluyan correctamente en los reportes y que los datos sean consistentes y completos.",
+            "dependencies": [
+              "32.4"
+            ],
+            "details": "Integrar los gastos aprobados en los reportes exportables, verificando la integridad de los datos y la correcta vinculación de recibos.",
+            "status": "pending",
+            "testStrategy": "Exportar reportes, revisar que los gastos aprobados aparecen con todos los datos y que las fotos de recibos están accesibles."
+          }
+        ]
       },
       {
-        "id": 14,
-        "title": "Develop Customer Management Module",
-        "description": "Create customer database with contact info, custom pricing, purchase history, and location mapping.",
-        "details": "Implement customer CRUD operations. Integrate search by name/phone. Track purchase history and apply custom pricing. Add location mapping using geolocation APIs.",
-        "testStrategy": "Add, search, and update customers. Verify purchase history and custom pricing application. Test location mapping.",
-        "priority": "medium",
-        "dependencies": [
-          2,
-          6
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 15,
-        "title": "Implement Expense Tracking and Approval Workflow",
-        "description": "Allow vendors to record expenses with category, amount, description, and receipt photo. Route for approval and include in profitability.",
-        "details": "Build expense form with category selection and photo upload. Implement approval workflow for managers. Integrate approved expenses into daily totals and profitability calculations.",
-        "testStrategy": "Record expenses, upload receipts, process approvals, and verify inclusion in reports.",
-        "priority": "medium",
-        "dependencies": [
-          8,
-          4
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 16,
-        "title": "Develop Goals and Performance Tracking System",
-        "description": "Enable Jefe to set daily/weekly sales targets per vendor, track progress, and send achievement notifications.",
-        "details": "Create UI for setting targets. Track sales against targets in real-time. Implement notifications for achievements and maintain historical performance records.",
-        "testStrategy": "Set targets, simulate sales, and verify progress tracking and notifications. Review historical data.",
+        "id": 33,
+        "title": "Seguimiento de metas y desempeño",
+        "description": "Implementar configuración de metas diarias/semanales por vendedor y seguimiento en tiempo real.",
+        "details": "Interfaz para establecer metas, lógica de cálculo de progreso, notificaciones de logro y análisis histórico.",
+        "testStrategy": "Configurar metas, registrar ventas y verificar alertas y reportes de desempeño.",
         "priority": "low",
         "dependencies": [
-          4,
-          6
+          28
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseño de la interfaz para configuración de metas",
+            "description": "Crear una interfaz intuitiva que permita a los usuarios establecer metas diarias y semanales por vendedor.",
+            "dependencies": [],
+            "details": "La interfaz debe permitir seleccionar el vendedor, definir el tipo de meta (diaria/semanal), el valor objetivo y el periodo de vigencia.\n<info added on 2025-09-12T21:14:31.704Z>\nEl sistema debe permitir la configuración de metas generales del negocio y metas individuales por vendedor, con períodos semanales, mensuales, semestrales y anuales, utilizando kilogramos de gas vendido como unidad principal. Se debe implementar conversión automática de cilindros (33 lbs = 15 kg, 40 lbs = 18 kg, 100 lbs = 45 kg) en cada registro de venta, acumulando el progreso por vendedor y totalizando el avance general del negocio. La visualización debe incluir barras de progreso, comparativos entre meta y resultado real, ranking de vendedores, indicadores de estado (cumplido, en progreso, retrasado), proyecciones de cumplimiento y alertas visuales por colores y notificaciones.\n</info added on 2025-09-12T21:14:31.704Z>",
+            "status": "pending",
+            "testStrategy": "Verificar que los usuarios puedan crear, editar y eliminar metas para cualquier vendedor y periodo."
+          },
+          {
+            "id": 2,
+            "title": "Implementación de la lógica de cálculo de progreso",
+            "description": "Desarrollar la lógica que calcule en tiempo real el avance de cada vendedor respecto a sus metas establecidas.",
+            "dependencies": [
+              "33.1"
+            ],
+            "details": "El sistema debe actualizar el progreso automáticamente al registrar nuevas ventas y mostrar el porcentaje de cumplimiento.",
+            "status": "pending",
+            "testStrategy": "Registrar ventas de prueba y comprobar que el progreso se actualiza correctamente en la interfaz."
+          },
+          {
+            "id": 3,
+            "title": "Configuración de notificaciones automáticas de logro y alerta",
+            "description": "Implementar notificaciones automáticas para informar a los vendedores y supervisores cuando se alcancen metas o existan desviaciones.",
+            "dependencies": [
+              "33.2"
+            ],
+            "details": "Las notificaciones deben ser configurables y enviarse por los canales definidos (correo, app, etc.) según el evento (logro, retraso, etc.).",
+            "status": "pending",
+            "testStrategy": "Simular el cumplimiento y no cumplimiento de metas para verificar la recepción de notificaciones adecuadas."
+          },
+          {
+            "id": 4,
+            "title": "Desarrollo del módulo de análisis histórico de desempeño",
+            "description": "Crear un módulo que permita consultar el historial de metas y desempeño por vendedor y periodo.",
+            "dependencies": [
+              "33.2"
+            ],
+            "details": "El módulo debe mostrar gráficos y reportes exportables con tendencias, comparativas y métricas clave.",
+            "status": "pending",
+            "testStrategy": "Generar metas y registros de ventas históricos y validar la visualización y exportación de reportes."
+          },
+          {
+            "id": 5,
+            "title": "Integración y pruebas de flujo completo",
+            "description": "Integrar todos los componentes desarrollados y realizar pruebas de extremo a extremo del proceso de seguimiento de metas.",
+            "dependencies": [
+              "33.3",
+              "33.4"
+            ],
+            "details": "Asegurar que la configuración de metas, el seguimiento en tiempo real, las notificaciones y el análisis histórico funcionen de manera integrada.",
+            "status": "pending",
+            "testStrategy": "Realizar pruebas de usuario simulando el ciclo completo: establecer metas, registrar ventas, recibir notificaciones y analizar resultados."
+          }
+        ]
       },
       {
-        "id": 17,
-        "title": "Implement Notification System (In-App, Push, Email)",
-        "description": "Provide in-app notification center, push notifications for critical events, and email notifications for reports.",
-        "details": "Integrate push notification APIs and email service. Trigger notifications for low inventory, edit requests, truck arrivals, sync errors, and report generation. Build notification center UI.",
-        "testStrategy": "Trigger all notification types and verify delivery (in-app, push, email). Test notification center display and accessibility.",
-        "priority": "low",
+        "id": 34,
+        "title": "Sistema de notificaciones in-app y push",
+        "description": "Desarrollar centro de notificaciones y envío de push para eventos críticos y reportes.",
+        "details": "Usar service worker para push (Web Push API), lógica de notificaciones en frontend y backend (Supabase Functions), integración con email para reportes.",
+        "testStrategy": "Disparar eventos (bajo stock, llegada camión, error de sync), verificar recepción de notificaciones.",
+        "priority": "medium",
         "dependencies": [
-          5,
-          11,
-          9,
-          12
+          30
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Diseño e implementación del centro de notificaciones in-app",
+            "description": "Crear la interfaz y lógica para mostrar notificaciones dentro de la aplicación, permitiendo a los usuarios visualizar, marcar como leídas y gestionar notificaciones críticas y reportes.",
+            "dependencies": [],
+            "details": "Definir el modelo de datos de notificaciones, diseñar la UI/UX del centro de notificaciones y conectar con el backend para obtener y actualizar el estado de las notificaciones.",
+            "status": "pending",
+            "testStrategy": "Generar eventos simulados y verificar que las notificaciones se muestran correctamente, se pueden marcar como leídas y desaparecen según la lógica definida."
+          },
+          {
+            "id": 2,
+            "title": "Implementación de notificaciones push usando Service Worker y Web Push API",
+            "description": "Configurar el Service Worker y la Web Push API para permitir el envío y recepción de notificaciones push en navegadores compatibles.",
+            "dependencies": [
+              "34.1"
+            ],
+            "details": "Registrar el Service Worker, solicitar permisos al usuario, gestionar la suscripción a push y mostrar notificaciones push recibidas incluso con la app cerrada.",
+            "status": "pending",
+            "testStrategy": "Enviar notificaciones de prueba desde el backend y verificar la recepción y visualización en diferentes navegadores y dispositivos."
+          },
+          {
+            "id": 3,
+            "title": "Desarrollo de lógica backend para generación y envío de notificaciones",
+            "description": "Implementar funciones en Supabase Functions para detectar eventos críticos y generar notificaciones, enviando tanto in-app como push según corresponda.",
+            "dependencies": [
+              "34.1",
+              "34.2"
+            ],
+            "details": "Detectar eventos como bajo stock, llegada de camión o errores de sincronización, crear registros de notificación y disparar el envío a los canales configurados.",
+            "status": "pending",
+            "testStrategy": "Simular eventos críticos y verificar que se generan y envían notificaciones a los usuarios afectados."
+          },
+          {
+            "id": 4,
+            "title": "Integración de notificaciones con envío de reportes por email",
+            "description": "Conectar la lógica de notificaciones con el sistema de envío de emails para reportes automáticos en eventos críticos.",
+            "dependencies": [
+              "34.3"
+            ],
+            "details": "Configurar plantillas de email, integrar el backend con un servicio de correo y asegurar el envío automático de reportes relevantes.",
+            "status": "pending",
+            "testStrategy": "Provocar eventos que requieran reporte y verificar la recepción del email con el contenido esperado."
+          },
+          {
+            "id": 5,
+            "title": "Gestión de preferencias y auditoría de notificaciones",
+            "description": "Permitir a los usuarios configurar preferencias de notificación (canales, tipos de eventos) y registrar logs de entrega y apertura para auditoría.",
+            "dependencies": [
+              "34.1",
+              "34.2",
+              "34.3",
+              "34.4"
+            ],
+            "details": "Desarrollar interfaz de configuración de preferencias, almacenar opciones por usuario y registrar logs de envío, recepción y apertura de notificaciones.",
+            "status": "pending",
+            "testStrategy": "Modificar preferencias de usuario, disparar eventos y verificar que solo se reciben notificaciones según configuración; revisar logs de auditoría."
+          }
+        ]
       },
       {
-        "id": 18,
-        "title": "Establish Error Handling, Backup, and Recovery Procedures",
-        "description": "Implement robust error handling, user-friendly messages, automated backups, and point-in-time recovery.",
-        "details": "Add error boundaries and user guidance for network/validation/system errors. Set up daily automated backups in Supabase. Document and test backup restoration and recovery processes.",
-        "testStrategy": "Simulate errors and verify user feedback. Test backup creation, restoration, and recovery from data loss scenarios.",
+        "id": 35,
+        "title": "Carga y optimización de fotos de recibos",
+        "description": "Permitir captura y carga de fotos desde cámara o galería, con compresión y almacenamiento seguro.",
+        "details": "Integrar acceso a cámara (HTML5 Media Capture), compresión con browser-image-compression, subida a Supabase Storage y vinculación con transacción/gasto.",
+        "testStrategy": "Subir fotos desde móvil, verificar compresión, almacenamiento y visualización.",
+        "priority": "medium",
+        "dependencies": [
+          24
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar captura de fotos desde cámara o galería",
+            "description": "Permitir al usuario tomar una foto con la cámara del dispositivo o seleccionar una imagen existente desde la galería utilizando HTML5 Media Capture.",
+            "dependencies": [],
+            "details": "Utilizar el atributo 'capture' en <input type='file'> para acceso rápido y seguro a la cámara y galería, asegurando compatibilidad móvil.",
+            "status": "pending",
+            "testStrategy": "Probar en dispositivos móviles y navegadores compatibles que se pueda tomar o seleccionar una foto correctamente."
+          },
+          {
+            "id": 2,
+            "title": "Aplicar compresión de imagen en el navegador",
+            "description": "Reducir el tamaño de la imagen seleccionada o capturada antes de su carga, utilizando la biblioteca browser-image-compression.",
+            "dependencies": [
+              "35.1"
+            ],
+            "details": "Configurar browser-image-compression para ajustar calidad, dimensiones y peso de la imagen según los requisitos de almacenamiento y rendimiento.",
+            "status": "pending",
+            "testStrategy": "Verificar que la imagen comprimida mantenga calidad aceptable y que el tamaño del archivo sea significativamente menor al original."
+          },
+          {
+            "id": 3,
+            "title": "Subir imagen comprimida a Supabase Storage",
+            "description": "Cargar la imagen comprimida de manera segura en Supabase Storage, gestionando errores y asegurando la integridad del archivo.",
+            "dependencies": [
+              "35.2"
+            ],
+            "details": "Implementar la lógica de subida usando el SDK de Supabase, asegurando autenticación y permisos adecuados.",
+            "status": "pending",
+            "testStrategy": "Subir varias imágenes y comprobar que se almacenan correctamente en Supabase Storage y que son accesibles solo para usuarios autorizados."
+          },
+          {
+            "id": 4,
+            "title": "Vincular la imagen con la transacción o gasto correspondiente",
+            "description": "Asociar la URL o identificador de la imagen almacenada en Supabase con el registro de la transacción o gasto en la base de datos.",
+            "dependencies": [
+              "35.3"
+            ],
+            "details": "Actualizar el modelo de datos para incluir el campo de referencia a la imagen y asegurar la relación en la interfaz de usuario.",
+            "status": "pending",
+            "testStrategy": "Registrar una transacción/gasto con imagen y verificar que la relación se almacene y visualice correctamente."
+          },
+          {
+            "id": 5,
+            "title": "Asegurar almacenamiento y transmisión segura de imágenes",
+            "description": "Garantizar que las imágenes se transmitan y almacenen de forma segura, cumpliendo buenas prácticas de privacidad y protección de datos.",
+            "dependencies": [
+              "35.3",
+              "35.4"
+            ],
+            "details": "Configurar reglas de acceso en Supabase Storage, usar HTTPS para la transmisión y validar que solo usuarios autorizados puedan acceder a las imágenes.",
+            "status": "pending",
+            "testStrategy": "Intentar acceder a imágenes sin autenticación y verificar que el acceso sea denegado; revisar logs de acceso y cumplimiento de políticas de seguridad."
+          }
+        ]
+      },
+      {
+        "id": 36,
+        "title": "Implementación de PWA y service worker avanzado",
+        "description": "Configurar next-pwa y service worker personalizado para soporte offline, push y actualización de caché.",
+        "details": "Configurar next-pwa, definir rutas cacheables, lógica de actualización de assets y manejo de eventos push. Estrategias de invalidación de caché y fallback offline.",
+        "testStrategy": "Instalar como PWA, probar offline, recibir push y verificar actualización automática.",
+        "priority": "medium",
+        "dependencies": [
+          19,
+          30
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configuración inicial de next-pwa y archivos base",
+            "description": "Instalar y configurar el paquete next-pwa en el proyecto Next.js, asegurando la generación del service worker y el archivo manifest.json.",
+            "dependencies": [],
+            "details": "Agregar next-pwa al proyecto, crear o actualizar next.config.js/ts con la configuración básica, y definir el manifest.json con los metadatos de la PWA.",
+            "status": "pending",
+            "testStrategy": "Verificar que la aplicación muestre la opción de instalación como PWA y que el manifest.json sea detectado por el navegador."
+          },
+          {
+            "id": 2,
+            "title": "Definición de rutas y recursos cacheables",
+            "description": "Identificar y configurar las rutas y recursos estáticos o dinámicos que deben ser cacheados por el service worker.",
+            "dependencies": [
+              "36.1"
+            ],
+            "details": "Configurar las reglas de caché en next-pwa para assets, páginas y APIs, asegurando que los recursos críticos estén disponibles offline.",
+            "status": "pending",
+            "testStrategy": "Desconectar la red y comprobar que los recursos definidos siguen accesibles y funcionales."
+          },
+          {
+            "id": 3,
+            "title": "Implementación de lógica avanzada de actualización de caché",
+            "description": "Desarrollar la lógica personalizada para la actualización de assets y la invalidación de caché usando eventos del service worker.",
+            "dependencies": [
+              "36.2"
+            ],
+            "details": "Personalizar el service worker para manejar eventos como 'install', 'activate' y 'fetch', implementando estrategias como stale-while-revalidate o cache-first según el tipo de recurso.",
+            "status": "pending",
+            "testStrategy": "Actualizar assets en el servidor y verificar que los cambios se reflejan correctamente tras la actualización del service worker."
+          },
+          {
+            "id": 4,
+            "title": "Manejo de eventos push y notificaciones",
+            "description": "Configurar el service worker para recibir y mostrar notificaciones push, gestionando la suscripción y el manejo de eventos push.",
+            "dependencies": [
+              "36.3"
+            ],
+            "details": "Integrar la lógica de suscripción a push notifications y el manejo de eventos 'push' y 'notificationclick' en el service worker.",
+            "status": "pending",
+            "testStrategy": "Enviar notificaciones push desde un backend de prueba y verificar la recepción y visualización en el cliente."
+          },
+          {
+            "id": 5,
+            "title": "Implementación de fallback offline y pruebas integrales",
+            "description": "Desarrollar una página de fallback offline y realizar pruebas integrales de la PWA, incluyendo soporte offline, push y actualización de caché.",
+            "dependencies": [
+              "36.4"
+            ],
+            "details": "Configurar el fallback offline en el service worker y ejecutar pruebas de instalación, funcionamiento offline, recepción de push y actualización automática.",
+            "status": "pending",
+            "testStrategy": "Simular escenarios offline, enviar push y actualizar assets para validar el comportamiento integral de la PWA."
+          }
+        ]
+      },
+      {
+        "id": 37,
+        "title": "Monitoreo, logging y auditoría",
+        "description": "Integrar Sentry, Next.js analytics y logging estructurado para auditoría y debugging.",
+        "details": "Configurar Sentry para frontend y backend, activar analytics de Next.js, registrar acciones críticas en audit_logs y estructurar logs para trazabilidad.",
+        "testStrategy": "Forzar errores, verificar reportes en Sentry y registros en audit_logs.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Integrar y configurar Sentry en el frontend de Next.js",
+            "description": "Instalar el SDK de Sentry y configurar la monitorización de errores y performance en el frontend de la aplicación Next.js.",
+            "dependencies": [],
+            "details": "Instalar @sentry/nextjs, crear sentry.client.config.js con el DSN y parámetros de trazabilidad, y envolver componentes críticos con ErrorBoundary para capturar errores de UI.",
+            "status": "pending",
+            "testStrategy": "Forzar errores en componentes del frontend y verificar que los reportes aparecen en el dashboard de Sentry."
+          },
+          {
+            "id": 2,
+            "title": "Integrar y configurar Sentry en el backend de Next.js",
+            "description": "Configurar Sentry para capturar errores y trazas en las rutas API y lógica del backend de Next.js.",
+            "dependencies": [
+              "37.1"
+            ],
+            "details": "Crear sentry.server.config.js con el DSN y parámetros de performance, asegurando la captura de errores en endpoints y funciones del backend.",
+            "status": "pending",
+            "testStrategy": "Provocar errores en rutas API y verificar su registro en Sentry."
+          },
+          {
+            "id": 3,
+            "title": "Activar y configurar Next.js Analytics",
+            "description": "Habilitar la funcionalidad de analytics de Next.js para recopilar métricas de uso y rendimiento.",
+            "dependencies": [
+              "37.1"
+            ],
+            "details": "Configurar next.config.js para activar analytics, revisar la documentación oficial y validar la recolección de datos en el panel correspondiente.",
+            "status": "pending",
+            "testStrategy": "Navegar por la aplicación y verificar la aparición de eventos y métricas en el dashboard de analytics."
+          },
+          {
+            "id": 4,
+            "title": "Implementar logging estructurado y audit_logs",
+            "description": "Diseñar e implementar un sistema de logging estructurado que registre acciones críticas en audit_logs para trazabilidad y auditoría.",
+            "dependencies": [
+              "37.2"
+            ],
+            "details": "Definir el formato de logs (JSON), identificar acciones críticas (login, cambios de datos, etc.), y registrar estos eventos en una base de datos o sistema de logs centralizado.",
+            "status": "pending",
+            "testStrategy": "Ejecutar acciones críticas y verificar que los registros aparecen correctamente estructurados en audit_logs."
+          },
+          {
+            "id": 5,
+            "title": "Verificar la trazabilidad y la integración de monitoreo",
+            "description": "Realizar pruebas integrales para asegurar que Sentry, analytics y audit_logs funcionan de forma coordinada y permiten la trazabilidad completa de eventos y errores.",
+            "dependencies": [
+              "37.3",
+              "37.4"
+            ],
+            "details": "Simular flujos de usuario y errores, revisando que cada evento relevante quede registrado en Sentry, analytics y audit_logs, y que la información sea correlacionable.",
+            "status": "pending",
+            "testStrategy": "Forzar errores y acciones críticas, luego revisar los tres sistemas para confirmar la trazabilidad y consistencia de los registros."
+          }
+        ]
+      },
+      {
+        "id": 38,
+        "title": "Gestión de errores y recuperación",
+        "description": "Implementar manejo global de errores, mensajes claros y opciones de recuperación para usuarios.",
+        "details": "Captura de errores de red, validación y sistema, mensajes amigables, opciones de reintento y logging para soporte.",
+        "testStrategy": "Simular errores, verificar mensajes y opciones de recuperación.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementación de captura global de errores",
+            "description": "Desarrollar un mecanismo centralizado para capturar errores de red, validación y sistema en toda la aplicación.",
+            "dependencies": [],
+            "details": "Utilizar manejadores globales como window.onerror o mecanismos equivalentes según la tecnología empleada para asegurar que todos los errores sean detectados y gestionados desde un único punto.",
+            "status": "pending",
+            "testStrategy": "Simular distintos tipos de errores (red, validación, sistema) y verificar que todos sean capturados por el sistema global."
+          },
+          {
+            "id": 2,
+            "title": "Generación de mensajes de error claros y amigables",
+            "description": "Diseñar e implementar mensajes de error comprensibles y útiles para los usuarios finales.",
+            "dependencies": [
+              "38.1"
+            ],
+            "details": "Definir una guía de estilo para mensajes de error, asegurando que sean descriptivos, eviten tecnicismos y ofrezcan contexto sobre el problema detectado.",
+            "status": "pending",
+            "testStrategy": "Revisar los mensajes generados en distintos escenarios de error y validar su claridad mediante pruebas de usuario."
+          },
+          {
+            "id": 3,
+            "title": "Opciones de recuperación y reintento para usuarios",
+            "description": "Proveer mecanismos interactivos que permitan a los usuarios reintentar acciones o recuperar el flujo tras un error.",
+            "dependencies": [
+              "38.2"
+            ],
+            "details": "Implementar botones de reintento, sugerencias de acciones alternativas o flujos de recuperación según el tipo de error presentado.",
+            "status": "pending",
+            "testStrategy": "Simular errores y verificar que las opciones de recuperación sean accesibles y funcionales para el usuario."
+          },
+          {
+            "id": 4,
+            "title": "Registro y logging de errores para soporte",
+            "description": "Configurar un sistema de logging que almacene información relevante de los errores para facilitar el soporte y la resolución de incidencias.",
+            "dependencies": [
+              "38.1"
+            ],
+            "details": "Registrar detalles técnicos de los errores (tipo, contexto, usuario, timestamp) en un sistema seguro y accesible para el equipo de soporte.",
+            "status": "pending",
+            "testStrategy": "Provocar errores y comprobar que los registros contienen la información necesaria y se almacenan correctamente."
+          },
+          {
+            "id": 5,
+            "title": "Validación y pruebas de la gestión de errores",
+            "description": "Diseñar y ejecutar pruebas que aseguren la correcta gestión, comunicación y recuperación ante errores en la aplicación.",
+            "dependencies": [
+              "38.1",
+              "38.2",
+              "38.3",
+              "38.4"
+            ],
+            "details": "Elaborar casos de prueba que cubran errores de red, validación y sistema, verificando la captura, el mensaje mostrado, las opciones de recuperación y el registro.",
+            "status": "pending",
+            "testStrategy": "Ejecutar pruebas automatizadas y manuales simulando errores y documentar los resultados para asegurar la robustez del sistema."
+          }
+        ]
+      },
+      {
+        "id": 39,
+        "title": "Respaldo y recuperación de datos",
+        "description": "Configurar backups automáticos diarios y procedimientos de restauración en Supabase.",
+        "details": "Automatizar backups con Supabase, documentar y probar restauración punto en el tiempo, definir procesos para recuperación ante pérdida crítica.",
+        "testStrategy": "Simular restauración en entorno de staging y validar integridad de datos.",
+        "priority": "medium",
+        "dependencies": [
+          20
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configurar backups automáticos diarios en Supabase",
+            "description": "Implementar una solución automatizada para realizar respaldos diarios de la base de datos de Supabase.",
+            "dependencies": [],
+            "details": "Utilizar herramientas como Supabase CLI, GitHub Actions, o servicios externos (por ejemplo, SimpleBackups u Ottomatik) para programar y almacenar backups diarios de la base de datos PostgreSQL de Supabase.",
+            "status": "pending",
+            "testStrategy": "Verificar la creación automática de archivos de respaldo en el almacenamiento configurado durante varios días consecutivos."
+          },
+          {
+            "id": 2,
+            "title": "Documentar el procedimiento de backup y almacenamiento seguro",
+            "description": "Crear documentación detallada sobre el proceso de respaldo, incluyendo ubicación, frecuencia y medidas de seguridad.",
+            "dependencies": [
+              "39.1"
+            ],
+            "details": "Describir paso a paso cómo se generan, almacenan y protegen los backups, especificando rutas, credenciales y políticas de retención.",
+            "status": "pending",
+            "testStrategy": "Revisar la documentación con el equipo y validar que cualquier miembro pueda seguir el procedimiento sin ambigüedades."
+          },
+          {
+            "id": 3,
+            "title": "Implementar y documentar restauración punto en el tiempo",
+            "description": "Configurar y probar la restauración de la base de datos a un estado específico utilizando los backups generados.",
+            "dependencies": [
+              "39.1",
+              "39.2"
+            ],
+            "details": "Utilizar los archivos de respaldo para restaurar la base de datos en un entorno de staging, documentando el proceso y los comandos necesarios.",
+            "status": "pending",
+            "testStrategy": "Simular restauraciones a diferentes puntos en el tiempo y validar la integridad y consistencia de los datos restaurados."
+          },
+          {
+            "id": 4,
+            "title": "Definir y documentar procesos de recuperación ante pérdida crítica",
+            "description": "Establecer procedimientos claros para la recuperación de datos en caso de pérdida total o corrupción de la base de datos.",
+            "dependencies": [
+              "39.3"
+            ],
+            "details": "Describir los pasos a seguir ante incidentes críticos, responsables, tiempos estimados de recuperación y comunicación interna.",
+            "status": "pending",
+            "testStrategy": "Realizar simulacros de recuperación total en staging y medir el tiempo y efectividad del proceso."
+          },
+          {
+            "id": 5,
+            "title": "Capacitar al equipo y validar el plan de respaldo y recuperación",
+            "description": "Asegurar que todo el equipo conozca y pueda ejecutar los procedimientos de respaldo y restauración documentados.",
+            "dependencies": [
+              "39.4"
+            ],
+            "details": "Organizar una sesión de capacitación y realizar ejercicios prácticos de restauración y recuperación con los miembros clave del equipo.",
+            "status": "pending",
+            "testStrategy": "Evaluar la ejecución autónoma de los procedimientos por parte del equipo y recoger retroalimentación para mejorar la documentación."
+          }
+        ]
+      },
+      {
+        "id": 40,
+        "title": "Optimización de rendimiento y carga inicial",
+        "description": "Implementar code splitting, lazy loading y optimización de imágenes para cumplir tiempos de carga.",
+        "details": "Configurar imports dinámicos, lazy loading de componentes no críticos, compresión de imágenes y uso de formatos next-gen. Medir con Lighthouse y ajustar.",
+        "testStrategy": "Medir tiempos de carga en 3G, validar cumplimiento de ≤3s.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configurar code splitting con imports dinámicos",
+            "description": "Implementar code splitting utilizando la sintaxis de importación dinámica (`import()`) para dividir el código en chunks y cargar módulos bajo demanda.",
+            "dependencies": [],
+            "details": "Identificar módulos y rutas principales que pueden beneficiarse de la carga bajo demanda. Configurar Webpack y/o Next.js para soportar imports dinámicos y verificar que los bundles se generen correctamente.",
+            "status": "pending",
+            "testStrategy": "Verificar que los módulos se cargan solo cuando son requeridos y que el tamaño del bundle inicial disminuye."
+          },
+          {
+            "id": 2,
+            "title": "Implementar lazy loading de componentes no críticos",
+            "description": "Utilizar React.lazy y Suspense para cargar componentes secundarios o no críticos de forma diferida, optimizando el tiempo de carga inicial.",
+            "dependencies": [
+              "40.1"
+            ],
+            "details": "Identificar componentes que no son esenciales para el render inicial (ej. modales, dashboards secundarios). Refactorizar imports usando React.lazy y envolverlos en Suspense con fallback apropiado.",
+            "status": "pending",
+            "testStrategy": "Medir el impacto en el tiempo de carga inicial y validar que los componentes se cargan correctamente al ser requeridos."
+          },
+          {
+            "id": 3,
+            "title": "Optimizar imágenes: compresión y formatos next-gen",
+            "description": "Aplicar compresión a imágenes y convertirlas a formatos modernos (WebP, AVIF) para reducir el peso y mejorar la velocidad de carga.",
+            "dependencies": [],
+            "details": "Identificar imágenes estáticas y dinámicas en la aplicación. Utilizar herramientas de compresión y convertir imágenes a formatos next-gen. Configurar el sistema para servir imágenes optimizadas según el navegador.",
+            "status": "pending",
+            "testStrategy": "Comparar tiempos de carga y tamaño de recursos antes y después de la optimización. Validar visualmente la calidad de las imágenes."
+          },
+          {
+            "id": 4,
+            "title": "Medir rendimiento con Lighthouse y ajustar configuración",
+            "description": "Ejecutar auditorías de rendimiento con Lighthouse para identificar cuellos de botella y ajustar la configuración de code splitting, lazy loading e imágenes.",
+            "dependencies": [
+              "40.1",
+              "40.2",
+              "40.3"
+            ],
+            "details": "Realizar pruebas en condiciones de red 3G simulada. Analizar métricas clave (First Contentful Paint, Largest Contentful Paint, Total Blocking Time) y ajustar la configuración según los resultados.",
+            "status": "pending",
+            "testStrategy": "Validar que el tiempo de carga inicial cumple el objetivo (≤3s) y que las métricas de Lighthouse mejoran tras los ajustes."
+          },
+          {
+            "id": 5,
+            "title": "Documentar y validar la estrategia de optimización",
+            "description": "Registrar los cambios realizados, la justificación de cada optimización y los resultados obtenidos. Validar que la estrategia es sostenible y replicable.",
+            "dependencies": [
+              "40.4"
+            ],
+            "details": "Crear documentación técnica sobre la configuración de code splitting, lazy loading y optimización de imágenes. Incluir recomendaciones para futuras mejoras y mantenimiento.",
+            "status": "pending",
+            "testStrategy": "Revisar la documentación con el equipo y validar que los pasos pueden ser reproducidos en nuevos módulos o proyectos."
+          }
+        ]
+      },
+      {
+        "id": 41,
+        "title": "Compatibilidad cross-browser y responsive",
+        "description": "Asegurar compatibilidad con navegadores y dispositivos especificados, cumpliendo WCAG 2.1 AA.",
+        "details": "Testear en Chrome, Firefox, Safari, Edge (versiones mínimas), iOS y Android. Validar diseño responsive y accesibilidad (teclado, screen reader, contraste).",
+        "testStrategy": "Pruebas manuales y automáticas en dispositivos reales y emuladores.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Definir navegadores, dispositivos y versiones objetivo",
+            "description": "Identificar y documentar los navegadores (Chrome, Firefox, Safari, Edge) y dispositivos (iOS, Android) junto con sus versiones mínimas requeridas para las pruebas.",
+            "dependencies": [],
+            "details": "Analizar métricas de uso y requerimientos del proyecto para establecer la lista de navegadores y dispositivos soportados, incluyendo versiones mínimas.",
+            "status": "pending",
+            "testStrategy": "Revisar documentación y métricas de usuarios; validar la lista con stakeholders."
+          },
+          {
+            "id": 2,
+            "title": "Preparar entornos de prueba manual y automatizada",
+            "description": "Configurar dispositivos reales, emuladores y herramientas de automatización para ejecutar pruebas en los navegadores y dispositivos definidos.",
+            "dependencies": [
+              "41.1"
+            ],
+            "details": "Instalar navegadores y emuladores requeridos; configurar servicios en la nube para pruebas automatizadas y manuales.",
+            "status": "pending",
+            "testStrategy": "Verificar acceso y funcionamiento de cada entorno antes de iniciar pruebas."
+          },
+          {
+            "id": 3,
+            "title": "Ejecutar pruebas de compatibilidad cross-browser",
+            "description": "Realizar pruebas funcionales y visuales en los navegadores y dispositivos definidos para detectar diferencias de renderizado, errores de JavaScript y problemas de compatibilidad.",
+            "dependencies": [
+              "41.2"
+            ],
+            "details": "Utilizar listas de verificación para validar funcionalidades clave, estilos CSS, y comportamiento de scripts en cada combinación de navegador y dispositivo.",
+            "status": "pending",
+            "testStrategy": "Registrar incidencias con capturas y descripciones detalladas; repetir pruebas tras correcciones."
+          },
+          {
+            "id": 4,
+            "title": "Validar diseño responsive en múltiples resoluciones",
+            "description": "Comprobar que el diseño se adapta correctamente a diferentes tamaños de pantalla y orientaciones, asegurando una experiencia consistente en desktop, tablet y móvil.",
+            "dependencies": [
+              "41.2"
+            ],
+            "details": "Probar el sitio en resoluciones y dispositivos representativos; verificar uso correcto de media queries, grids y flexbox.",
+            "status": "pending",
+            "testStrategy": "Utilizar herramientas de inspección y simuladores de dispositivos; documentar cualquier problema de adaptabilidad."
+          },
+          {
+            "id": 5,
+            "title": "Verificar cumplimiento de accesibilidad WCAG 2.1 AA",
+            "description": "Evaluar el sitio para asegurar que cumple los criterios de accesibilidad WCAG 2.1 AA, incluyendo navegación por teclado, compatibilidad con lectores de pantalla y contraste adecuado.",
+            "dependencies": [
+              "41.3",
+              "41.4"
+            ],
+            "details": "Realizar pruebas manuales y automáticas de accesibilidad; revisar navegación, etiquetas ARIA, roles, y contraste de colores.",
+            "status": "pending",
+            "testStrategy": "Usar herramientas como Axe o Lighthouse; validar con usuarios o testers con necesidades de accesibilidad si es posible."
+          }
+        ]
+      },
+      {
+        "id": 42,
+        "title": "Seguridad: RLS, cifrado y validación",
+        "description": "Configurar Row Level Security, cifrado en tránsito y reposo, validación de entradas y rate limiting.",
+        "details": "Definir políticas RLS en Supabase, forzar HTTPS, validar entradas con Zod, implementar rate limiting en endpoints críticos.",
+        "testStrategy": "Intentar accesos no autorizados, inyecciones y validar protección.",
         "priority": "high",
         "dependencies": [
-          2,
-          3,
-          7
+          21
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Definir y habilitar políticas de Row Level Security (RLS) en Supabase",
+            "description": "Configurar y activar RLS en las tablas relevantes de Supabase, estableciendo políticas que restrinjan el acceso a filas según el usuario autenticado.",
+            "dependencies": [],
+            "details": "Utilizar el editor SQL de Supabase para habilitar RLS y crear políticas personalizadas que utilicen funciones como auth.uid() para asegurar que los usuarios solo accedan a sus propios datos.",
+            "status": "pending",
+            "testStrategy": "Intentar acceder a filas de otros usuarios y verificar que el acceso sea denegado según las políticas definidas."
+          },
+          {
+            "id": 2,
+            "title": "Configurar cifrado en tránsito (HTTPS obligatorio)",
+            "description": "Asegurar que todas las comunicaciones entre clientes y servidores se realicen exclusivamente mediante HTTPS, evitando conexiones inseguras.",
+            "dependencies": [],
+            "details": "Configurar el servidor y los proxies para redirigir todo el tráfico HTTP a HTTPS y habilitar certificados TLS válidos.",
+            "status": "pending",
+            "testStrategy": "Intentar acceder a la aplicación por HTTP y verificar redirección automática a HTTPS; comprobar que no existen advertencias de seguridad en los navegadores."
+          },
+          {
+            "id": 3,
+            "title": "Configurar cifrado en reposo para la base de datos y almacenamiento",
+            "description": "Verificar y habilitar el cifrado de datos almacenados en la base de datos y en el almacenamiento de archivos de Supabase.",
+            "dependencies": [],
+            "details": "Revisar la configuración de Supabase y el proveedor de almacenamiento para asegurar que los datos estén cifrados en disco y en backups.",
+            "status": "pending",
+            "testStrategy": "Solicitar evidencia de cifrado en reposo y realizar auditorías de configuración; validar que los backups también estén cifrados."
+          },
+          {
+            "id": 4,
+            "title": "Implementar validación de entradas con Zod en endpoints críticos",
+            "description": "Utilizar la librería Zod para validar y sanear los datos recibidos en los endpoints de la API, previniendo inyecciones y datos maliciosos.",
+            "dependencies": [],
+            "details": "Integrar Zod en los controladores de la API para definir esquemas de validación estrictos y rechazar solicitudes que no cumplan con los requisitos.",
+            "status": "pending",
+            "testStrategy": "Enviar datos inválidos y maliciosos a los endpoints y verificar que sean rechazados correctamente."
+          },
+          {
+            "id": 5,
+            "title": "Implementar rate limiting en endpoints críticos",
+            "description": "Configurar mecanismos de limitación de tasa para evitar abusos y ataques de denegación de servicio en los endpoints más sensibles.",
+            "dependencies": [],
+            "details": "Utilizar middleware o servicios externos para limitar el número de solicitudes permitidas por usuario/IP en intervalos definidos.",
+            "status": "pending",
+            "testStrategy": "Simular múltiples solicitudes rápidas desde un mismo usuario/IP y verificar que se bloqueen o retrasen según la política de rate limiting."
+          }
+        ]
+      },
+      {
+        "id": 43,
+        "title": "Documentación técnica y de usuario",
+        "description": "Redactar documentación de APIs, flujos críticos, procedimientos de backup y manuales de usuario.",
+        "details": "Usar herramientas como Storybook para UI, Swagger para APIs, y Markdown para manuales. Incluir diagramas de flujo y ejemplos.",
+        "testStrategy": "Revisión por pares y validación de claridad por usuarios piloto.",
+        "priority": "low",
+        "dependencies": [
+          19,
+          20,
+          21
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Definir audiencias y estructura de la documentación",
+            "description": "Identificar los públicos objetivo (desarrolladores, usuarios finales, administradores) y planificar la estructura general de la documentación técnica y de usuario.",
+            "dependencies": [],
+            "details": "Establecer secciones para APIs, flujos críticos, procedimientos de backup y manuales de usuario. Determinar el formato y la organización de los documentos según el público y el propósito.",
+            "status": "pending",
+            "testStrategy": "Validar la estructura propuesta con stakeholders y revisar que cubra todas las necesidades identificadas."
+          },
+          {
+            "id": 2,
+            "title": "Documentar APIs utilizando Swagger",
+            "description": "Redactar y mantener la documentación de las APIs del sistema empleando Swagger, incluyendo endpoints, parámetros, respuestas y ejemplos de uso.",
+            "dependencies": [
+              "43.1"
+            ],
+            "details": "Asegurarse de que la documentación sea navegable, clara y actualizada, integrando ejemplos prácticos y descripciones detalladas.",
+            "status": "pending",
+            "testStrategy": "Revisión por pares técnicos y validación mediante pruebas de consumo de la API usando la documentación generada."
+          },
+          {
+            "id": 3,
+            "title": "Documentar flujos críticos y procedimientos de backup",
+            "description": "Describir detalladamente los flujos críticos del sistema y los procedimientos de backup y restauración, incluyendo diagramas de flujo y pasos secuenciales.",
+            "dependencies": [
+              "43.1"
+            ],
+            "details": "Utilizar herramientas de diagramación para ilustrar procesos y asegurar que los procedimientos sean reproducibles por cualquier miembro del equipo.",
+            "status": "pending",
+            "testStrategy": "Simulación de los procedimientos documentados y validación de comprensión por parte de usuarios piloto."
+          },
+          {
+            "id": 4,
+            "title": "Redactar manuales de usuario y guías de interfaz con Storybook y Markdown",
+            "description": "Crear manuales de usuario y guías de uso de la interfaz utilizando Storybook para componentes UI y Markdown para instrucciones y ejemplos.",
+            "dependencies": [
+              "43.1"
+            ],
+            "details": "Incluir capturas de pantalla, ejemplos de casos de uso y preguntas frecuentes para facilitar la adopción por parte de usuarios finales.",
+            "status": "pending",
+            "testStrategy": "Pruebas de usabilidad con usuarios piloto y revisión de claridad y completitud por parte de personal no técnico."
+          },
+          {
+            "id": 5,
+            "title": "Revisión, validación y publicación de la documentación",
+            "description": "Coordinar la revisión por pares, incorporar feedback de usuarios piloto y publicar la documentación en los repositorios y plataformas designadas.",
+            "dependencies": [
+              "43.2",
+              "43.3",
+              "43.4"
+            ],
+            "details": "Asegurar la accesibilidad, versionado y actualización periódica de la documentación. Establecer un proceso de mantenimiento y mejora continua.",
+            "status": "pending",
+            "testStrategy": "Verificar que toda la documentación esté accesible, actualizada y validada por los públicos objetivo."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-08-27T07:25:24.241Z",
-      "updated": "2025-08-27T07:25:24.241Z",
+      "updated": "2025-09-12T21:27:59.759Z",
       "description": "Tasks for master context"
     }
   }

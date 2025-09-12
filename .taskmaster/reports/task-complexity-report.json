@@ -1,0 +1,213 @@
+{
+	"meta": {
+		"generatedAt": "2025-09-12T20:44:20.755Z",
+		"tasksAnalyzed": 25,
+		"totalTasks": 25,
+		"analysisCount": 25,
+		"thresholdScore": 6,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 19,
+			"taskTitle": "Configuración inicial del repositorio y entorno",
+			"complexityScore": 6,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Desglosa la configuración inicial en subtareas como: creación del repositorio, inicialización de Next.js 15, instalación de Tailwind CSS, integración de Shadcn UI, configuración de React Hook Form y Zod, integración de Zustand y Lucide React, configuración de next-pwa, preparación de scripts de linting/formateo y definición de la estructura de carpetas.",
+			"reasoning": "La tarea implica múltiples herramientas y dependencias, cada una con su propia configuración y posibles conflictos. Aunque no es altamente algorítmica, la integración y aseguramiento de un entorno coherente requiere atención a detalles y buenas prácticas de modularización, lo que eleva la complejidad por encima de una simple inicialización."
+		},
+		{
+			"taskId": 36,
+			"taskTitle": "Implementación de PWA y service worker avanzado",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Divide la tarea en: configuración básica de next-pwa, desarrollo de service worker personalizado, definición de rutas cacheables, implementación de lógica de actualización de assets, manejo de eventos push y estrategias de invalidación/fallback offline.",
+			"reasoning": "La integración de PWA y un service worker avanzado requiere conocimiento profundo de caching, eventos push, actualización de assets y manejo de estados offline, además de pruebas exhaustivas cross-browser. La coordinación entre frontend y service worker añade complejidad técnica y de pruebas."
+		},
+		{
+			"taskId": 37,
+			"taskTitle": "Monitoreo, logging y auditoría",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Desglosa en: integración de Sentry en frontend, integración de Sentry en backend, activación y configuración de Next.js analytics, diseño e implementación de audit_logs, y estructuración de logs para trazabilidad.",
+			"reasoning": "La tarea abarca integración de herramientas externas, configuración de logging estructurado y diseño de auditoría, lo que implica coordinación entre distintas capas de la aplicación y cumplimiento de buenas prácticas de observabilidad y trazabilidad."
+		},
+		{
+			"taskId": 40,
+			"taskTitle": "Optimización de rendimiento y carga inicial",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Divide en: configuración de code splitting, implementación de lazy loading, optimización y compresión de imágenes, adopción de formatos next-gen, medición con Lighthouse y ajustes iterativos según resultados.",
+			"reasoning": "Optimizar el rendimiento inicial requiere aplicar patrones modernos (code splitting, lazy loading), herramientas de medición y ajustes iterativos. La coordinación entre frontend, assets y métricas de usuario real añade dificultad y requiere experiencia en performance web."
+		},
+		{
+			"taskId": 20,
+			"taskTitle": "Modelado y migraciones de base de datos en Supabase",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Desglosa en: diseño de esquema inicial, creación de tablas principales, definición de relaciones y claves foráneas, creación de índices, definición de restricciones, escritura de migraciones SQL, pruebas en entorno de staging y validación de integridad/rendimiento.",
+			"reasoning": "El modelado de datos para múltiples entidades y relaciones, junto con migraciones y validaciones, implica alta complejidad estructural y riesgo de errores que pueden afectar la integridad y escalabilidad del sistema."
+		},
+		{
+			"taskId": 38,
+			"taskTitle": "Gestión de errores y recuperación",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide en: captura global de errores, manejo de errores de red, validación y mensajes amigables, opciones de reintento para el usuario y logging para soporte.",
+			"reasoning": "Aunque la gestión de errores es transversal, requiere implementar patrones robustos para captura, comunicación y recuperación, además de asegurar una experiencia de usuario clara y soporte para diagnóstico."
+		},
+		{
+			"taskId": 41,
+			"taskTitle": "Compatibilidad cross-browser y responsive",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Desglosa en: pruebas en navegadores desktop, pruebas en navegadores móviles, validación de diseño responsive, validación de accesibilidad (WCAG 2.1 AA) y ajustes según hallazgos.",
+			"reasoning": "Asegurar compatibilidad y accesibilidad implica pruebas manuales y automáticas en múltiples entornos, así como ajustes iterativos para cumplir estándares y buenas prácticas de UX/UI."
+		},
+		{
+			"taskId": 29,
+			"taskTitle": "Exportación de reportes (CSV, XLSX, PDF)",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Divide en: exportación a CSV (papaparse), exportación a XLSX (SheetJS), exportación a PDF (jsPDF), inclusión de metadatos, integración de gráficos en PDF y validación de formato/integridad.",
+			"reasoning": "La exportación en múltiples formatos con metadatos y gráficos requiere integración de varias librerías, manejo de formatos binarios y validación de la calidad del output, lo que eleva la complejidad técnica."
+		},
+		{
+			"taskId": 23,
+			"taskTitle": "Gestión de inventario de cilindros llenos y vacíos",
+			"complexityScore": 8,
+			"recommendedSubtasks": 7,
+			"expansionPrompt": "Desglosa en: diseño de vistas de inventario, lógica de clasificación por tipo/marca/color, actualización en tiempo real, configuración de triggers de bajo stock, integración de notificaciones push, pruebas de flujo y validación de alertas.",
+			"reasoning": "La gestión de inventario en tiempo real con notificaciones automáticas y clasificación avanzada requiere lógica compleja, integración con backend y frontend, y pruebas exhaustivas para asegurar consistencia y reactividad."
+		},
+		{
+			"taskId": 39,
+			"taskTitle": "Respaldo y recuperación de datos",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Divide en: automatización de backups en Supabase, documentación de procedimientos de restauración, pruebas de restauración punto en el tiempo y definición de procesos de recuperación ante pérdida crítica.",
+			"reasoning": "Aunque la automatización de backups es soportada por la plataforma, la documentación, pruebas y definición de procesos de recuperación requieren atención a detalles y validación para asegurar la resiliencia ante incidentes."
+		},
+		{
+			"taskId": 21,
+			"taskTitle": "Implementación de autenticación y control de acceso",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on implementación de autenticación y control de acceso.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 22,
+			"taskTitle": "Implementación de Panel 'En Ruta' en tiempo real",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on implementación de panel 'en ruta' en tiempo real.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 24,
+			"taskTitle": "Procesamiento de transacciones de venta y ajustes automáticos",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on procesamiento de transacciones de venta y ajustes automáticos.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 25,
+			"taskTitle": "Gestión de llegadas de camión y actualización de costos",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on gestión de llegadas de camión y actualización de costos.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 26,
+			"taskTitle": "Sistema de asignación diaria de cilindros",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on sistema de asignación diaria de cilindros.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 27,
+			"taskTitle": "Flujo de solicitudes de edición de transacciones",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on flujo de solicitudes de edición de transacciones.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 28,
+			"taskTitle": "Módulo de reportes y analítica multidimensional",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on módulo de reportes y analítica multidimensional.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 30,
+			"taskTitle": "Capacidades offline y sincronización",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on capacidades offline y sincronización.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 31,
+			"taskTitle": "Gestión de clientes y precios personalizados",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on gestión de clientes y precios personalizados.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 32,
+			"taskTitle": "Registro y aprobación de gastos de vendedor",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on registro y aprobación de gastos de vendedor.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 33,
+			"taskTitle": "Seguimiento de metas y desempeño",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on seguimiento de metas y desempeño.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 34,
+			"taskTitle": "Sistema de notificaciones in-app y push",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on sistema de notificaciones in-app y push.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 35,
+			"taskTitle": "Carga y optimización de fotos de recibos",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on carga y optimización de fotos de recibos.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 42,
+			"taskTitle": "Seguridad: RLS, cifrado y validación",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on seguridad: rls, cifrado y validación.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 43,
+			"taskTitle": "Documentación técnica y de usuario",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on documentación técnica y de usuario.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		}
+	]
+}
