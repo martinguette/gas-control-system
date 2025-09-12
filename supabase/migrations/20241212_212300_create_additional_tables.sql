@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS public.inventory_empty (
   brand TEXT NOT NULL,
   color TEXT NOT NULL,
   quantity INTEGER NOT NULL DEFAULT 0 CHECK (quantity >= 0),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT inventory_empty_type_brand_color_unique UNIQUE (type, brand, color)
 );
 
 -- =====================================================
