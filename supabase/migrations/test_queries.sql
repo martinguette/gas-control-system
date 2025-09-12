@@ -230,11 +230,11 @@ SELECT * FROM get_record_history(
 -- 20. Verificar funciones de seguridad
 SELECT 
   'is_jefe()' as function_name,
-  is_jefe() as result
+  is_jefe()::TEXT as result
 UNION ALL
 SELECT 
   'is_vendedor()' as function_name,
-  is_vendedor() as result
+  is_vendedor()::TEXT as result
 UNION ALL
 SELECT 
   'get_user_role()' as function_name,
