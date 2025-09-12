@@ -264,3 +264,4 @@ Este proyecto es privado y está destinado únicamente para uso interno de la or
 **Última actualización:** Diciembre 2024  
 **Tecnologías:** Next.js 15, TypeScript, ShadCN UI, Tailwind CSS
 # gas-control-system
+# Test commit for GitHub contributions
