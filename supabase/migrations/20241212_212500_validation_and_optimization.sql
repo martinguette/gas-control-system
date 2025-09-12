@@ -405,14 +405,14 @@ RETURNS TABLE (
 BEGIN
   RETURN QUERY
   SELECT 
-    schemaname||'.'||tablename as table_name,
+    schemaname||'.'||relname as table_name,
     n_tup_ins - n_tup_del as row_count,
-    pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as total_size,
-    pg_size_pretty(pg_indexes_size(schemaname||'.'||tablename)) as index_size,
-    pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename) - pg_relation_size(schemaname||'.'||tablename)) as toast_size
+    pg_size_pretty(pg_total_relation_size(schemaname||'.'||relname)) as total_size,
+    pg_size_pretty(pg_indexes_size(schemaname||'.'||relname)) as index_size,
+    pg_size_pretty(pg_total_relation_size(schemaname||'.'||relname) - pg_relation_size(schemaname||'.'||relname)) as toast_size
   FROM pg_stat_user_tables
   WHERE schemaname = 'public'
-  ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
+  ORDER BY pg_total_relation_size(schemaname||'.'||relname) DESC;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
