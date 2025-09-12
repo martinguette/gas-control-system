@@ -12,8 +12,8 @@
 -- FUNCIONES DE VALIDACIÓN DE INTEGRIDAD
 -- =====================================================
 
--- Función para validar que no hay inventario negativo
-CREATE OR REPLACE FUNCTION validate_positive_inventory()
+-- Función para validar que no hay inventario negativo en inventory_full
+CREATE OR REPLACE FUNCTION validate_inventory_full_positive()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Validar que la cantidad no sea negativa
@@ -30,16 +30,29 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Función para validar que no hay inventario negativo en inventory_empty
+CREATE OR REPLACE FUNCTION validate_inventory_empty_positive()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Validar que la cantidad no sea negativa
+  IF NEW.quantity < 0 THEN
+    RAISE EXCEPTION 'La cantidad de inventario no puede ser negativa: %', NEW.quantity;
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Triggers para validar inventario positivo
 CREATE TRIGGER validate_inventory_full_positive
   BEFORE INSERT OR UPDATE ON public.inventory_full
   FOR EACH ROW
-  EXECUTE FUNCTION validate_positive_inventory();
+  EXECUTE FUNCTION validate_inventory_full_positive();
 
 CREATE TRIGGER validate_inventory_empty_positive
   BEFORE INSERT OR UPDATE ON public.inventory_empty
   FOR EACH ROW
-  EXECUTE FUNCTION validate_positive_inventory();
+  EXECUTE FUNCTION validate_inventory_empty_positive();
 
 -- =====================================================
 -- FUNCIONES DE VALIDACIÓN DE NEGOCIO
@@ -420,7 +433,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- COMENTARIOS EN FUNCIONES DE VALIDACIÓN
 -- =====================================================
 
-COMMENT ON FUNCTION validate_positive_inventory() IS 'Valida que el inventario no tenga cantidades o costos negativos';
+COMMENT ON FUNCTION validate_inventory_full_positive() IS 'Valida que el inventario lleno no tenga cantidades o costos negativos';
+COMMENT ON FUNCTION validate_inventory_empty_positive() IS 'Valida que el inventario vacío no tenga cantidades negativas';
 COMMENT ON FUNCTION validate_goal_dates() IS 'Valida que las fechas de metas sean coherentes';
 COMMENT ON FUNCTION validate_daily_assignment_unique() IS 'Valida que no existan asignaciones duplicadas para el mismo vendedor y fecha';
 COMMENT ON FUNCTION analyze_query_performance() IS 'Analiza el rendimiento de las consultas más costosas';
