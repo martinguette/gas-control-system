@@ -7,10 +7,12 @@ Este proyecto utiliza **Git Flow** para mantener un desarrollo organizado y cont
 ## 🌳 Estructura de Ramas
 
 ### Ramas Principales
+
 - **`main`** - Código de producción estable
 - **`develop`** - Código de desarrollo integrado
 
 ### Ramas de Feature
+
 - **`feature/nombre-descriptivo`** - Nuevas funcionalidades
 - **`hotfix/nombre-descriptivo`** - Correcciones urgentes en producción
 
@@ -68,6 +70,7 @@ git branch -d release/version-x.x.x
 ## 📝 Convenciones de Commits
 
 ### Formato
+
 ```
 tipo(scope): descripción breve
 
@@ -78,6 +81,7 @@ Descripción detallada del cambio (opcional)
 ```
 
 ### Tipos de Commit
+
 - **`feat`** - Nueva funcionalidad
 - **`fix`** - Corrección de bugs
 - **`docs`** - Documentación
@@ -87,6 +91,7 @@ Descripción detallada del cambio (opcional)
 - **`chore`** - Tareas de mantenimiento
 
 ### Ejemplos
+
 ```bash
 feat(database): Add inventory management tables
 fix(auth): Resolve login validation issue
@@ -97,22 +102,26 @@ refactor(ui): Simplify component structure
 ## 🏷️ Naming de Ramas
 
 ### Features
+
 - `feature/database-schema-implementation`
 - `feature/user-authentication`
 - `feature/inventory-management`
 - `feature/realtime-dashboard`
 
 ### Hotfixes
+
 - `hotfix/critical-security-patch`
 - `hotfix/login-bug-fix`
 
 ### Releases
+
 - `release/v1.0.0`
 - `release/v1.1.0`
 
 ## 📊 Estado Actual del Proyecto
 
 ### ✅ Features Completadas
+
 - **`feature/database-schema-implementation`** - Esquema completo de base de datos
   - 9 tablas principales implementadas
   - Sistema de auditoría completo
@@ -120,9 +129,11 @@ refactor(ui): Simplify component structure
   - Migraciones versionadas
 
 ### 🔄 En Desarrollo
+
 - **`feature/realtime-dashboard`** - Panel "En Ruta" en tiempo real (próximo)
 
 ### 📋 Próximas Features
+
 - `feature/inventory-management` - Gestión de inventario
 - `feature/sales-transactions` - Procesamiento de ventas
 - `feature/expense-tracking` - Seguimiento de gastos
@@ -131,6 +142,7 @@ refactor(ui): Simplify component structure
 ## 🛠️ Comandos Útiles
 
 ### Verificar Estado
+
 ```bash
 git status
 git branch -a
@@ -138,11 +150,13 @@ git log --oneline --graph
 ```
 
 ### Limpiar Ramas Locales
+
 ```bash
 git branch --merged | grep -v main | grep -v develop | xargs -n 1 git branch -d
 ```
 
 ### Sincronizar con Remoto
+
 ```bash
 git fetch origin
 git checkout develop
@@ -152,6 +166,7 @@ git pull origin develop
 ## 📋 Checklist para Features
 
 ### Antes de Crear PR
+
 - [ ] Código funciona correctamente
 - [ ] Tests pasan (si existen)
 - [ ] Documentación actualizada
@@ -159,6 +174,7 @@ git pull origin develop
 - [ ] Rama actualizada con develop
 
 ### Antes de Merge a Main
+
 - [ ] Feature probada en staging
 - [ ] Documentación completa
 - [ ] Changelog actualizado
@@ -168,11 +184,13 @@ git pull origin develop
 ## 🔒 Políticas de Seguridad
 
 ### Protección de Ramas
+
 - **`main`** - Requiere PR y review
 - **`develop`** - Requiere PR
 - **Features** - Desarrollo libre
 
 ### Acceso
+
 - Solo administradores pueden hacer merge directo a `main`
 - Todos los desarrolladores pueden crear features
 - Code review obligatorio para cambios críticos
@@ -180,6 +198,7 @@ git pull origin develop
 ## 📞 Contacto y Soporte
 
 Para dudas sobre el flujo de trabajo:
+
 - Revisar este documento
 - Consultar con el equipo de desarrollo
 - Crear issue en el repositorio
