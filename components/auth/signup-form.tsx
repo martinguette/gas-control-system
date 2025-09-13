@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -41,44 +41,37 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { signUpSchema, type SignUpFormData } from '@/lib/validations';
 import { signUp } from '@/actions/auth';
+import { useSearchParams } from 'next/navigation';
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const message = searchParams.get('message');
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       full_name: '',
       email: '',
-      role: undefined,
+      role: '' as any, // Cambiar undefined por string vacío
       password: '',
       repeatPassword: '',
     },
+    mode: 'onChange', // Validar en tiempo real
   });
 
-  const onSubmit = async (data: SignUpFormData) => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  // Validar contraseñas en tiempo real
+  const password = form.watch('password');
+  const repeatPassword = form.watch('repeatPassword');
 
-      const formData = new FormData();
-      formData.append('full_name', data.full_name);
-      formData.append('email', data.email);
-      formData.append('role', data.role);
-      formData.append('password', data.password);
-      formData.append('repeatPassword', data.repeatPassword);
-
-      await signUp(formData);
-    } catch (error) {
-      setError('Error al crear la cuenta. Por favor, intenta de nuevo.');
-    } finally {
-      setIsLoading(false);
+  useEffect(() => {
+    if (password && repeatPassword) {
+      form.trigger('repeatPassword');
     }
-  };
+  }, [password, repeatPassword, form]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
@@ -98,14 +91,35 @@ export default function SignUpForm() {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {error && (
+          {message && (
             <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{message}</AlertDescription>
             </Alert>
           )}
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form
+              className="space-y-4"
+              onSubmit={form.handleSubmit(async (data) => {
+                try {
+                  setIsLoading(true);
+
+                  // Crear FormData manualmente con los valores del formulario
+                  const formData = new FormData();
+                  formData.append('full_name', data.full_name);
+                  formData.append('email', data.email);
+                  formData.append('role', data.role);
+                  formData.append('password', data.password);
+                  formData.append('repeatPassword', data.repeatPassword);
+
+                  await signUp(formData);
+                } catch (error) {
+                  console.error('Error:', error);
+                } finally {
+                  setIsLoading(false);
+                }
+              })}
+            >
               <FormField
                 control={form.control}
                 name="full_name"
@@ -163,7 +177,7 @@ export default function SignUpForm() {
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value || ''}
                     >
                       <FormControl>
                         <SelectTrigger className="h-11">
@@ -262,7 +276,6 @@ export default function SignUpForm() {
 
               <Button
                 type="submit"
-                formAction={signUp}
                 className="w-full h-11 text-base font-medium"
                 disabled={isLoading}
               >
