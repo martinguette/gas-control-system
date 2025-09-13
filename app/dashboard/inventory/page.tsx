@@ -35,7 +35,9 @@ export default async function InventoryPage() {
             </div>
             <div className="hidden md:block">
               <div className="text-right">
-                <div className="text-sm font-medium text-gray-500">Panel de Control</div>
+                <div className="text-sm font-medium text-gray-500">
+                  Panel de Control
+                </div>
                 <div className="text-lg font-semibold text-gray-900">Jefe</div>
               </div>
             </div>
