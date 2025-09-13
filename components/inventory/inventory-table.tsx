@@ -87,123 +87,70 @@ export function InventoryTable({
 
   if (data.length === 0) {
     return (
-      <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-300">
-        <div className="text-8xl mb-6">📦</div>
-        <h3 className="text-2xl font-bold text-gray-700 mb-2">
-          {type === 'full' ? 'Sin Cilindros Llenos' : 'Sin Cilindros Vacíos'}
-        </h3>
-        <p className="text-gray-600 text-lg font-medium mb-4">
+      <div className="text-center py-8">
+        <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <p className="text-muted-foreground">
           No hay {type === 'full' ? 'cilindros llenos' : 'cilindros vacíos'} en
           el inventario
         </p>
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 rounded-full">
-          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-          <span className="text-blue-700 font-semibold">
-            {type === 'full'
-              ? 'Agregar cilindros llenos'
-              : 'Agregar cilindros vacíos'}
-          </span>
-        </div>
       </div>
     );
   }
 
   return (
     <>
-      <div className="rounded-2xl border-0 shadow-xl bg-white overflow-hidden">
+      <div className="rounded-md border">
         <Table>
-          <TableHeader className="bg-gradient-to-r from-blue-600 to-indigo-600">
-            <TableRow className="border-0 hover:bg-transparent">
-              <TableHead className="text-white font-bold text-lg py-4">
-                Producto
-              </TableHead>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Producto</TableHead>
               {type === 'empty' && (
                 <>
-                  <TableHead className="text-white font-bold text-lg py-4">
-                    Marca
-                  </TableHead>
-                  <TableHead className="text-white font-bold text-lg py-4">
-                    Color
-                  </TableHead>
+                  <TableHead>Marca</TableHead>
+                  <TableHead>Color</TableHead>
                 </>
               )}
-              <TableHead className="text-right text-white font-bold text-lg py-4">
-                Cantidad
-              </TableHead>
+              <TableHead className="text-right">Cantidad</TableHead>
               {type === 'full' && (
-                <TableHead className="text-right text-white font-bold text-lg py-4">
-                  Costo Unitario
-                </TableHead>
+                <TableHead className="text-right">Costo Unitario</TableHead>
               )}
-              <TableHead className="text-right text-white font-bold text-lg py-4">
-                Última Actualización
-              </TableHead>
+              <TableHead className="text-right">Última Actualización</TableHead>
               {showActions && (
-                <TableHead className="text-center text-white font-bold text-lg py-4">
-                  Acciones
-                </TableHead>
+                <TableHead className="text-center">Acciones</TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((item, index) => (
-              <TableRow
-                key={item.id}
-                className={`border-0 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 ${
-                  index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                }`}
-              >
-                <TableCell className="font-bold text-lg py-4">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`p-2 rounded-lg ${
-                        type === 'full' ? 'bg-green-500' : 'bg-orange-500'
-                      }`}
-                    >
-                      <Package className="h-5 w-5 text-white" />
-                    </div>
-                    <span
-                      className={
-                        type === 'full' ? 'text-green-800' : 'text-orange-800'
-                      }
-                    >
-                      {getDisplayName(item)}
-                    </span>
-                  </div>
+            {data.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell className="font-medium">
+                  {getDisplayName(item)}
                 </TableCell>
                 {type === 'empty' && (
                   <>
-                    <TableCell className="py-4">
-                      <Badge className="bg-blue-100 text-blue-800 font-semibold">
+                    <TableCell>
+                      <Badge variant="outline">
                         {(item as InventoryEmpty).brand}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-4">
-                      <Badge className="bg-purple-100 text-purple-800 font-semibold">
+                    <TableCell>
+                      <Badge variant="outline">
                         {(item as InventoryEmpty).color}
                       </Badge>
                     </TableCell>
                   </>
                 )}
-                <TableCell className="text-right py-4">
-                  <Badge
-                    className={`font-bold text-lg px-4 py-2 ${
-                      item.quantity > 10
-                        ? 'bg-green-500 text-white'
-                        : item.quantity > 5
-                        ? 'bg-yellow-500 text-white'
-                        : 'bg-red-500 text-white'
-                    }`}
-                  >
+                <TableCell className="text-right">
+                  <Badge variant={getQuantityVariant(item.quantity)}>
                     {item.quantity}
                   </Badge>
                 </TableCell>
                 {type === 'full' && (
-                  <TableCell className="text-right py-4 font-semibold text-lg text-green-700">
+                  <TableCell className="text-right">
                     {formatCurrency((item as InventoryFull).unit_cost)}
                   </TableCell>
                 )}
-                <TableCell className="text-right py-4 text-sm text-gray-600">
+                <TableCell className="text-right text-sm text-muted-foreground">
                   {new Date(item.updated_at).toLocaleDateString('es-CO', {
                     day: '2-digit',
                     month: '2-digit',
@@ -213,37 +160,37 @@ export function InventoryTable({
                   })}
                 </TableCell>
                 {showActions && (
-                  <TableCell className="text-center py-4">
-                    <div className="flex items-center justify-center gap-2">
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-1">
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(item)}
-                        className="hover:bg-blue-100 border-blue-300 text-blue-700"
+                        className="h-8 w-8 p-0"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => handleOperation(item, 'add')}
-                        className="hover:bg-green-100 border-green-300 text-green-700"
+                        className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => handleOperation(item, 'subtract')}
-                        className="hover:bg-orange-100 border-orange-300 text-orange-700"
+                        className="h-8 w-8 p-0 text-orange-600 hover:text-orange-700"
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => handleOperation(item, 'set')}
-                        className="hover:bg-purple-100 border-purple-300 text-purple-700"
+                        className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700"
                       >
                         <Package className="h-4 w-4" />
                       </Button>

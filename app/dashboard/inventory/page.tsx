@@ -20,25 +20,23 @@ import { AlertTriangle, Package, TrendingUp } from 'lucide-react';
 
 export default async function InventoryPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      <div className="space-y-8 p-6">
-        {/* Header con gradiente */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 text-white shadow-2xl">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="relative flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50">
+      <div className="space-y-6 p-6">
+        {/* Header simplificado */}
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold tracking-tight mb-2">
-                📦 Inventario Inteligente
+              <h1 className="text-2xl font-semibold text-gray-900 mb-1">
+                Inventario de Cilindros
               </h1>
-              <p className="text-blue-100 text-lg">
+              <p className="text-gray-600">
                 Gestiona el inventario de cilindros de gas y monitorea el stock
-                en tiempo real
               </p>
             </div>
             <div className="hidden md:block">
               <div className="text-right">
-                <div className="text-2xl font-bold">Dashboard</div>
-                <div className="text-blue-200">Panel de Control</div>
+                <div className="text-sm font-medium text-gray-500">Panel de Control</div>
+                <div className="text-lg font-semibold text-gray-900">Jefe</div>
               </div>
             </div>
           </div>
@@ -47,8 +45,8 @@ export default async function InventoryPage() {
         {/* Alertas de Stock Bajo */}
         <Suspense
           fallback={
-            <div className="flex items-center justify-center p-8 bg-white rounded-xl shadow-lg">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="flex items-center justify-center p-6 bg-white rounded-lg shadow-sm border">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
               <span className="ml-3 text-gray-600">Cargando alertas...</span>
             </div>
           }
@@ -59,8 +57,8 @@ export default async function InventoryPage() {
         {/* Estadísticas Generales */}
         <Suspense
           fallback={
-            <div className="flex items-center justify-center p-8 bg-white rounded-xl shadow-lg">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+            <div className="flex items-center justify-center p-6 bg-white rounded-lg shadow-sm border">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
               <span className="ml-3 text-gray-600">
                 Cargando estadísticas...
               </span>
