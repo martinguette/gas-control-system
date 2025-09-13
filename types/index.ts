@@ -35,3 +35,6 @@ export interface Profile {
   created_at?: string;
   updated_at?: string;
 }
+
+// Re-export inventory types
+export * from './inventory';
