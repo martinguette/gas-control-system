@@ -1,0 +1,398 @@
+---
+description: Reglas de UI/UX específicas para el Sistema de Control de Gas - Diseño y experiencia de usuario
+globs: app/**/*.tsx, components/**/*.tsx, styles/**/*.css
+alwaysApply: true
+---
+
+# Sistema de Control de Gas - Reglas UI/UX
+
+## 📱 **Diseño Mobile-First para Vendedores**
+
+### **Interfaz Móvil Optimizada**
+
+```tsx
+// ✅ DO: Diseño específico para móviles
+<div className="min-h-screen bg-background pb-20">
+  {/* Header sticky */}
+  <header className="sticky top-0 z-10 bg-card border-b">
+    {/* Contenido del header */}
+  </header>
+
+  {/* Contenido principal */}
+  <main className="p-4">{/* Contenido */}</main>
+
+  {/* Navegación inferior fija */}
+  <div className="fixed bottom-0 left-0 right-0 bg-card border-t">
+    {/* Navegación táctil */}
+  </div>
+</div>
+```
+
+### **Botones Táctiles**
+
+```tsx
+// ✅ DO: Botones grandes para dedos
+<Button className="w-full h-12 text-base" size="lg">
+  <Icon className="mr-2 h-5 w-5" />
+  Acción Principal
+</Button>
+
+// ✅ DO: Navegación inferior con iconos claros
+<div className="grid grid-cols-5 gap-1 p-2">
+  <Button className="flex flex-col items-center py-3 h-auto">
+    <Icon className="h-5 w-5 mb-1" />
+    <span className="text-xs">Etiqueta</span>
+  </Button>
+</div>
+```
+
+## 🎨 **Sistema de Colores Consistente**
+
+### **Colores por Tipo de Transacción**
+
+```tsx
+// ✅ DO: Usar colores específicos para cada tipo
+const colorScheme = {
+  sales: 'text-green-600 bg-green-50 border-green-200', // Ingresos
+  expenses: 'text-red-600 bg-red-50 border-red-200', // Gastos
+  inventory: 'text-blue-600 bg-blue-50 border-blue-200', // Inventario
+  alerts: 'text-yellow-600 bg-yellow-50 border-yellow-200', // Alertas
+  neutral: 'text-gray-600 bg-gray-50 border-gray-200', // Neutral
+};
+```
+
+### **Estados Visuales**
+
+```tsx
+// ✅ DO: Estados claros con colores
+const statusColors = {
+  active: 'bg-green-100 text-green-800', // Activo
+  standby: 'bg-yellow-100 text-yellow-800', // En espera
+  pending: 'bg-orange-100 text-orange-800', // Pendiente
+  completed: 'bg-blue-100 text-blue-800', // Completado
+  error: 'bg-red-100 text-red-800', // Error
+};
+```
+
+## 📊 **Panel "En Ruta" - Diseño Específico**
+
+### **Cards de Vendedores**
+
+```tsx
+// ✅ DO: Diseño específico para cards de vendedores
+<Card className="border-l-4 border-l-blue-500">
+  <CardContent className="p-4">
+    {/* Header con avatar y estado */}
+    <div className="flex items-center gap-3 mb-4">
+      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+        <UserCheck className="h-5 w-5 text-blue-600" />
+      </div>
+      <div className="flex-1">
+        <h4 className="font-semibold text-base">Nombre Vendedor</h4>
+        <p className="text-xs text-muted-foreground">Ruta Asignada</p>
+      </div>
+      <Badge className="bg-green-100 text-green-800">Activo</Badge>
+    </div>
+
+    {/* Métricas en grid */}
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
+      <div className="text-center p-2 bg-white rounded border">
+        <p className="text-lg font-bold text-blue-600">15</p>
+        <p className="text-xs text-muted-foreground">Asignados</p>
+      </div>
+      {/* Más métricas */}
+    </div>
+
+    {/* Barra de progreso */}
+    <div className="w-full bg-gray-200 rounded-full h-2">
+      <div
+        className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full"
+        style={{ width: '53%' }}
+      ></div>
+    </div>
+  </CardContent>
+</Card>
+```
+
+### **Indicadores de Tiempo Real**
+
+```tsx
+// ✅ DO: Indicadores visuales de tiempo real
+<Badge variant="outline" className="text-green-600 border-green-600">
+  <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+  En Vivo
+</Badge>
+```
+
+## 📱 **Formularios Móviles**
+
+### **Formulario de Ventas**
+
+```tsx
+// ✅ DO: Diseño específico para formularios móviles
+<Card>
+  <CardHeader className="pb-3">
+    <CardTitle className="text-base flex items-center gap-2">
+      <ShoppingCart className="h-4 w-4 text-green-600" />
+      Nueva Venta
+    </CardTitle>
+    <CardDescription className="text-sm">
+      Registra una nueva transacción
+    </CardDescription>
+  </CardHeader>
+  <CardContent className="space-y-4">
+    {/* Campos con labels claros */}
+    <div className="space-y-2">
+      <Label htmlFor="customer-name">Nombre del Cliente</Label>
+      <Input
+        id="customer-name"
+        placeholder="Nombre completo"
+        className="text-sm"
+      />
+    </div>
+  </CardContent>
+</Card>
+```
+
+### **Selección de Productos**
+
+```tsx
+// ✅ DO: Diseño para selección de productos
+<div className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
+  <div className="flex items-center gap-3">
+    <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+      <Package className="h-5 w-5 text-orange-600" />
+    </div>
+    <div>
+      <p className="font-medium text-sm">15kg - Gas Natural</p>
+      <p className="text-xs text-muted-foreground">
+        Color: Azul | Disponibles: 5
+      </p>
+    </div>
+  </div>
+  <div className="flex items-center gap-2">
+    <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+      -
+    </Button>
+    <span className="w-8 text-center text-sm font-medium">0</span>
+    <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+      +
+    </Button>
+  </div>
+</div>
+```
+
+## 📊 **Dashboard del Jefe**
+
+### **Layout Responsivo**
+
+```tsx
+// ✅ DO: Layout que se adapta a todos los dispositivos
+<div className="min-h-screen bg-background">
+  {/* Sidebar para desktop */}
+  <div className="hidden lg:block fixed inset-y-0 left-0 w-64 bg-sidebar border-r">
+    {/* Navegación lateral */}
+  </div>
+
+  {/* Contenido principal */}
+  <div className="lg:ml-64">
+    <main className="p-4 lg:p-6">{/* Contenido del dashboard */}</main>
+  </div>
+</div>
+```
+
+### **Tarjetas de Estadísticas**
+
+```tsx
+// ✅ DO: Diseño consistente para estadísticas
+<Card className="border-green-200 bg-green-50">
+  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <CardTitle className="text-xs lg:text-sm font-medium text-green-800">
+      Vendedores Activos
+    </CardTitle>
+    <UserCheck className="h-3 w-3 lg:h-4 lg:w-4 text-green-600" />
+  </CardHeader>
+  <CardContent>
+    <div className="text-lg lg:text-2xl font-bold text-green-700">2</div>
+    <p className="text-xs text-green-600">En campo</p>
+  </CardContent>
+</Card>
+```
+
+## 🔄 **Estados de Carga y Feedback**
+
+### **Estados de Carga**
+
+```tsx
+// ✅ DO: Mostrar estados de carga claros
+{
+  isLoading ? (
+    <div className="flex items-center justify-center p-4">
+      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+      <span className="ml-2 text-sm text-muted-foreground">Cargando...</span>
+    </div>
+  ) : (
+    <div>{/* Contenido */}</div>
+  );
+}
+```
+
+### **Mensajes de Confirmación**
+
+```tsx
+// ✅ DO: Feedback inmediato para acciones
+<Button onClick={handleSubmit} disabled={isSubmitting}>
+  {isSubmitting ? (
+    <>
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      Procesando...
+    </>
+  ) : (
+    <>
+      <Check className="mr-2 h-4 w-4" />
+      Confirmar
+    </>
+  )}
+</Button>
+```
+
+## 📱 **Responsive Design**
+
+### **Breakpoints Específicos**
+
+```tsx
+// ✅ DO: Usar breakpoints apropiados
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-6">
+  {/* Contenido que se adapta */}
+</div>
+
+// ✅ DO: Texto que se escala
+<h1 className="text-2xl lg:text-3xl font-bold">Título</h1>
+<p className="text-sm lg:text-lg text-muted-foreground">Descripción</p>
+
+// ✅ DO: Iconos que se escalan
+<Icon className="h-3 w-3 lg:h-4 lg:w-4" />
+```
+
+### **Navegación Móvil**
+
+```tsx
+// ✅ DO: Navegación optimizada para móviles
+<div className="lg:hidden fixed top-4 left-4 z-50">
+  <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+    <Menu className="h-6 w-6" />
+  </Button>
+</div>;
+
+{
+  /* Overlay para móviles */
+}
+{
+  sidebarOpen && (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+      onClick={closeSidebar}
+    ></div>
+  );
+}
+```
+
+## 🎯 **Accesibilidad y Usabilidad**
+
+### **Navegación por Teclado**
+
+```tsx
+// ✅ DO: Asegurar navegación por teclado
+<Button
+  className="cursor-pointer focus:ring-2 focus:ring-primary focus:outline-none"
+  onKeyDown={(e) => e.key === 'Enter' && handleClick()}
+>
+  Acción
+</Button>
+```
+
+### **Contraste y Legibilidad**
+
+```tsx
+// ✅ DO: Usar colores con buen contraste
+const textColors = {
+  primary: 'text-foreground', // Alto contraste
+  secondary: 'text-muted-foreground', // Contraste medio
+  accent: 'text-primary', // Color de marca
+  error: 'text-red-600', // Error claro
+  success: 'text-green-600', // Éxito claro
+};
+```
+
+## 🚨 **Alertas y Notificaciones**
+
+### **Sistema de Alertas**
+
+```tsx
+// ✅ DO: Alertas claras y contextuales
+<Alert className="border-red-200 bg-red-50">
+  <AlertTriangle className="h-4 w-4 text-red-500" />
+  <AlertTitle className="text-red-900">Alerta Importante</AlertTitle>
+  <AlertDescription className="text-red-700">
+    Descripción clara del problema
+  </AlertDescription>
+</Alert>
+```
+
+### **Notificaciones de Estado**
+
+```tsx
+// ✅ DO: Notificaciones de estado del sistema
+<Badge variant="outline" className="text-green-600 border-green-600">
+  <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+  Sistema Activo
+</Badge>
+```
+
+## 📊 **Gráficos y Visualizaciones**
+
+### **Barras de Progreso**
+
+```tsx
+// ✅ DO: Barras de progreso claras
+<div className="w-full bg-gray-200 rounded-full h-2 lg:h-3">
+  <div
+    className="bg-gradient-to-r from-green-500 to-blue-500 h-2 lg:h-3 rounded-full transition-all duration-500"
+    style={{ width: `${progress}%` }}
+  ></div>
+</div>
+```
+
+### **Métricas Visuales**
+
+```tsx
+// ✅ DO: Métricas con iconos y colores
+<div className="text-center p-2 lg:p-3 bg-white rounded-lg border">
+  <p className="text-lg lg:text-2xl font-bold text-blue-600">15</p>
+  <p className="text-xs text-muted-foreground">Asignados</p>
+</div>
+```
+
+## 🎨 **Consistencia Visual**
+
+### **Espaciado Consistente**
+
+```tsx
+// ✅ DO: Usar espaciado consistente
+<div className="space-y-4">        {/* Espaciado estándar */}
+<div className="space-y-2">        {/* Espaciado compacto */}
+<div className="space-y-6">        {/* Espaciado amplio */}
+```
+
+### **Tipografía Consistente**
+
+```tsx
+// ✅ DO: Jerarquía tipográfica clara
+<h1 className="text-2xl lg:text-3xl font-bold">Título Principal</h1>
+<h2 className="text-xl lg:text-2xl font-semibold">Título Secundario</h2>
+<h3 className="text-lg lg:text-xl font-medium">Título Terciario</h3>
+<p className="text-sm lg:text-base">Texto Normal</p>
+<p className="text-xs lg:text-sm text-muted-foreground">Texto Secundario</p>
+```
+
+Estas reglas aseguran una experiencia de usuario consistente, accesible y optimizada para el sistema de control de gas, especialmente en dispositivos móviles donde los vendedores realizan la mayor parte de su trabajo.

@@ -1,0 +1,217 @@
+---
+description: Reglas críticas para el Sistema de Control de Gas - Arquitectura y flujo operativo
+globs: app/**/*.tsx, components/**/*.tsx, lib/**/*.ts, actions/**/*.ts
+alwaysApply: true
+---
+
+# Sistema de Control de Gas - Reglas Críticas
+
+## 🏗️ **Arquitectura del Sistema**
+
+### **Roles y Acceso Diferenciado**
+
+- **👨‍💼 JEFE (Admin)**: Acceso completo desde PC/tablet/móvil
+
+  - Panel "En Ruta" para monitoreo en tiempo real
+  - Gestión completa de inventario
+  - Configuración de precios personalizados
+  - Registro de llegadas de camión
+  - Todos los reportes y análisis
+
+- **👨‍💻 VENDEDOR**: Solo acceso móvil con funciones limitadas
+  - Registro de ventas únicamente
+  - Registro de gastos operativos
+  - Visualización solo de sus propias transacciones
+  - Sin acceso a inventario general
+  - Sin acceso a reportes financieros
+
+### **Inventario Separado - CRÍTICO**
+
+```typescript
+// ✅ DO: Manejar inventarios completamente separados
+const inventoryFull = {
+  type: '33lb' | '40lb' | '100lb', // Solo marca Roscogas
+  quantity: number,
+  unitCost: decimal,
+};
+
+const inventoryEmpty = {
+  type: '33lb' | '40lb' | '100lb',
+  brand: string, // Todas las marcas
+  color: string, // Todos los colores
+  quantity: number,
+};
+```
+
+### **Tipos de Transacciones - OBLIGATORIO**
+
+```typescript
+// ✅ DO: Implementar estos 4 tipos exactos
+type SaleType =
+  | 'intercambio' // -1 lleno, +1 vacío (80% de ventas)
+  | 'completa' // -1 lleno únicamente
+  | 'venta_vacios' // -1 vacío
+  | 'compra_vacios'; // +1 vacío
+```
+
+## 🛣️ **Panel "En Ruta" - Funcionalidad Central**
+
+### **Cards de Vendedores - SOLO DÍA ACTUAL**
+
+```typescript
+// ✅ DO: Mostrar únicamente datos del día actual
+interface VendorCard {
+  vendorName: string;
+  assignedRoute: string;
+  cylindersAssigned: number; // Por tipo
+  cylindersSold: number; // Por tipo
+  cylindersRemaining: number; // Por tipo
+  totalSales: number; // Del día
+  totalExpenses: number; // Del día
+  dailyMargin: number; // Ventas - Gastos
+  progressPercentage: number; // Visual
+  lastUpdate: timestamp;
+}
+```
+
+### **Estados de Cilindros**
+
+```typescript
+// ✅ DO: Usar estado STANDBY para asignaciones
+type CylinderStatus =
+  | 'available' // En inventario general
+  | 'standby' // Asignado a vendedor (no afecta inventario)
+  | 'sold' // Vendido (actualiza inventario)
+  | 'returned'; // Devuelto al final del día
+```
+
+## 💰 **Gestión Financiera - Factor Crítico**
+
+### **Precio de Compra = Rentabilidad**
+
+```typescript
+// ✅ DO: El precio de compra determina la ganancia
+interface TruckArrival {
+  cylindersReceived: number;
+  unitCost: decimal; // CRÍTICO: Define rentabilidad
+  totalInvoice: decimal;
+  freightCost: decimal; // Se paga por separado
+}
+```
+
+### **Cálculo de Margen**
+
+```typescript
+// ✅ DO: Calcular margen correctamente
+const dailyMargin = totalSales - totalExpenses;
+const profitPerCylinder = salePrice - purchasePrice;
+```
+
+## 📱 **Interfaz Móvil - Vendedores**
+
+### **Formulario de Ventas - Campos Obligatorios**
+
+```typescript
+// ✅ DO: Incluir todos estos campos
+interface SaleForm {
+  customerName: string; // Obligatorio
+  customerPhone?: string; // Opcional
+  customerLocation: string; // Obligatorio
+  productType: '33lb' | '40lb' | '100lb';
+  saleType: SaleType;
+  amountCharged: decimal;
+  paymentMethod: 'efectivo' | 'transferencia' | 'credito';
+  timestamp: Date; // Automático
+}
+```
+
+### **Formulario de Gastos**
+
+```typescript
+// ✅ DO: Categorizar gastos correctamente
+interface ExpenseForm {
+  type: 'gasolina' | 'comida' | 'reparaciones' | 'otros';
+  amount: decimal;
+  description: string;
+  timestamp: Date;
+}
+```
+
+## 🔄 **Flujo Operativo Diario**
+
+### **Inicio del Día (6:00 AM - 8:00 AM)**
+
+1. Jefe asigna cilindros a vendedores
+2. Cilindros quedan en estado STANDBY
+3. Se crean cards "En Ruta" automáticamente
+
+### **Durante el Día (8:00 AM - 6:00 PM)**
+
+1. Vendedores registran ventas desde móvil
+2. Cards "En Ruta" se actualizan instantáneamente
+3. Inventario se actualiza solo con ventas confirmadas
+
+### **Final del Día (6:00 PM - 8:00 PM)**
+
+1. Cilindros no vendidos regresan al inventario
+2. Cards "En Ruta" se resetean automáticamente
+3. Datos se consolidan para reportes
+
+## 🚨 **Reglas de Validación**
+
+### **❌ DON'T: Operaciones que NO afectan inventario**
+
+- Salida para ruta (solo cambia a STANDBY)
+- Asignación a vendedores (solo crea cards)
+- Devoluciones al final del día (solo cambia estado)
+
+### **✅ DO: Operaciones que SÍ afectan inventario**
+
+- Venta con intercambio: -1 lleno, +1 vacío
+- Venta completa: -1 lleno
+- Venta de vacíos: -1 vacío
+- Compra de vacíos: +1 vacío
+- Llegada de camión: +llenos recibidos, -vacíos entregados
+
+## 📊 **Sistema de Metas**
+
+### **Unidad de Medida: Kilogramos**
+
+```typescript
+// ✅ DO: Convertir automáticamente
+const conversions = {
+  '33lb': 15, // kg
+  '40lb': 18, // kg
+  '100lb': 45, // kg
+};
+```
+
+### **Períodos de Metas**
+
+- Semanales, mensuales, semestrales, anuales
+- Generales del negocio e individuales por vendedor
+- Seguimiento en tiempo real con barras de progreso
+
+## 🔐 **Seguridad y Permisos**
+
+### **Control de Edición**
+
+- Vendedores solo pueden editar con autorización del jefe
+- Sistema de solicitudes y aprobaciones
+- Auditoría completa de todas las acciones
+
+### **Comunicación Externa**
+
+- WhatsApp para comprobantes y evidencias
+- Sin integración técnica compleja
+- Flujo directo jefe-vendedores
+
+## 🎯 **Objetivo Principal del Sistema**
+
+**Maximizar la rentabilidad** controlando precisamente:
+
+1. **Precio de compra** del gas (factor principal de costos)
+2. **Precio de venta** al cliente (personalizable por cliente)
+3. **Gastos operativos** (controlados por vendedor)
+
+El sistema debe transformar datos operativos en **información accionable** para tomar mejores decisiones comerciales y operativas.
