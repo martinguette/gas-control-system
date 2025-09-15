@@ -284,6 +284,13 @@ export default async function AdminDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
+                <Link href="/dashboard/admin/en-ruta" className="block">
+                  <Button className="w-full justify-start cursor-pointer bg-green-600 hover:bg-green-700">
+                    <Activity className="mr-2 h-4 w-4" />
+                    <span className="text-sm">Monitoreo En Ruta</span>
+                  </Button>
+                </Link>
+
                 <Link href="/dashboard/admin/inventory" className="block">
                   <Button
                     variant="outline"
