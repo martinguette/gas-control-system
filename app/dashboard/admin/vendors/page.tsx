@@ -45,29 +45,29 @@ export default async function VendorsPage() {
     <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
               Gestión de Vendedores
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-sm lg:text-lg text-muted-foreground">
               Monitoreo y control del equipo de ventas
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button size="sm" className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
-              Agregar Vendedor
+              <span className="text-sm">Agregar Vendedor</span>
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <Activity className="mr-2 h-4 w-4" />
-              Ver Actividad
+              <span className="text-sm">Ver Actividad</span>
             </Button>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -122,7 +122,7 @@ export default async function VendorsPage() {
         </div>
 
         {/* Vendors List */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
           {/* Vendor 1 */}
           <Card>
             <CardHeader>
