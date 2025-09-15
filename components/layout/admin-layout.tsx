@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   BarChart3,
   Users,
@@ -11,6 +12,7 @@ import {
   LayoutDashboard as Dashboard,
   FileText,
   TrendingUp,
+  Package,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
@@ -48,30 +50,66 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2">
-            <Button variant="ghost" className="w-full justify-start" size="sm">
-              <Dashboard className="mr-3 h-4 w-4" />
-              Dashboard
-            </Button>
-            <Button variant="ghost" className="w-full justify-start" size="sm">
-              <BarChart3 className="mr-3 h-4 w-4" />
-              Análisis
-            </Button>
-            <Button variant="ghost" className="w-full justify-start" size="sm">
-              <Users className="mr-3 h-4 w-4" />
-              Usuarios
-            </Button>
-            <Button variant="ghost" className="w-full justify-start" size="sm">
-              <FileText className="mr-3 h-4 w-4" />
-              Reportes
-            </Button>
-            <Button variant="ghost" className="w-full justify-start" size="sm">
-              <TrendingUp className="mr-3 h-4 w-4" />
-              Ventas
-            </Button>
-            <Button variant="ghost" className="w-full justify-start" size="sm">
-              <Settings className="mr-3 h-4 w-4" />
-              Configuración
-            </Button>
+            <Link href="/dashboard/admin">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                size="sm"
+              >
+                <Dashboard className="mr-3 h-4 w-4" />
+                Dashboard
+              </Button>
+            </Link>
+            <Link href="/dashboard/admin/inventory">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                size="sm"
+              >
+                <Package className="mr-3 h-4 w-4" />
+                Inventario
+              </Button>
+            </Link>
+            <Link href="/dashboard/admin/vendors">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                size="sm"
+              >
+                <Users className="mr-3 h-4 w-4" />
+                Vendedores
+              </Button>
+            </Link>
+            <Link href="/dashboard/admin/reports">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                size="sm"
+              >
+                <FileText className="mr-3 h-4 w-4" />
+                Reportes
+              </Button>
+            </Link>
+            <Link href="/dashboard/admin/assignments">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                size="sm"
+              >
+                <TrendingUp className="mr-3 h-4 w-4" />
+                Asignaciones
+              </Button>
+            </Link>
+            <Link href="/dashboard/admin/settings">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                size="sm"
+              >
+                <Settings className="mr-3 h-4 w-4" />
+                Configuración
+              </Button>
+            </Link>
           </nav>
 
           {/* User Info & Logout */}
