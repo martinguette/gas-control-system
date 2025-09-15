@@ -467,7 +467,75 @@ As a system administrator, I want automated data backups so that business contin
 - **PWA support**: Full progressive web app functionality on supported browsers
 - **Responsive design**: Optimal experience across phone, tablet, and desktop screen sizes
 
-## 8. Design and user interface
+### 7.9 Testing and Quality Assurance
+- **Unit Testing**: Jest + Testing Library for component and function testing
+- **Integration Testing**: Jest for server actions and API integration testing
+- **End-to-End Testing**: Playwright for complete user journey testing
+- **Test-Driven Development (TDD)**: Red-Green-Refactor methodology for all features
+- **Coverage Requirements**: Minimum 80% code coverage for critical business logic
+- **Automated Testing**: CI/CD pipeline with automated test execution
+- **Cross-browser Testing**: Playwright multi-browser testing (Chrome, Firefox, Safari)
+- **Mobile Testing**: Responsive design testing across device sizes
+- **Performance Testing**: Load testing for concurrent user scenarios
+- **Accessibility Testing**: Automated and manual accessibility compliance testing
+
+## 8. Test-Driven Development (TDD) Methodology
+
+### 8.1 TDD Workflow
+The development process follows the Red-Green-Refactor cycle for all features:
+
+#### 8.1.1 Red Phase
+- Write a failing test that describes the desired functionality
+- Test should fail for the right reason (feature not implemented)
+- Test serves as documentation of expected behavior
+
+#### 8.1.2 Green Phase
+- Write the minimum code necessary to make the test pass
+- Focus on making the test green, not on perfect implementation
+- Avoid over-engineering at this stage
+
+#### 8.1.3 Refactor Phase
+- Improve code quality while keeping tests green
+- Remove duplication, improve readability, optimize performance
+- Ensure all tests continue to pass after refactoring
+
+### 8.2 Testing Strategy by Feature Type
+
+#### 8.2.1 Authentication Features
+- **Unit Tests**: Validation schemas, form components, utility functions
+- **Integration Tests**: Server actions, API endpoints, database interactions
+- **E2E Tests**: Complete login/register flows, role-based routing, session management
+
+#### 8.2.2 Business Logic Features
+- **Unit Tests**: Calculation functions, data transformations, business rules
+- **Integration Tests**: Database operations, real-time updates, file uploads
+- **E2E Tests**: Complete user workflows, cross-feature interactions
+
+#### 8.2.3 UI Components
+- **Unit Tests**: Component rendering, user interactions, state management
+- **Integration Tests**: Form submissions, navigation, data display
+- **E2E Tests**: User journeys, responsive behavior, accessibility
+
+### 8.3 Test Coverage Requirements
+- **Critical Path Features**: 90%+ coverage (authentication, transactions, inventory)
+- **Business Logic**: 85%+ coverage (calculations, validations, workflows)
+- **UI Components**: 80%+ coverage (forms, displays, interactions)
+- **Utility Functions**: 95%+ coverage (helpers, formatters, validators)
+
+### 8.4 Testing Tools and Configuration
+- **Jest**: Unit and integration testing with TypeScript support
+- **Testing Library**: Component testing with user-centric approach
+- **Playwright**: E2E testing with multi-browser support
+- **MSW**: API mocking for isolated testing
+- **Coverage Reports**: HTML and JSON reports for coverage analysis
+
+### 8.5 Continuous Integration Testing
+- **Pre-commit Hooks**: Run unit tests before code commits
+- **Pull Request Checks**: Full test suite execution on PR creation
+- **Deployment Pipeline**: E2E tests before production deployment
+- **Coverage Gates**: Prevent merging if coverage drops below thresholds
+
+## 9. Design and user interface
 
 ### 8.1 Design principles
 - **Mobile-first approach**: Primary interface optimized for mobile devices with desktop enhancement

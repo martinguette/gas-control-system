@@ -33,11 +33,12 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const message = searchParams.get('message');
+  const emailFromUrl = searchParams.get('email') || '';
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      email: emailFromUrl,
       password: '',
     },
   });
@@ -61,7 +62,11 @@ export default function LoginForm() {
 
         <CardContent className="space-y-6">
           {message && (
-            <Alert>
+            <Alert
+              variant={
+                message.includes('exitosamente') ? 'default' : 'destructive'
+              }
+            >
               <AlertDescription>{message}</AlertDescription>
             </Alert>
           )}
@@ -77,7 +82,6 @@ export default function LoginForm() {
                       <Input
                         {...field}
                         type="email"
-                        placeholder="usuario@gaspardo.com"
                         className="h-11"
                         disabled={isSubmitting}
                       />
@@ -98,7 +102,6 @@ export default function LoginForm() {
                         <Input
                           {...field}
                           type={showPassword ? 'text' : 'password'}
-                          placeholder="••••••••"
                           className="h-11 pr-10"
                           disabled={isSubmitting}
                         />
@@ -141,30 +144,17 @@ export default function LoginForm() {
             </form>
           </Form>
 
-          <div className="text-center space-y-2">
+          <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              Credenciales de prueba:
+              ¿No tienes una cuenta?{' '}
+              <Button
+                variant="link"
+                className="p-0 h-auto font-normal text-primary hover:underline"
+                onClick={() => router.push('/sign-up')}
+              >
+                Regístrate aquí
+              </Button>
             </p>
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>
-                <strong>Admin:</strong> admin@gaspardo.com / admin123
-              </p>
-              <p>
-                <strong>Vendedor:</strong> vendor@gaspardo.com / vendor123
-              </p>
-            </div>
-            <div className="pt-2">
-              <p className="text-sm text-muted-foreground">
-                ¿No tienes una cuenta?{' '}
-                <Button
-                  variant="link"
-                  className="p-0 h-auto font-normal text-primary hover:underline"
-                  onClick={() => router.push('/sign-up')}
-                >
-                  Regístrate aquí
-                </Button>
-              </p>
-            </div>
           </div>
         </CardContent>
       </Card>
