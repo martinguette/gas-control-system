@@ -55,6 +55,16 @@ export default function SalesPage() {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
 
+  // Estados para múltiples productos
+  const [selectedProducts, setSelectedProducts] = useState<
+    Array<{
+      type: CylinderType;
+      quantity: number;
+      unitPrice: number;
+      total: number;
+    }>
+  >([]);
+
   // Estados para precios personalizados
   const [isCustomerRegistered, setIsCustomerRegistered] = useState(false);
   const [customerPrices, setCustomerPrices] = useState<PriceMap>({
@@ -131,12 +141,68 @@ export default function SalesPage() {
 
   // Calcular total
   const calculateTotal = () => {
+    const total = selectedProducts.reduce(
+      (sum, product) => sum + product.total,
+      0
+    );
+    setTotalAmount(total);
+  };
+
+  // Agregar producto a la lista
+  const addProduct = () => {
     if (selectedCylinder && cylinderQuantity > 0) {
-      const price = editingPrices
+      const unitPrice = editingPrices
         ? tempPrices[selectedCylinder as CylinderType]
         : customerPrices[selectedCylinder as CylinderType];
-      setTotalAmount(price * cylinderQuantity);
+
+      const newProduct = {
+        type: selectedCylinder as CylinderType,
+        quantity: cylinderQuantity,
+        unitPrice,
+        total: unitPrice * cylinderQuantity,
+      };
+
+      // Verificar si ya existe este tipo de cilindro
+      const existingIndex = selectedProducts.findIndex(
+        (p) => p.type === selectedCylinder
+      );
+
+      if (existingIndex >= 0) {
+        // Actualizar cantidad existente
+        const updatedProducts = [...selectedProducts];
+        updatedProducts[existingIndex].quantity += cylinderQuantity;
+        updatedProducts[existingIndex].total =
+          updatedProducts[existingIndex].quantity * unitPrice;
+        setSelectedProducts(updatedProducts);
+      } else {
+        // Agregar nuevo producto
+        setSelectedProducts([...selectedProducts, newProduct]);
+      }
+
+      // Resetear selección
+      setSelectedCylinder('');
+      setCylinderQuantity(1);
     }
+  };
+
+  // Remover producto de la lista
+  const removeProduct = (index: number) => {
+    const updatedProducts = selectedProducts.filter((_, i) => i !== index);
+    setSelectedProducts(updatedProducts);
+  };
+
+  // Actualizar cantidad de un producto existente
+  const updateProductQuantity = (index: number, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      removeProduct(index);
+      return;
+    }
+
+    const updatedProducts = [...selectedProducts];
+    updatedProducts[index].quantity = newQuantity;
+    updatedProducts[index].total =
+      newQuantity * updatedProducts[index].unitPrice;
+    setSelectedProducts(updatedProducts);
   };
 
   // Efectos
@@ -146,13 +212,7 @@ export default function SalesPage() {
 
   useEffect(() => {
     calculateTotal();
-  }, [
-    selectedCylinder,
-    cylinderQuantity,
-    customerPrices,
-    tempPrices,
-    editingPrices,
-  ]);
+  }, [selectedProducts]);
 
   // Handlers
   const handleEditPrices = () => {
@@ -177,13 +237,9 @@ export default function SalesPage() {
       customerPhone,
       customerLocation,
       transactionType,
-      selectedCylinder,
-      cylinderQuantity,
+      products: selectedProducts,
       paymentMethod,
       totalAmount,
-      unitPrice: editingPrices
-        ? tempPrices[selectedCylinder as CylinderType]
-        : customerPrices[selectedCylinder as CylinderType],
     });
   };
 
@@ -304,66 +360,160 @@ export default function SalesPage() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Package className="h-4 w-4 text-orange-600" />
-              Selección de Producto
+              Selección de Productos
             </CardTitle>
+            <CardDescription>
+              Agrega uno o más tipos de cilindros a la venta
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="cylinder-type">Tipo de Cilindro</Label>
-              <Select
-                value={selectedCylinder}
-                onValueChange={(value) =>
-                  setSelectedCylinder(value as CylinderType)
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona el tipo de cilindro" />
-                </SelectTrigger>
-                <SelectContent>
-                  {assignedCylinders.map((cylinder) => (
-                    <SelectItem key={cylinder.id} value={cylinder.type}>
-                      {cylinder.type} - {cylinder.brand} ({cylinder.color}) -
-                      Disponibles: {cylinder.quantity}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="cylinder-type">Tipo de Cilindro</Label>
+                <Select
+                  value={selectedCylinder}
+                  onValueChange={(value) =>
+                    setSelectedCylinder(value as CylinderType)
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecciona el tipo de cilindro" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assignedCylinders.map((cylinder) => (
+                      <SelectItem key={cylinder.id} value={cylinder.type}>
+                        {cylinder.type} - {cylinder.brand} ({cylinder.color}) -
+                        Disponibles: {cylinder.quantity}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="quantity">Cantidad</Label>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setCylinderQuantity(Math.max(1, cylinderQuantity - 1))
-                  }
-                  disabled={cylinderQuantity <= 1}
-                >
-                  -
-                </Button>
-                <Input
-                  id="quantity"
-                  type="number"
-                  min="1"
-                  value={cylinderQuantity}
-                  onChange={(e) =>
-                    setCylinderQuantity(parseInt(e.target.value) || 1)
-                  }
-                  className="w-20 text-center"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCylinderQuantity(cylinderQuantity + 1)}
-                >
-                  +
-                </Button>
+              <div className="space-y-2">
+                <Label htmlFor="quantity">Cantidad</Label>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setCylinderQuantity(Math.max(1, cylinderQuantity - 1))
+                    }
+                    disabled={cylinderQuantity <= 1}
+                  >
+                    -
+                  </Button>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    min="1"
+                    value={cylinderQuantity}
+                    onChange={(e) =>
+                      setCylinderQuantity(parseInt(e.target.value) || 1)
+                    }
+                    className="w-20 text-center"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCylinderQuantity(cylinderQuantity + 1)}
+                  >
+                    +
+                  </Button>
+                </div>
               </div>
             </div>
+
+            <Button
+              onClick={addProduct}
+              disabled={!selectedCylinder || cylinderQuantity <= 0}
+              className="w-full"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Agregar Producto
+            </Button>
           </CardContent>
         </Card>
+
+        {/* Selected Products */}
+        {selectedProducts.length > 0 && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <ShoppingCart className="h-4 w-4 text-green-600" />
+                Productos Seleccionados ({selectedProducts.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {selectedProducts.map((product, index) => (
+                <div
+                  key={`${product.type}-${index}`}
+                  className="flex items-center justify-between p-3 border rounded-lg bg-green-50"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                      <Package className="h-4 w-4 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">
+                        Cilindro {product.type}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Roscogas - Naranja
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          updateProductQuantity(index, product.quantity - 1)
+                        }
+                        className="h-8 w-8 p-0"
+                      >
+                        -
+                      </Button>
+                      <span className="w-8 text-center text-sm font-medium">
+                        {product.quantity}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          updateProductQuantity(index, product.quantity + 1)
+                        }
+                        className="h-8 w-8 p-0"
+                      >
+                        +
+                      </Button>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="font-bold text-green-600">
+                        ${product.total.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        ${product.unitPrice} c/u
+                      </p>
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeProduct(index)}
+                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Pricing */}
         <Card>
@@ -491,13 +641,24 @@ export default function SalesPage() {
                   ${totalAmount.toLocaleString()}
                 </span>
               </div>
-              {selectedCylinder && (
+
+              {selectedProducts.length > 0 && (
+                <div className="mt-3 space-y-1">
+                  <p className="text-sm font-medium text-green-800">
+                    Desglose:
+                  </p>
+                  {selectedProducts.map((product, index) => (
+                    <p key={index} className="text-sm text-green-600">
+                      {product.quantity}x Cilindro {product.type} = $
+                      {product.total.toLocaleString()}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {selectedProducts.length === 0 && (
                 <p className="text-sm text-green-600 mt-1">
-                  {cylinderQuantity} x $
-                  {editingPrices
-                    ? tempPrices[selectedCylinder as CylinderType]
-                    : customerPrices[selectedCylinder as CylinderType]}{' '}
-                  = ${totalAmount.toLocaleString()}
+                  Agrega productos para ver el total
                 </p>
               )}
             </div>
@@ -514,7 +675,7 @@ export default function SalesPage() {
               !customerName ||
               !customerLocation ||
               !transactionType ||
-              !selectedCylinder ||
+              selectedProducts.length === 0 ||
               !paymentMethod
             }
           >
