@@ -42,29 +42,29 @@ export default async function ReportsPage() {
     <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
               Reportes y Análisis
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-sm lg:text-lg text-muted-foreground">
               Análisis detallado del rendimiento del negocio
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <Filter className="mr-2 h-4 w-4" />
-              Filtros
+              <span className="text-sm">Filtros</span>
             </Button>
-            <Button>
+            <Button size="sm" className="w-full sm:w-auto">
               <Download className="mr-2 h-4 w-4" />
-              Exportar
+              <span className="text-sm">Exportar</span>
             </Button>
           </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
