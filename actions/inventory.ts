@@ -1,689 +1,508 @@
 'use server';
 
 import { createClient } from '@/utils/supabase/server';
-import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import {
-  inventoryFullSchema,
-  inventoryFullUpdateSchema,
-  inventoryEmptySchema,
-  inventoryEmptyUpdateSchema,
-  inventoryAlertSchema,
-  inventoryAlertUpdateSchema,
-  inventoryOperationSchema,
-} from '@/lib/validations';
-import type {
   InventoryFull,
   InventoryEmpty,
-  InventoryAlert,
+  InventoryFullInsert,
+  InventoryEmptyInsert,
+  InventoryFullUpdate,
+  InventoryEmptyUpdate,
   InventorySummary,
-  LowStockAlert,
   InventoryStats,
+  LowStockAlert,
+  CylinderType,
+  InventoryOperation,
 } from '@/types/inventory';
 
 // =====================================================
-// SERVER ACTIONS PARA INVENTARIO DE CILINDROS LLENOS
+// FUNCIONES DE AUTENTICACIÓN Y AUTORIZACIÓN
 // =====================================================
 
-export async function getFullInventory(): Promise<{
-  data: InventoryFull[] | null;
-  error: string | null;
-}> {
-  try {
-    const supabase = await createClient();
+async function getAuthenticatedUser() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
-    const { data, error } = await supabase
-      .from('inventory_full')
-      .select('*')
-      .order('type');
-
-    if (error) {
-      console.error('Error fetching full inventory:', error);
-      return {
-        data: null,
-        error: 'Error al obtener inventario de cilindros llenos',
-      };
-    }
-
-    return { data, error: null };
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    return { data: null, error: 'Error interno del servidor' };
+  if (error || !user) {
+    redirect('/log-in');
   }
+
+  return user;
 }
 
-export async function updateFullInventory(formData: FormData) {
-  try {
-    const supabase = await createClient();
+async function checkAdminRole() {
+  const user = await getAuthenticatedUser();
+  const supabase = await createClient();
 
-    // Verificar autenticación
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
-      redirect('/log-in?error=No autorizado');
-    }
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
 
-    // Verificar que el usuario sea jefe
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+  if (!profile || profile.role !== 'jefe') {
+    redirect('/dashboard/vendor');
+  }
 
-    if (!profile || profile.role !== 'jefe') {
-      redirect('/dashboard?error=Solo los jefes pueden gestionar inventario');
-    }
+  return user;
+}
 
-    const type = formData.get('type') as string;
-    const quantity = parseInt(formData.get('quantity') as string);
-    const unit_cost = parseFloat(formData.get('unit_cost') as string);
+// =====================================================
+// INVENTARIO DE CILINDROS LLENOS
+// =====================================================
 
-    // Validar datos
-    const validation = inventoryFullSchema.safeParse({
-      type,
-      quantity,
-      unit_cost,
+export async function getInventoryFull(): Promise<InventoryFull[]> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('inventory_full')
+    .select('*')
+    .order('type');
+
+  if (error) {
+    console.error('Error fetching full inventory:', error);
+    throw new Error('Error al obtener inventario de cilindros llenos');
+  }
+
+  return data || [];
+}
+
+export async function updateInventoryFull(
+  type: CylinderType,
+  updates: InventoryFullUpdate
+): Promise<InventoryFull> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('inventory_full')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('type', type)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating full inventory:', error);
+    throw new Error('Error al actualizar inventario de cilindros llenos');
+  }
+
+  revalidatePath('/dashboard/admin/inventory');
+  return data;
+}
+
+export async function addInventoryFull(
+  insert: InventoryFullInsert
+): Promise<InventoryFull> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('inventory_full')
+    .insert({
+      ...insert,
+      quantity: insert.quantity || 0,
+      unit_cost: insert.unit_cost || 0,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error adding full inventory:', error);
+    throw new Error('Error al agregar inventario de cilindros llenos');
+  }
+
+  revalidatePath('/dashboard/admin/inventory');
+  return data;
+}
+
+// =====================================================
+// INVENTARIO DE CILINDROS VACÍOS
+// =====================================================
+
+export async function getInventoryEmpty(): Promise<InventoryEmpty[]> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('inventory_empty')
+    .select('*')
+    .order('type, brand, color');
+
+  if (error) {
+    console.error('Error fetching empty inventory:', error);
+    throw new Error('Error al obtener inventario de cilindros vacíos');
+  }
+
+  return data || [];
+}
+
+export async function updateInventoryEmpty(
+  id: string,
+  updates: InventoryEmptyUpdate
+): Promise<InventoryEmpty> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('inventory_empty')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating empty inventory:', error);
+    throw new Error('Error al actualizar inventario de cilindros vacíos');
+  }
+
+  revalidatePath('/dashboard/admin/inventory');
+  return data;
+}
+
+export async function addInventoryEmpty(
+  insert: InventoryEmptyInsert
+): Promise<InventoryEmpty> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('inventory_empty')
+    .insert({
+      ...insert,
+      quantity: insert.quantity || 0,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error adding empty inventory:', error);
+    throw new Error('Error al agregar inventario de cilindros vacíos');
+  }
+
+  revalidatePath('/dashboard/admin/inventory');
+  return data;
+}
+
+export async function deleteInventoryEmpty(id: string): Promise<void> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from('inventory_empty')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error deleting empty inventory:', error);
+    throw new Error('Error al eliminar inventario de cilindros vacíos');
+  }
+
+  revalidatePath('/dashboard/admin/inventory');
+}
+
+// =====================================================
+// RESUMEN Y ESTADÍSTICAS
+// =====================================================
+
+export async function getInventorySummary(): Promise<InventorySummary[]> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  // Obtener inventario lleno
+  const { data: fullInventory, error: fullError } = await supabase
+    .from('inventory_full')
+    .select('*')
+    .order('type');
+
+  if (fullError) {
+    console.error('Error fetching full inventory for summary:', fullError);
+    throw new Error('Error al obtener resumen de inventario');
+  }
+
+  // Obtener inventario vacío agrupado
+  const { data: emptyInventory, error: emptyError } = await supabase
+    .from('inventory_empty')
+    .select('*')
+    .order('type, brand, color');
+
+  if (emptyError) {
+    console.error('Error fetching empty inventory for summary:', emptyError);
+    throw new Error('Error al obtener resumen de inventario');
+  }
+
+  // Procesar datos para crear resumen
+  const summary: InventorySummary[] = [];
+  const types: CylinderType[] = ['33lb', '40lb', '100lb'];
+
+  for (const type of types) {
+    const fullItem = fullInventory?.find((item) => item.type === type);
+    const emptyItems =
+      emptyInventory?.filter((item) => item.type === type) || [];
+
+    const emptyTotalQuantity = emptyItems.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+    const emptyBrands = emptyItems.map((item) => ({
+      brand: item.brand,
+      color: item.color,
+      quantity: item.quantity,
+    }));
+
+    summary.push({
+      product_type: type,
+      full_quantity: fullItem?.quantity || 0,
+      full_unit_cost: fullItem?.unit_cost || 0,
+      empty_total_quantity: emptyTotalQuantity,
+      empty_brands: emptyBrands,
     });
-    if (!validation.success) {
-      redirect(
-        `/dashboard/inventory?error=${encodeURIComponent('Datos inválidos')}`
-      );
-    }
-
-    const { data, error } = await supabase
-      .from('inventory_full')
-      .upsert({
-        type: validation.data.type,
-        quantity: validation.data.quantity,
-        unit_cost: validation.data.unit_cost,
-        updated_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error updating full inventory:', error);
-      redirect(
-        `/dashboard/inventory?error=${encodeURIComponent(
-          'Error al actualizar inventario'
-        )}`
-      );
-    }
-
-    revalidatePath('/dashboard/inventory');
-    redirect(
-      '/dashboard/inventory?success=Inventario actualizado exitosamente'
-    );
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    redirect(
-      `/dashboard/inventory?error=${encodeURIComponent(
-        'Error interno del servidor'
-      )}`
-    );
   }
+
+  return summary;
+}
+
+export async function getInventoryStats(): Promise<InventoryStats> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  // Obtener inventario completo
+  const { data: fullInventory, error: fullError } = await supabase
+    .from('inventory_full')
+    .select('*');
+
+  if (fullError) {
+    console.error('Error fetching full inventory for stats:', fullError);
+    throw new Error('Error al obtener estadísticas de inventario');
+  }
+
+  const { data: emptyInventory, error: emptyError } = await supabase
+    .from('inventory_empty')
+    .select('*');
+
+  if (emptyError) {
+    console.error('Error fetching empty inventory for stats:', emptyError);
+    throw new Error('Error al obtener estadísticas de inventario');
+  }
+
+  // Calcular estadísticas
+  const totalFullCylinders =
+    fullInventory?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  const totalEmptyCylinders =
+    emptyInventory?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  const totalValue =
+    fullInventory?.reduce(
+      (sum, item) => sum + item.quantity * item.unit_cost,
+      0
+    ) || 0;
+
+  // Estadísticas por tipo
+  const byType = {
+    '33lb': { full: 0, empty: 0, value: 0 },
+    '40lb': { full: 0, empty: 0, value: 0 },
+    '100lb': { full: 0, empty: 0, value: 0 },
+  };
+
+  fullInventory?.forEach((item) => {
+    byType[item.type as CylinderType].full = item.quantity;
+    byType[item.type as CylinderType].value = item.quantity * item.unit_cost;
+  });
+
+  emptyInventory?.forEach((item) => {
+    byType[item.type as CylinderType].empty += item.quantity;
+  });
+
+  return {
+    total_full_cylinders: totalFullCylinders,
+    total_empty_cylinders: totalEmptyCylinders,
+    total_value: totalValue,
+    low_stock_alerts: 0, // TODO: Implementar alertas
+    by_type: byType,
+  };
 }
 
 // =====================================================
-// SERVER ACTIONS PARA INVENTARIO DE CILINDROS VACÍOS
+// OPERACIONES DE INVENTARIO
 // =====================================================
 
-export async function getEmptyInventory(): Promise<{
-  data: InventoryEmpty[] | null;
-  error: string | null;
-}> {
+export async function performInventoryOperation(
+  operation: InventoryOperation
+): Promise<void> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
   try {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-      .from('inventory_empty')
-      .select('*')
-      .order('type, brand, color');
-
-    if (error) {
-      console.error('Error fetching empty inventory:', error);
-      return {
-        data: null,
-        error: 'Error al obtener inventario de cilindros vacíos',
-      };
-    }
-
-    return { data, error: null };
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    return { data: null, error: 'Error interno del servidor' };
-  }
-}
-
-export async function updateEmptyInventory(formData: FormData) {
-  try {
-    const supabase = await createClient();
-
-    // Verificar autenticación
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
-      redirect('/log-in?error=No autorizado');
-    }
-
-    // Verificar que el usuario sea jefe
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile || profile.role !== 'jefe') {
-      redirect('/dashboard?error=Solo los jefes pueden gestionar inventario');
-    }
-
-    const type = formData.get('type') as string;
-    const brand = formData.get('brand') as string;
-    const color = formData.get('color') as string;
-    const quantity = parseInt(formData.get('quantity') as string);
-
-    // Validar datos
-    const validation = inventoryEmptySchema.safeParse({
-      type,
-      brand,
-      color,
-      quantity,
-    });
-    if (!validation.success) {
-      redirect(
-        `/dashboard/inventory?error=${encodeURIComponent('Datos inválidos')}`
-      );
-    }
-
-    const { data, error } = await supabase
-      .from('inventory_empty')
-      .upsert({
-        type: validation.data.type,
-        brand: validation.data.brand,
-        color: validation.data.color,
-        quantity: validation.data.quantity,
-        updated_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error updating empty inventory:', error);
-      redirect(
-        `/dashboard/inventory?error=${encodeURIComponent(
-          'Error al actualizar inventario'
-        )}`
-      );
-    }
-
-    revalidatePath('/dashboard/inventory');
-    redirect(
-      '/dashboard/inventory?success=Inventario actualizado exitosamente'
-    );
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    redirect(
-      `/dashboard/inventory?error=${encodeURIComponent(
-        'Error interno del servidor'
-      )}`
-    );
-  }
-}
-
-// =====================================================
-// SERVER ACTIONS PARA RESUMEN DE INVENTARIO
-// =====================================================
-
-export async function getInventorySummary(): Promise<{
-  summary: InventorySummary[] | null;
-  alerts: LowStockAlert[] | null;
-  stats: InventoryStats | null;
-  error: string | null;
-}> {
-  try {
-    const supabase = await createClient();
-
-    // Obtener resumen usando la función de la base de datos
-    const { data: summary, error: summaryError } = await supabase.rpc(
-      'get_inventory_summary'
-    );
-
-    if (summaryError) {
-      console.error('Error fetching inventory summary:', summaryError);
-      return {
-        summary: null,
-        alerts: null,
-        stats: null,
-        error: 'Error al obtener resumen de inventario',
-      };
-    }
-
-    // Obtener alertas de stock bajo
-    const { data: alerts, error: alertsError } = await supabase.rpc(
-      'check_low_stock_alerts'
-    );
-
-    if (alertsError) {
-      console.error('Error fetching low stock alerts:', alertsError);
-    }
-
-    // Calcular estadísticas
-    const totalFullCylinders =
-      summary?.reduce(
-        (sum: number, item: any) => sum + item.full_quantity,
-        0
-      ) || 0;
-    const totalEmptyCylinders =
-      summary?.reduce(
-        (sum: number, item: any) => sum + item.empty_total_quantity,
-        0
-      ) || 0;
-    const totalValue =
-      summary?.reduce(
-        (sum: number, item: any) =>
-          sum + item.full_quantity * item.full_unit_cost,
-        0
-      ) || 0;
-
-    const stats: InventoryStats = {
-      total_full_cylinders: totalFullCylinders,
-      total_empty_cylinders: totalEmptyCylinders,
-      total_value: totalValue,
-      low_stock_alerts: alerts?.length || 0,
-      by_type:
-        summary?.reduce((acc: any, item: any) => {
-          acc[item.product_type] = {
-            full: item.full_quantity,
-            empty: item.empty_total_quantity,
-            value: item.full_quantity * item.full_unit_cost,
-          };
-          return acc;
-        }, {}) || {},
-    };
-
-    return {
-      summary: summary || [],
-      alerts: alerts || [],
-      stats,
-      error: null,
-    };
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    return {
-      summary: null,
-      alerts: null,
-      stats: null,
-      error: 'Error interno del servidor',
-    };
-  }
-}
-
-// =====================================================
-// SERVER ACTIONS PARA ALERTAS DE INVENTARIO
-// =====================================================
-
-export async function getInventoryAlerts(): Promise<{
-  alerts: InventoryAlert[] | null;
-  low_stock_alerts: LowStockAlert[] | null;
-  error: string | null;
-}> {
-  try {
-    const supabase = await createClient();
-
-    // Verificar autenticación
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return { alerts: null, low_stock_alerts: null, error: 'No autorizado' };
-    }
-
-    // Verificar que el usuario sea jefe
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile || profile.role !== 'jefe') {
-      return {
-        alerts: null,
-        low_stock_alerts: null,
-        error: 'Solo los jefes pueden ver alertas',
-      };
-    }
-
-    // Obtener alertas activas
-    const { data: alerts, error: alertsError } = await supabase
-      .from('inventory_alerts')
-      .select('*')
-      .eq('is_active', true)
-      .order('type, product_type');
-
-    if (alertsError) {
-      console.error('Error fetching inventory alerts:', alertsError);
-      return {
-        alerts: null,
-        low_stock_alerts: null,
-        error: 'Error al obtener alertas',
-      };
-    }
-
-    // Obtener alertas de stock bajo actuales
-    const { data: lowStockAlerts, error: lowStockError } = await supabase.rpc(
-      'check_low_stock_alerts'
-    );
-
-    if (lowStockError) {
-      console.error('Error fetching low stock alerts:', lowStockError);
-    }
-
-    return {
-      alerts: alerts || [],
-      low_stock_alerts: lowStockAlerts || [],
-      error: null,
-    };
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    return {
-      alerts: null,
-      low_stock_alerts: null,
-      error: 'Error interno del servidor',
-    };
-  }
-}
-
-export async function createInventoryAlert(formData: FormData) {
-  try {
-    const supabase = await createClient();
-
-    // Verificar autenticación
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
-      redirect('/log-in?error=No autorizado');
-    }
-
-    // Verificar que el usuario sea jefe
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile || profile.role !== 'jefe') {
-      redirect('/dashboard?error=Solo los jefes pueden crear alertas');
-    }
-
-    const type = formData.get('type') as string;
-    const product_type = formData.get('product_type') as string;
-    const brand = formData.get('brand') as string;
-    const color = formData.get('color') as string;
-    const min_threshold = parseInt(formData.get('min_threshold') as string);
-    const is_active = formData.get('is_active') === 'true';
-
-    // Validar datos
-    const validation = inventoryAlertSchema.safeParse({
-      type,
-      product_type,
-      brand: brand || undefined,
-      color: color || undefined,
-      min_threshold,
-      is_active,
-    });
-
-    if (!validation.success) {
-      redirect(
-        `/dashboard/inventory/alerts?error=${encodeURIComponent(
-          'Datos inválidos'
-        )}`
-      );
-    }
-
-    const { data, error } = await supabase
-      .from('inventory_alerts')
-      .insert({
-        type: validation.data.type,
-        product_type: validation.data.product_type,
-        brand: validation.data.brand,
-        color: validation.data.color,
-        min_threshold: validation.data.min_threshold,
-        is_active: validation.data.is_active ?? true,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating inventory alert:', error);
-      redirect(
-        `/dashboard/inventory/alerts?error=${encodeURIComponent(
-          'Error al crear alerta'
-        )}`
-      );
-    }
-
-    revalidatePath('/dashboard/inventory/alerts');
-    redirect('/dashboard/inventory/alerts?success=Alerta creada exitosamente');
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    redirect(
-      `/dashboard/inventory/alerts?error=${encodeURIComponent(
-        'Error interno del servidor'
-      )}`
-    );
-  }
-}
-
-// =====================================================
-// SERVER ACTIONS PARA OPERACIONES DE INVENTARIO
-// =====================================================
-
-export async function performInventoryOperation(formData: FormData) {
-  try {
-    const supabase = await createClient();
-
-    // Verificar autenticación
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
-      redirect('/log-in?error=No autorizado');
-    }
-
-    // Verificar que el usuario sea jefe
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile || profile.role !== 'jefe') {
-      redirect(
-        '/dashboard?error=Solo los jefes pueden realizar operaciones de inventario'
-      );
-    }
-
-    const type = formData.get('type') as string;
-    const inventory_type = formData.get('inventory_type') as string;
-    const product_type = formData.get('product_type') as string;
-    const brand = formData.get('brand') as string;
-    const color = formData.get('color') as string;
-    const quantity = parseInt(formData.get('quantity') as string);
-    const unit_cost = formData.get('unit_cost')
-      ? parseFloat(formData.get('unit_cost') as string)
-      : undefined;
-    const reason = formData.get('reason') as string;
-
-    // Validar datos
-    const validation = inventoryOperationSchema.safeParse({
-      type,
-      inventory_type,
-      product_type,
-      brand: brand || undefined,
-      color: color || undefined,
-      quantity,
-      unit_cost,
-      reason,
-    });
-
-    if (!validation.success) {
-      redirect(
-        `/dashboard/inventory?error=${encodeURIComponent('Datos inválidos')}`
-      );
-    }
-
-    const {
-      type: operationType,
-      inventory_type: invType,
-      product_type: prodType,
-      brand: opBrand,
-      color: opColor,
-      quantity: opQuantity,
-      unit_cost: opUnitCost,
-      reason: opReason,
-    } = validation.data;
-
-    // Realizar operación según el tipo
-    if (invType === 'full') {
-      // Operación en inventario de cilindros llenos
-      const { data: currentData, error: fetchError } = await supabase
+    if (operation.inventory_type === 'full') {
+      const { data: currentItem, error: fetchError } = await supabase
         .from('inventory_full')
         .select('quantity, unit_cost')
-        .eq('type', prodType)
+        .eq('type', operation.product_type)
         .single();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
-        // PGRST116 = no rows returned
-        console.error('Error fetching current inventory:', fetchError);
-        redirect(
-          `/dashboard/inventory?error=${encodeURIComponent(
-            'Error al obtener inventario actual'
-          )}`
-        );
+        throw new Error(`Error al obtener inventario: ${fetchError.message}`);
       }
 
-      const currentQuantity = currentData?.quantity || 0;
-      const currentUnitCost = currentData?.unit_cost || 0;
+      if (!currentItem) {
+        // Si no existe, crear nuevo registro
+        await addInventoryFull({
+          type: operation.product_type,
+          quantity: operation.quantity,
+          unit_cost: operation.unit_cost || 0,
+        });
+        return;
+      }
 
       let newQuantity: number;
-      let newUnitCost = opUnitCost || currentUnitCost;
-
-      switch (operationType) {
+      switch (operation.type) {
         case 'add':
-          newQuantity = currentQuantity + opQuantity;
+          newQuantity = currentItem.quantity + operation.quantity;
           break;
         case 'subtract':
-          newQuantity = Math.max(0, currentQuantity - opQuantity);
+          newQuantity = Math.max(0, currentItem.quantity - operation.quantity);
           break;
         case 'set':
-          newQuantity = opQuantity;
+          newQuantity = operation.quantity;
           break;
         default:
-          redirect(
-            `/dashboard/inventory?error=${encodeURIComponent(
-              'Tipo de operación no válido'
-            )}`
-          );
+          throw new Error('Tipo de operación no válido');
       }
 
-      const { error: updateError } = await supabase
-        .from('inventory_full')
-        .upsert({
-          type: prodType,
-          quantity: newQuantity,
-          unit_cost: newUnitCost,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (updateError) {
-        console.error('Error updating full inventory:', updateError);
-        redirect(
-          `/dashboard/inventory?error=${encodeURIComponent(
-            'Error al actualizar inventario'
-          )}`
-        );
-      }
-    } else {
-      // Operación en inventario de cilindros vacíos
-      const { data: currentData, error: fetchError } = await supabase
+      await updateInventoryFull(operation.product_type, {
+        quantity: newQuantity,
+        unit_cost:
+          operation.unit_cost !== undefined
+            ? operation.unit_cost
+            : currentItem.unit_cost,
+      });
+    } else if (operation.inventory_type === 'empty') {
+      // Para cilindros vacíos, necesitamos buscar por tipo, marca y color
+      const { data: currentItem, error: fetchError } = await supabase
         .from('inventory_empty')
-        .select('quantity')
-        .eq('type', prodType)
-        .eq('brand', opBrand)
-        .eq('color', opColor)
+        .select('id, quantity')
+        .eq('type', operation.product_type)
+        .eq('brand', operation.brand || 'Roscogas')
+        .eq('color', operation.color || 'Naranja')
         .single();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error('Error fetching current empty inventory:', fetchError);
-        redirect(
-          `/dashboard/inventory?error=${encodeURIComponent(
-            'Error al obtener inventario actual'
-          )}`
+        throw new Error(
+          `Error al obtener inventario vacío: ${fetchError.message}`
         );
       }
 
-      const currentQuantity = currentData?.quantity || 0;
+      if (!currentItem) {
+        // Si no existe, crear nuevo registro
+        await addInventoryEmpty({
+          type: operation.product_type,
+          brand: operation.brand || 'Roscogas',
+          color: operation.color || 'Naranja',
+          quantity: operation.quantity,
+        });
+        return;
+      }
 
       let newQuantity: number;
-
-      switch (operationType) {
+      switch (operation.type) {
         case 'add':
-          newQuantity = currentQuantity + opQuantity;
+          newQuantity = currentItem.quantity + operation.quantity;
           break;
         case 'subtract':
-          newQuantity = Math.max(0, currentQuantity - opQuantity);
+          newQuantity = Math.max(0, currentItem.quantity - operation.quantity);
           break;
         case 'set':
-          newQuantity = opQuantity;
+          newQuantity = operation.quantity;
           break;
         default:
-          redirect(
-            `/dashboard/inventory?error=${encodeURIComponent(
-              'Tipo de operación no válido'
-            )}`
-          );
+          throw new Error('Tipo de operación no válido');
       }
 
-      const { error: updateError } = await supabase
-        .from('inventory_empty')
-        .upsert({
-          type: prodType,
-          brand: opBrand!,
-          color: opColor!,
-          quantity: newQuantity,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (updateError) {
-        console.error('Error updating empty inventory:', updateError);
-        redirect(
-          `/dashboard/inventory?error=${encodeURIComponent(
-            'Error al actualizar inventario'
-          )}`
-        );
-      }
+      await updateInventoryEmpty(currentItem.id, {
+        quantity: newQuantity,
+      });
     }
 
-    revalidatePath('/dashboard/inventory');
-    redirect(
-      `/dashboard/inventory?success=${encodeURIComponent(
-        'Operación realizada exitosamente'
-      )}`
-    );
+    revalidatePath('/dashboard/admin/inventory');
   } catch (error) {
-    console.error('Unexpected error:', error);
-    redirect(
-      `/dashboard/inventory?error=${encodeURIComponent(
-        'Error interno del servidor'
-      )}`
+    console.error('Error performing inventory operation:', error);
+    throw new Error(
+      `Error al realizar operación de inventario: ${
+        error instanceof Error ? error.message : 'Error desconocido'
+      }`
     );
   }
+}
+
+// =====================================================
+// ALERTAS DE STOCK BAJO
+// =====================================================
+
+export async function getLowStockAlerts(): Promise<LowStockAlert[]> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  // TODO: Implementar sistema de alertas
+  // Por ahora retornamos array vacío
+  return [];
+}
+
+// =====================================================
+// UTILIDADES
+// =====================================================
+
+export async function initializeInventory(): Promise<void> {
+  await checkAdminRole();
+  const supabase = await createClient();
+
+  // Verificar si ya existe inventario
+  const { data: existingFull } = await supabase
+    .from('inventory_full')
+    .select('id')
+    .limit(1);
+
+  if (existingFull && existingFull.length > 0) {
+    return; // Ya está inicializado
+  }
+
+  // Inicializar inventario lleno
+  const fullTypes: CylinderType[] = ['33lb', '40lb', '100lb'];
+  for (const type of fullTypes) {
+    await addInventoryFull({
+      type,
+      quantity: 0,
+      unit_cost: 0,
+    });
+  }
+
+  // Inicializar inventario vacío con todas las marcas
+  const brands = [
+    { brand: 'Roscogas', color: 'Naranja' },
+    { brand: 'Gasan', color: 'Azul' },
+    { brand: 'Gaspais', color: 'Verde Oscuro' },
+    { brand: 'Vidagas', color: 'Verde Claro' },
+  ];
+
+  for (const type of fullTypes) {
+    for (const { brand, color } of brands) {
+      await addInventoryEmpty({
+        type,
+        brand,
+        color,
+        quantity: 0,
+      });
+    }
+  }
+
+  revalidatePath('/dashboard/admin/inventory');
 }

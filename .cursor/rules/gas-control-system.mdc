@@ -37,9 +37,40 @@ const inventoryFull = {
 
 const inventoryEmpty = {
   type: '33lb' | '40lb' | '100lb',
-  brand: string, // Todas las marcas
-  color: string, // Todos los colores
+  brand: 'Roscogas' | 'Gasan' | 'Gaspais' | 'Vidagas' | 'Otro',
+  color: 'Naranja' | 'Azul' | 'Verde Oscuro' | 'Verde Claro', // Se asigna automáticamente según la marca
   quantity: number,
+};
+```
+
+### **Marcas y Colores de Cilindros - OBLIGATORIO**
+
+```typescript
+// ✅ DO: Usar estas marcas y colores exactos
+const cylinderBrands = {
+  'Roscogas': 'Naranja', // Marca principal, color naranja
+  'Gasan': 'Azul', // Marca secundaria, color azul
+  'Gaspais': 'Verde Oscuro', // Marca secundaria, color verde oscuro
+  'Vidagas': 'Verde Claro', // Marca secundaria, color verde claro
+};
+
+// ✅ DO: Solo Roscogas para cilindros llenos
+const fullCylinders = {
+  brand: 'Roscogas',
+  color: 'Naranja',
+  types: ['33lb', '40lb', '100lb'],
+};
+
+// ✅ DO: Todas las marcas para cilindros vacíos (color se asigna automáticamente)
+const emptyCylinders = {
+  brands: ['Roscogas', 'Gasan', 'Gaspais', 'Vidagas'],
+  // Color se asigna automáticamente según la marca seleccionada
+  brandToColor: {
+    'Roscogas': 'Naranja',
+    'Gasan': 'Azul',
+    'Gaspais': 'Verde Oscuro',
+    'Vidagas': 'Verde Claro',
+  },
 };
 ```
 
