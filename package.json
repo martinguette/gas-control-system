@@ -10,7 +10,10 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "setup:test-data": "node scripts/setup-test-data.js",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push"
   },
   "dependencies": {
     "@hookform/resolvers": "latest",

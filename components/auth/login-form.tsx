@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -24,16 +24,18 @@ import {
 } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { loginSchema, type LoginFormData } from '@/lib/validations';
-import { logIn } from '@/actions/auth';
+import { useSupabaseAuth } from '@/hooks/use-supabase-auth';
 import { useSearchParams } from 'next/navigation';
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const message = searchParams.get('message');
   const emailFromUrl = searchParams.get('email') || '';
+  const { login, authState } = useSupabaseAuth();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -42,6 +44,27 @@ export default function LoginForm() {
       password: '',
     },
   });
+
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (authState.isAuthenticated && authState.user) {
+      router.push('/dashboard');
+    }
+  }, [authState.isAuthenticated, authState.user, router]);
+
+  const onSubmit = async (data: LoginFormData) => {
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      await login(data.email, data.password);
+      // La redirección se maneja automáticamente en el useEffect
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error de autenticación');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
@@ -70,8 +93,18 @@ export default function LoginForm() {
               <AlertDescription>{message}</AlertDescription>
             </Alert>
           )}
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <Form {...form}>
-            <form className="space-y-4" onSubmit={() => setIsSubmitting(true)}>
+            <form
+              className="space-y-4"
+              autoComplete="off"
+              data-form-type="other"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               <FormField
                 control={form.control}
                 name="email"
@@ -84,6 +117,8 @@ export default function LoginForm() {
                         type="email"
                         className="h-11"
                         disabled={isSubmitting}
+                        autoComplete="email"
+                        data-form-type="other"
                       />
                     </FormControl>
                     <FormMessage />
@@ -104,6 +139,8 @@ export default function LoginForm() {
                           type={showPassword ? 'text' : 'password'}
                           className="h-11 pr-10"
                           disabled={isSubmitting}
+                          autoComplete="current-password"
+                          data-form-type="other"
                         />
                         <Button
                           type="button"
@@ -128,7 +165,6 @@ export default function LoginForm() {
 
               <Button
                 type="submit"
-                formAction={logIn}
                 className="w-full h-11 text-base font-medium"
                 disabled={isSubmitting}
               >

@@ -43,16 +43,16 @@ export default async function AdminDashboard() {
     redirect('/dashboard/vendor');
   }
 
-  // Resolve full name from metadata, fallback to profiles
+  // Resolve full name from metadata, fallback to users table
   let fullName = (user.user_metadata as Record<string, unknown> | null)
     ?.full_name as string | undefined;
   if (!fullName) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('full_name')
+    const { data: userData } = await supabase
+      .from('users')
+      .select('name')
       .eq('id', user.id)
       .single();
-    fullName = profile?.full_name;
+    fullName = userData?.name;
   }
 
   return (
