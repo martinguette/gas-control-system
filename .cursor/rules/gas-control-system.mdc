@@ -10,15 +10,19 @@ alwaysApply: true
 
 ### **Roles y Acceso Diferenciado**
 
-- **👨‍💼 JEFE (Admin)**: Acceso completo desde PC/tablet/móvil
+- **👨‍💼 JEFE (Admin)**: Acceso completo desde cualquier dispositivo
 
+  - **PC/Desktop:** Dashboard completo con sidebar, tablas detalladas, reportes avanzados
+  - **Tablet:** Interfaz adaptada con navegación táctil, cards optimizadas
+  - **Móvil:** Versión compacta con funciones esenciales, navegación por tabs
   - Panel "En Ruta" para monitoreo en tiempo real
   - Gestión completa de inventario
   - Configuración de precios personalizados
   - Registro de llegadas de camión
   - Todos los reportes y análisis
 
-- **👨‍💻 VENDEDOR**: Solo acceso móvil con funciones limitadas
+- **👨‍💻 VENDEDOR**: Solo acceso móvil optimizado con funciones limitadas
+  - **Móvil:** Interfaz táctil optimizada, formularios simplificados
   - Registro de ventas únicamente
   - Registro de gastos operativos
   - Visualización solo de sus propias transacciones
@@ -138,6 +142,82 @@ const dailyMargin = totalSales - totalExpenses;
 const profitPerCylinder = salePrice - purchasePrice;
 ```
 
+## 📱 **Interfaces Diferenciadas por Rol y Dispositivo**
+
+### **👨‍💼 Interfaz del Jefe - Multi-dispositivo**
+
+```tsx
+// ✅ DO: Interfaz responsive para jefe
+<div className="min-h-screen bg-background">
+  {/* Desktop: Sidebar lateral */}
+  <div className="hidden lg:block fixed inset-y-0 left-0 w-64 bg-sidebar border-r">
+    <Sidebar />
+  </div>
+
+  {/* Tablet: Navegación superior */}
+  <div className="lg:hidden">
+    <TopNavigation />
+  </div>
+
+  {/* Contenido principal adaptativo */}
+  <main className="lg:ml-64 p-4 lg:p-6">
+    {/* Dashboard completo en desktop, compacto en móvil */}
+  </main>
+</div>
+```
+
+### **👨‍💻 Interfaz del Vendedor - Móvil Optimizado**
+
+```tsx
+// ✅ DO: Interfaz móvil específica para vendedores
+<div className="min-h-screen bg-background pb-20">
+  {/* Header sticky */}
+  <header className="sticky top-0 z-10 bg-card border-b">
+    {/* Contenido del header */}
+  </header>
+
+  {/* Contenido principal */}
+  <main className="p-4">{/* Contenido */}</main>
+
+  {/* Navegación inferior fija */}
+  <div className="fixed bottom-0 left-0 right-0 bg-card border-t">
+    {/* Navegación táctil */}
+  </div>
+</div>
+```
+
+### **🎯 Características por Dispositivo y Rol**
+
+```typescript
+// ✅ DO: Matriz de características por dispositivo y rol
+const interfaceMatrix = {
+  jefe: {
+    desktop: {
+      layout: 'sidebar + main content';
+      features: 'full dashboard, detailed tables, advanced reports';
+      navigation: 'sidebar menu';
+    };
+    tablet: {
+      layout: 'top navigation + cards';
+      features: 'optimized cards, touch navigation, essential reports';
+      navigation: 'top tabs + bottom navigation';
+    };
+    mobile: {
+      layout: 'compact tabs + bottom navigation';
+      features: 'essential functions, quick actions, simplified reports';
+      navigation: 'bottom tabs + hamburger menu';
+    };
+  };
+  vendedor: {
+    mobile: {
+      layout: 'full screen mobile optimized';
+      features: 'sales forms, expense tracking, personal history';
+      navigation: 'bottom tabs + swipe gestures';
+    };
+  };
+};
+```
+
 ## 📱 **Interfaz Móvil - Vendedores**
 
 ### **Formulario de Ventas - Campos Obligatorios**
@@ -204,6 +284,30 @@ interface ExpenseForm {
 - Compra de vacíos: +1 vacío
 - Llegada de camión: +llenos recibidos, -vacíos entregados
 
+### **📱 Validaciones de Interfaz por Rol**
+
+```typescript
+// ✅ DO: Validaciones específicas por rol y dispositivo
+const interfaceValidations = {
+  jefe: {
+    desktop: 'full_access_all_features',
+    tablet: 'essential_features_touch_optimized',
+    mobile: 'core_functions_compact_ui',
+  };
+  vendedor: {
+    mobile: 'sales_expenses_only_own_data',
+    desktop: 'access_denied_redirect_mobile',
+    tablet: 'access_denied_redirect_mobile',
+  };
+};
+
+// ✅ DO: Redirección automática por rol
+const roleBasedRouting = {
+  jefe: 'dashboard_admin',
+  vendedor: 'dashboard_vendor_mobile',
+};
+```
+
 ## 📊 **Sistema de Metas**
 
 ### **Unidad de Medida: Kilogramos**
@@ -246,3 +350,379 @@ const conversions = {
 3. **Gastos operativos** (controlados por vendedor)
 
 El sistema debe transformar datos operativos en **información accionable** para tomar mejores decisiones comerciales y operativas.
+
+## 🎯 **Mejores Prácticas para Interfaces Diferenciadas**
+
+### **📱 Desarrollo Responsive**
+
+```typescript
+// ✅ DO: Hook para detectar dispositivo y rol
+const useDeviceAndRole = () => {
+  const { user } = useAuth();
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isTablet = useMediaQuery('(min-width: 769px) and (max-width: 1024px)');
+  const isDesktop = useMediaQuery('(min-width: 1025px)');
+
+  return {
+    device: { isMobile, isTablet, isDesktop },
+    role: user?.role,
+    interface: getInterfaceConfig(user?.role, {
+      isMobile,
+      isTablet,
+      isDesktop,
+    }),
+  };
+};
+
+// ✅ DO: Configuración de interfaz por rol y dispositivo
+const getInterfaceConfig = (role: string, device: DeviceInfo) => {
+  if (role === 'vendedor') {
+    return {
+      layout: 'mobile_only',
+      features: ['sales', 'expenses', 'personal_history'],
+      navigation: 'bottom_tabs',
+    };
+  }
+
+  if (role === 'jefe') {
+    if (device.isDesktop) {
+      return {
+        layout: 'sidebar_main',
+        features: ['full_dashboard', 'detailed_tables', 'advanced_reports'],
+        navigation: 'sidebar_menu',
+      };
+    }
+    if (device.isTablet) {
+      return {
+        layout: 'top_nav_cards',
+        features: ['optimized_cards', 'essential_reports'],
+        navigation: 'top_tabs',
+      };
+    }
+    if (device.isMobile) {
+      return {
+        layout: 'compact_tabs',
+        features: ['essential_functions', 'quick_actions'],
+        navigation: 'bottom_tabs',
+      };
+    }
+  }
+};
+```
+
+### **🔐 Validación de Acceso por Dispositivo**
+
+```typescript
+// ✅ DO: Middleware de validación de acceso
+const validateDeviceAccess = (role: string, device: DeviceInfo) => {
+  if (role === 'vendedor' && !device.isMobile) {
+    throw new Error(
+      'Vendedores solo pueden acceder desde dispositivos móviles'
+    );
+  }
+
+  if (role === 'jefe') {
+    // Jefe puede acceder desde cualquier dispositivo
+    return true;
+  }
+
+  return false;
+};
+```
+
+## 📋 **Casos de Uso Críticos - Implementación**
+
+### **🔄 Casos de Uso del Sistema (CRÍTICOS)**
+
+#### **CU-S001: Actualizar Inventario Automáticamente**
+
+```typescript
+// ✅ DO: Operaciones que SÍ afectan inventario
+const inventoryOperations = {
+  'intercambio': { full: -1, empty: +1 },
+  'completa': { full: -1, empty: 0 },
+  'venta_vacios': { full: 0, empty: -1 },
+  'compra_vacios': { full: 0, empty: +1 },
+  'truck_arrival': { full: '+received', empty: '-delivered' },
+};
+
+// ❌ DON'T: Operaciones que NO afectan inventario
+const nonInventoryOperations = [
+  'assignment', // Solo cambia a STANDBY
+  'return', // Solo cambia estado
+  'standby', // No afecta inventario
+];
+```
+
+#### **CU-S002: Calcular Rentabilidad Automáticamente**
+
+```typescript
+// ✅ DO: Cálculo preciso de rentabilidad
+const calculateProfitability = {
+  grossProfit: salePrice - purchasePrice,
+  netProfit: grossProfit - operationalExpenses,
+  margin: (netProfit / salePrice) * 100,
+  dailyMargin: totalSales - totalExpenses,
+};
+```
+
+#### **CU-S003: Gestionar Estados de Cilindros**
+
+```typescript
+// ✅ DO: Estados y transiciones válidas
+type CylinderStatus =
+  | 'available' // En inventario general
+  | 'standby' // Asignado a vendedor (no afecta inventario)
+  | 'sold' // Vendido (actualiza inventario)
+  | 'returned'; // Devuelto al final del día
+
+const stateTransitions = {
+  'available': ['standby', 'sold'],
+  'standby': ['sold', 'returned'],
+  'sold': [], // Estado final
+  'returned': ['available'], // Al final del día
+};
+```
+
+### **👨‍💼 Casos de Uso del Jefe (ALTA PRIORIDAD)**
+
+#### **CU-J001: Gestionar Inventario**
+
+```typescript
+// ✅ DO: Validaciones para ajustes manuales
+const validateInventoryAdjustment = {
+  quantity: 'number > 0',
+  reason: 'string.length > 10',
+  timestamp: 'Date.now()',
+  authorizedBy: 'jefe_id',
+};
+```
+
+#### **CU-J002: Asignar Cilindros Diarios**
+
+```typescript
+// ✅ DO: Proceso de asignación diaria
+interface DailyAssignment {
+  vendorId: string;
+  date: Date;
+  assignedCylinders: {
+    '33lb': number;
+    '40lb': number;
+    '100lb': number;
+  };
+  status: 'assigned' | 'in_progress' | 'completed';
+}
+```
+
+#### **CU-J003: Monitorear Panel "En Ruta"**
+
+```typescript
+// ✅ DO: Estructura de card optimizada
+interface VendorCard {
+  vendorName: string;
+  assignedRoute: string;
+  cylindersAssigned: {
+    '33lb': number;
+    '40lb': number;
+    '100lb': number;
+  };
+  cylindersSold: {
+    '33lb': number;
+    '40lb': number;
+    '100lb': number;
+  };
+  cylindersRemaining: {
+    '33lb': number;
+    '40lb': number;
+    '100lb': number;
+  };
+  totalSales: number; // Del día
+  totalExpenses: number; // Del día
+  dailyMargin: number; // Ventas - Gastos
+  progressPercentage: number; // Visual
+  lastUpdate: timestamp;
+  status: 'active' | 'inactive' | 'completed';
+}
+```
+
+#### **CU-J004: Registrar Llegada de Camión**
+
+```typescript
+// ✅ DO: Estructura completa de llegada
+interface TruckArrival {
+  cylindersReceived: {
+    '33lb': number;
+    '40lb': number;
+    '100lb': number;
+  };
+  cylindersDelivered: {
+    brand: string;
+    color: string;
+    type: string;
+    quantity: number;
+  }[];
+  unitCost: decimal; // CRÍTICO: Define rentabilidad
+  totalInvoice: decimal;
+  freightCost: decimal; // Se paga por separado
+  timestamp: Date;
+}
+```
+
+#### **CU-J008: Autorizar Ediciones de Vendedores**
+
+```typescript
+// ✅ DO: Flujo de autorización completo
+const authorizationFlow = {
+  notification: 'solicitud_pendiente',
+  review: 'datos_originales_vs_propuestos',
+  decision: 'aprobar_rechazar_con_comentarios',
+  execution: 'actualizacion_automatica_si_aprobado',
+  audit: 'registro_completo_de_decision',
+};
+```
+
+#### **CU-J009: Acceso Multi-dispositivo**
+
+```typescript
+// ✅ DO: Interfaces específicas por dispositivo
+interface DeviceOptimization {
+  desktop: {
+    layout: 'sidebar + main content';
+    features: 'full dashboard, detailed tables, advanced reports';
+    navigation: 'sidebar menu';
+  };
+  tablet: {
+    layout: 'top navigation + cards';
+    features: 'optimized cards, touch navigation, essential reports';
+    navigation: 'top tabs + bottom navigation';
+  };
+  mobile: {
+    layout: 'compact tabs + bottom navigation';
+    features: 'essential functions, quick actions, simplified reports';
+    navigation: 'bottom tabs + hamburger menu';
+  };
+}
+```
+
+### **👨‍💻 Casos de Uso del Vendedor (ALTA PRIORIDAD)**
+
+#### **CU-V001: Registrar Venta**
+
+```typescript
+// ✅ DO: Estructura completa de venta
+interface SaleForm {
+  customerName: string; // Obligatorio
+  customerPhone?: string; // Opcional
+  customerLocation: string; // Obligatorio
+  productType: '33lb' | '40lb' | '100lb';
+  saleType: 'intercambio' | 'completa' | 'venta_vacios' | 'compra_vacios';
+  emptyBrand?: string; // Para intercambios
+  emptyColor?: string; // Para intercambios
+  amountCharged: decimal;
+  paymentMethod: 'efectivo' | 'transferencia' | 'credito';
+  timestamp: Date; // Automático
+}
+```
+
+#### **CU-V002: Registrar Gasto**
+
+```typescript
+// ✅ DO: Categorización clara de gastos
+type ExpenseType =
+  | 'gasolina'
+  | 'comida'
+  | 'reparaciones'
+  | 'imprevistos'
+  | 'otros';
+
+interface ExpenseForm {
+  type: ExpenseType;
+  amount: decimal;
+  description: string;
+  timestamp: Date;
+  vendorId: string;
+}
+```
+
+### **🚨 Validaciones Críticas del Sistema**
+
+#### **Inventario**
+
+```typescript
+// ✅ DO: Validaciones exhaustivas
+const validateInventory = {
+  neverNegative: 'quantity >= 0',
+  checkAvailability: 'beforeSale',
+  maintainConsistency: 'betweenStates',
+  auditChanges: 'allModifications',
+};
+```
+
+#### **Transacciones**
+
+```typescript
+// ✅ DO: Validaciones de transacciones
+const validateTransaction = {
+  inventory: 'checkAvailability',
+  customer: 'validateRequiredFields',
+  amounts: 'validatePositiveNumbers',
+  types: 'validateSaleType',
+  permissions: 'checkUserRole',
+};
+```
+
+### **📊 Orden de Implementación Crítico**
+
+#### **🔥 Fase 1: Base Crítica (Semanas 1-2)**
+
+1. CU-S001: Actualizar Inventario
+2. CU-S002: Calcular Rentabilidad
+3. CU-S006: Gestionar Estados de Cilindros
+4. CU-J001: Gestionar Inventario
+
+#### **⚡ Fase 2: Operación Diaria (Semanas 3-4)**
+
+1. CU-J002: Asignar Cilindros Diarios
+2. CU-V001: Registrar Venta
+3. CU-V002: Registrar Gasto
+4. CU-J003: Monitorear Panel "En Ruta"
+
+#### **📊 Fase 3: Control y Análisis (Semanas 5-6)**
+
+1. CU-J004: Registrar Llegada de Camión
+2. CU-J005: Generar Reportes Financieros
+3. CU-S003: Resetear Datos Diarios
+
+#### **🎯 Fase 4: Funciones Avanzadas (Semanas 7-8)**
+
+1. CU-J006: Configurar y Seguir Metas
+2. CU-J007: Gestionar Precios Personalizados
+3. CU-J008: Autorizar Ediciones de Vendedores
+4. CU-J009: Acceso Multi-dispositivo
+5. CU-V003: Solicitar Edición
+
+#### **🔧 Fase 5: Optimización (Semanas 9-10)**
+
+1. CU-V005: Iniciar Sesión Móvil
+2. CU-V006: Sincronizar Datos Offline
+3. CU-S004: Generar Alertas
+4. CU-S005: Validar Transacciones
+
+### **🎯 Métricas de Éxito**
+
+#### **Rendimiento**
+
+- Carga inicial: ≤ 3 segundos
+- Registro de ventas: ≤ 2 segundos
+- Actualización de dashboard: ≤ 1 segundo
+
+#### **Disponibilidad**
+
+- 99.5% uptime durante horario laboral
+- Sincronización offline: 99%+ exitosa
+
+#### **Usabilidad**
+
+- 100% adopción de vendedores en 30 días
+- 0 instancias de inventario negativo
+- Tiempo de capacitación: ≤ 2 horas

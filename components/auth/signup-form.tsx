@@ -100,6 +100,8 @@ export default function SignUpForm() {
           <Form {...form}>
             <form
               className="space-y-4"
+              autoComplete="off"
+              data-form-type="other"
               onSubmit={form.handleSubmit(async (data) => {
                 try {
                   setIsLoading(true);
@@ -136,6 +138,8 @@ export default function SignUpForm() {
                         placeholder="Juan Pérez"
                         className="h-11"
                         disabled={isLoading}
+                        autoComplete="name"
+                        data-form-type="other"
                       />
                     </FormControl>
                     <FormMessage />
@@ -159,6 +163,8 @@ export default function SignUpForm() {
                         placeholder="usuario@gaspardo.com"
                         className="h-11"
                         disabled={isLoading}
+                        autoComplete="email"
+                        data-form-type="other"
                       />
                     </FormControl>
                     <FormMessage />
@@ -211,6 +217,8 @@ export default function SignUpForm() {
                           placeholder="••••••••"
                           className="h-11 pr-10"
                           disabled={isLoading}
+                          autoComplete="new-password"
+                          data-form-type="other"
                         />
                         <Button
                           type="button"
@@ -250,6 +258,8 @@ export default function SignUpForm() {
                           placeholder="••••••••"
                           className="h-11 pr-10"
                           disabled={isLoading}
+                          autoComplete="new-password"
+                          data-form-type="other"
                         />
                         <Button
                           type="button"

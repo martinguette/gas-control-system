@@ -19,15 +19,14 @@ import {
   Activity,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/use-auth';
-import { logOut } from '@/actions/auth';
+import { useSupabaseAuth } from '@/hooks/use-supabase-auth';
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const { authState } = useAuth();
+  const { authState, logout } = useSupabaseAuth();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -144,23 +143,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="p-3 lg:p-4 border-t border-sidebar-border">
             <div className="mb-3">
               <p className="text-xs lg:text-sm font-medium text-sidebar-foreground truncate">
-                {authState.user?.full_name}
+                {authState.user?.user_metadata?.full_name ||
+                  authState.user?.email?.split('@')[0] ||
+                  'Usuario'}
               </p>
               <p className="text-xs text-muted-foreground truncate">
                 {authState.user?.email}
               </p>
             </div>
-            <form action={logOut}>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full bg-transparent cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                type="submit"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                <span className="text-xs lg:text-sm">Cerrar Sesión</span>
-              </Button>
-            </form>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full bg-transparent cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              onClick={logout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              <span className="text-xs lg:text-sm">Cerrar Sesión</span>
+            </Button>
           </div>
         </div>
       </div>

@@ -1,0 +1,947 @@
+Crea y refina estos casos de uso segun lo que ya tienes y lo que haremos, mejora todo para un mejor flujo de trabajo y una app muy optimizada en todos los sentidos, rapida, consistente, funcional y aprueba de errores.
+
+graph TB
+    subgraph "👨‍💼 Casos de Uso - Jefe"
+        CU1[Gestionar Inventario]
+        CU2[Asignar Cilindros Diarios]
+        CU3[Monitorear En Ruta]
+        CU4[Registrar Llegada Camión]
+        CU5[Generar Reportes]
+        CU6[Configurar Metas]
+        CU7[Gestionar Precios]
+        CU8[Autorizar Ediciones]
+    end
+    
+    subgraph "👨‍💻 Casos de Uso - Vendedor"
+        CU9[Registrar Venta]
+        CU10[Registrar Gasto]
+        CU11[Solicitar Edición]
+        CU12[Ver Historial Personal]
+    end
+    
+    subgraph "🔄 Casos de Uso - Sistema"
+        CU13[Actualizar Inventario]
+        CU14[Calcular Rentabilidad]
+        CU15[Resetear Datos Diarios]
+        CU16[Generar Alertas]
+    end
+
+    Casos de uso - Vendedor :
+    # Diagramas
+
+[Caso de uso - registrar ventas](https://www.notion.so/Caso-de-uso-registrar-ventas-2450091da98c80918b4de4d67a8c5f00?pvs=21)
+
+[CU-009: USOS GENERALES (Detallado)](https://www.notion.so/CU-009-USOS-GENERALES-Detallado-23d0091da98c80088259da85dc0f77fd?pvs=21)
+
+[**Diagrama de Estados del Sistema Móvil**](https://www.notion.so/Diagrama-de-Estados-del-Sistema-M-vil-23e0091da98c8061a9fae125d5a8913c?pvs=21)
+
+[CU-010: Registrar Gasto (Detallado)](https://www.notion.so/CU-010-Registrar-Gasto-Detallado-23e0091da98c80029454eb88faa0aa6d?pvs=21)
+
+[CU-011: Solicitar Edición (Detallado)](https://www.notion.so/CU-011-Solicitar-Edici-n-Detallado-23e0091da98c80959266eae6f2243795?pvs=21)
+
+[CU-012: Ver Historial Personal (Detallado)](https://www.notion.so/CU-012-Ver-Historial-Personal-Detallado-23e0091da98c804fb32ae3cad0930d38?pvs=21)
+
+[CU-012: Ver Historial Personal (Detallado)](https://www.notion.so/CU-012-Ver-Historial-Personal-Detallado-23e0091da98c8044b102c9a3c04d3b02?pvs=21)
+
+## 📱 CU-009: Registrar Venta
+
+### **Actor:** Vendedor
+
+### **Descripción:** Registrar una venta realizada a un cliente desde la aplicación móvil
+
+### **Precondiciones:**
+
+- Usuario autenticado como vendedor en dispositivo móvil
+- Tener cilindros asignados para la ruta del día
+- Conexión a internet disponible
+
+### **Flujo Principal:**
+
+1. Accede al formulario de registro de ventas desde la app móvil
+2. Completa los datos del cliente:
+    - Nombre completo del cliente (obligatorio)
+    - Teléfono (opcional)
+    - Ubicación específica (Ruta/Pueblo/Dirección) (obligatorio)
+3. Selecciona el tipo de producto:
+    - Cilindro de 33 libras (15 kg)
+    - Cilindro de 40 libras (18 kg)
+    - Cilindro de 100 libras (45 kg)
+4. Especifica el tipo de venta:
+    - **Intercambio:** Cliente entrega cilindro vacío y recibe lleno
+    - **Completa:** Cliente solo paga y recibe cilindro lleno
+    - **Venta de vacíos:** Cliente compra solo el envase
+5. Si es intercambio, registra:
+    - Marca del cilindro vacío recibido
+    - Color del cilindro vacío recibido
+6. Ingresa el valor cobrado al cliente
+7. Selecciona método de pago:
+    - Efectivo
+    - Transferencia
+    - Crédito
+8. Sistema valida la información y actualiza automáticamente:
+    - Inventario general
+    - Card "En Ruta" del vendedor
+9. Confirma el registro exitoso
+
+### **Flujos Alternativos:**
+
+- **4a.** Si es transferencia: Debe enviar comprobante al jefe por WhatsApp inmediatamente
+- **8a.** Si hay error de conectividad: Sistema guarda localmente y sincroniza cuando hay conexión
+
+### **Postcondiciones:**
+
+- Venta registrada en el sistema
+- Inventario actualizado automáticamente
+- Card "En Ruta" actualizado con la nueva venta
+- Timestamp automático registrado
+
+---
+
+## 💸 CU-010: Registrar Gasto
+
+### **Actor:** Vendedor
+
+### **Descripción:** Registrar un gasto operativo realizado durante la jornada de trabajo
+
+### **Precondiciones:**
+
+- Usuario autenticado como vendedor en dispositivo móvil
+- Conexión a internet disponible
+
+### **Flujo Principal:**
+
+1. Accede al formulario de registro de gastos desde la app móvil
+2. Selecciona el tipo de gasto:
+    - Gasolina
+    - Comida
+    - Imprevistos
+    - Reparaciones
+    - Otros
+3. Ingresa el valor exacto del gasto
+4. Proporciona descripción detallada del gasto
+5. Sistema registra automáticamente fecha y hora
+6. Confirma el registro del gasto
+7. Sistema actualiza automáticamente:
+    - Total de gastos del día en card "En Ruta"
+    - Margen del día (ventas - gastos)
+8. Gasto se visualiza en color rojo para identificación rápida
+
+### **Flujos Alternativos:**
+
+- **6a.** Si tiene comprobante: Debe enviarlo al jefe por WhatsApp
+- **7a.** Si hay error de conectividad: Sistema guarda localmente y sincroniza cuando hay conexión
+
+### **Postcondiciones:**
+
+- Gasto registrado en el sistema
+- Card "En Ruta" actualizado con el nuevo gasto
+- Margen del día recalculado automáticamente
+- Visualización en rojo para identificación
+
+---
+
+## ✏️ CU-011: Solicitar Edición
+
+### **Actor:** Vendedor
+
+### **Descripción:** Solicitar autorización al jefe para editar un registro de venta o gasto previamente realizado
+
+### **Precondiciones:**
+
+- Usuario autenticado como vendedor
+- Tener un registro previo que necesita modificación
+- Registro debe ser del mismo día
+
+### **Flujo Principal:**
+
+1. Accede a su historial personal del día
+2. Identifica el registro que necesita editar
+3. Selecciona la opción "Solicitar Edición"
+4. Especifica el motivo de la edición requerida
+5. Sistema envía notificación automática al jefe
+6. Espera respuesta del jefe (aprobación o rechazo)
+7. **Si es aprobado:** Puede proceder a editar el registro
+8. **Si es rechazado:** Recibe notificación con el motivo del rechazo
+
+### **Flujos Alternativos:**
+
+- **6a.** Si jefe no responde en tiempo determinado: Solicitud queda pendiente
+- **7a.** Una vez editado: Sistema actualiza inventario y cards automáticamente
+
+### **Postcondiciones:**
+
+- Solicitud de edición registrada
+- Jefe notificado de la solicitud
+- Si aprobado: Registro modificado y sistema actualizado
+
+---
+
+## 📱 CU-012: Ver Historial Personal
+
+### **Actor:** Vendedor
+
+### **Descripción:** Visualizar únicamente sus propias ventas y gastos del día actual
+
+### **Precondiciones:**
+
+- Usuario autenticado como vendedor en dispositivo móvil
+
+### **Flujo Principal:**
+
+1. Accede a la sección "Mi Historial" en la app móvil
+2. Sistema muestra solo los registros del vendedor actual
+3. Visualiza ventas del día con información básica:
+    - Cliente
+    - Tipo de producto
+    - Valor cobrado
+    - Hora de la venta
+4. Visualiza gastos del día (en color rojo):
+    - Tipo de gasto
+    - Valor
+    - Descripción
+    - Hora del gasto
+5. Ve resumen del día:
+    - Total de ventas realizadas
+    - Total de gastos incurridos
+    - Cilindros vendidos por tipo
+6. Puede solicitar edición de cualquier registro si es necesario
+
+### **Restricciones:**
+
+- ❌ No puede ver datos de otros vendedores
+- ❌ No puede ver datos de días anteriores
+- ❌ No puede ver inventario general
+- ❌ No puede ver reportes financieros
+
+### **Postcondiciones:**
+
+- Historial personal visualizado correctamente
+- Solo información propia y del día actual mostrada
+
+---
+
+## 🔐 CU-013: Iniciar Sesión Móvil
+
+### **Actor:** Vendedor
+
+### **Descripción:** Autenticarse en la aplicación móvil para acceder a sus funciones permitidas
+
+### **Precondiciones:**
+
+- Tener credenciales válidas (email y contraseña)
+- Aplicación móvil instalada
+- Conexión a internet
+
+### **Flujo Principal:**
+
+1. Abre la aplicación móvil
+2. Ingresa email y contraseña en el formulario de login
+3. Sistema valida credenciales
+4. Sistema verifica que el rol sea "vendedor"
+5. Redirecciona automáticamente al panel móvil optimizado
+6. Carga funcionalidades específicas para vendedores
+7. Establece sesión persistente
+
+### **Flujos Alternativos:**
+
+- **3a.** Si credenciales incorrectas: Muestra error y permite reintentar
+- **4a.** Si rol es "jefe": Redirecciona a dashboard completo
+- **6a.** Si hay problemas de conectividad: Muestra mensaje de estado de conexión
+
+### **Postcondiciones:**
+
+- Usuario autenticado correctamente
+- Acceso solo a funciones permitidas para vendedores
+- Sesión establecida de forma segura
+
+---
+
+## 📲 CU-014: Sincronizar Datos Offline
+
+### **Actor:** Vendedor
+
+### **Descripción:** Sincronizar automáticamente los datos guardados localmente cuando se restablece la conexión a internet
+
+### **Precondiciones:**
+
+- Haber registrado ventas o gastos sin conexión
+- Conexión a internet restablecida
+- Usuario autenticado
+
+### **Flujo Principal:**
+
+1. Sistema detecta que se ha restablecido la conexión a internet
+2. Identifica registros guardados localmente sin sincronizar
+3. Valida la integridad de los datos locales
+4. Envía automáticamente los datos al servidor
+5. Actualiza inventario y cards "En Ruta" con la información sincronizada
+6. Notifica al vendedor que los datos han sido sincronizados exitosamente
+7. Limpia el almacenamiento local de datos ya sincronizados
+
+### **Flujos Alternativos:**
+
+- **4a.** Si hay conflictos de datos: Notifica al jefe para resolución manual
+- **4b.** Si la sincronización falla: Reintenta automáticamente después de un tiempo
+
+### **Postcondiciones:**
+
+- Todos los datos locales sincronizados con el servidor
+- Inventario y reportes actualizados correctamente
+- Almacenamiento local limpiado
+
+---
+
+## 🔔 CU-015: Recibir Notificaciones
+
+### **Actor:** Vendedor
+
+### **Descripción:** Recibir notificaciones importantes del sistema y respuestas del jefe
+
+### **Precondiciones:**
+
+- Usuario autenticado como vendedor
+- Notificaciones habilitadas en la aplicación
+
+### **Flujo Principal:**
+
+1. Sistema genera notificación por eventos relevantes:
+    - Confirmación de venta registrada
+    - Confirmación de gasto registrado
+    - Respuesta a solicitud de edición (aprobada/rechazada)
+    - Problemas de conectividad
+    - Recordatorios importantes
+2. Notificación aparece en la aplicación móvil
+3. Vendedor visualiza la notificación
+4. Puede tomar acción según el tipo de notificación
+5. Marca notificación como leída
+
+### **Tipos de Notificaciones:**
+
+- ✅ **Éxito:** Registros confirmados (verde)
+- ⚠️ **Alerta:** Problemas de conexión (amarillo)
+- 📝 **Información:** Respuestas del jefe (azul)
+- ❌ **Error:** Fallos en el sistema (rojo)
+
+### **Postcondiciones:**
+
+- Vendedor informado de eventos importantes
+- Comunicación efectiva mantenida con el sistema
+
+---
+
+## 📊 Resumen de Restricciones del Vendedor
+
+### ✅ **Funciones Permitidas:**
+
+- Registrar ventas desde móvil
+- Registrar gastos operativos
+- Ver solo su historial personal del día
+- Solicitar edición con autorización
+- Recibir notificaciones del sistema
+- Sincronizar datos offline
+
+### ❌ **Funciones Restringidas:**
+
+- Acceso al inventario general
+- Ver datos de otros vendedores
+- Acceder a reportes financieros
+- Editar sin autorización del jefe
+- Configurar precios
+- Ver datos históricos (días anteriores)
+- Acceder desde dispositivos no móviles (solo móvil optimizado)
+
+### 📱 **Comunicación Externa:**
+
+- Todos los comprobantes de transferencia → WhatsApp al jefe
+- Evidencias de gastos → WhatsApp al jefe
+- Sin acceso a funciones de configuración del sistema
+
+Casos de uso - jefe 
+## 📋 ÍNDICE DE CASOS DE USO
+
+1. [CU-J001: Gestionar Inventario](https://claude.ai/chat/30c88d14-3285-4777-9028-1194a0c7db46#cu-j001-gestionar-inventario)
+2. [CU-J002: Asignar Cilindros Diarios](https://claude.ai/chat/30c88d14-3285-4777-9028-1194a0c7db46#cu-j002-asignar-cilindros-diarios)
+3. [CU-J003: Monitorear Panel "En Ruta"](https://claude.ai/chat/30c88d14-3285-4777-9028-1194a0c7db46#cu-j003-monitorear-panel-en-ruta)
+4. [CU-J004: Registrar Llegada de Camión](https://claude.ai/chat/30c88d14-3285-4777-9028-1194a0c7db46#cu-j004-registrar-llegada-de-cami%C3%B3n)
+5. [CU-J005: Generar Reportes Financieros](https://claude.ai/chat/30c88d14-3285-4777-9028-1194a0c7db46#cu-j005-generar-reportes-financieros)
+6. [CU-J006: Configurar y Seguir Metas](https://claude.ai/chat/30c88d14-3285-4777-9028-1194a0c7db46#cu-j006-configurar-y-seguir-metas)
+7. [CU-J007: Gestionar Precios Personalizados](https://claude.ai/chat/30c88d14-3285-4777-9028-1194a0c7db46#cu-j007-gestionar-precios-personalizados)
+8. [CU-J008: Autorizar Ediciones de Vendedores](https://claude.ai/chat/30c88d14-3285-4777-9028-1194a0c7db46#cu-j008-autorizar-ediciones-de-vendedores)
+
+---
+
+[Diagramas](https://www.notion.so/Diagramas-23b0091da98c809aa714d84133ea53d1?pvs=21)
+
+## CU-J001: Gestionar Inventario
+
+### 📊 Información General
+
+- **Actor Principal:** Jefe
+- **Nivel:** Objetivo del Usuario
+- **Frecuencia:** Continua (todo el día)
+- **Prioridad:** ALTA
+
+### 🎯 Objetivo
+
+Supervisar y controlar el inventario de cilindros llenos y vacíos en tiempo real, con capacidad de realizar ajustes manuales cuando sea necesario.
+
+### ✅ Precondiciones
+
+- Jefe autenticado en el sistema
+- Acceso desde PC, móvil o tablet
+- Base de datos de inventario inicializada
+
+### 📝 Flujo Principal
+
+1. **Acceso al módulo:** Jefe accede al dashboard de inventario
+2. **Visualización en tiempo real:** Sistema muestra:
+    - Cilindros llenos por tipo (33, 40, 100 libras)
+    - Cilindros vacíos por marca y color
+    - Valor total del inventario
+    - Alertas de stock bajo
+3. **Consulta detallada:** Jefe puede ver:
+    - Historial de movimientos
+    - Última actualización
+    - Costos unitarios actuales
+4. **Ajustes manuales** (opcional):
+    - Corrección de cantidades
+    - Ajustes por pérdidas o daños
+    - Notas explicativas del ajuste
+
+### 🔄 Flujos Alternativos
+
+- **A1 - Stock bajo:** Si hay cilindros con cantidad menor al límite, sistema muestra alerta roja
+- **A2 - Ajuste manual:** Jefe puede corregir cantidades con justificación obligatoria
+- **A3 - Sin conexión:** Sistema muestra último estado conocido con indicador de desconexión
+
+### ✅ Postcondiciones
+
+- Inventario consultado y actualizado si es necesario
+- Registros de ajustes guardados con timestamp y justificación
+- Alertas de stock bajo identificadas
+
+### ⚠️ Excepciones
+
+- **E1:** Error de conexión - Mostrar estado offline
+- **E2:** Datos inconsistentes - Solicitar verificación
+- **E3:** Ajuste excesivo - Confirmar operación
+
+---
+
+## CU-J002: Asignar Cilindros Diarios
+
+### 📊 Información General
+
+- **Actor Principal:** Jefe
+- **Nivel:** Sub-función
+- **Frecuencia:** Diaria (inicio del día)
+- **Prioridad:** ALTA
+
+### 🎯 Objetivo
+
+Asignar cantidad específica de cilindros a cada vendedor al inicio del día y crear los cards de seguimiento en el panel "En Ruta".
+
+### ✅ Precondiciones
+
+- Inicio del día laboral (6:00 AM - 8:00 AM)
+- Inventario de cilindros disponible
+- Lista de vendedores activos
+
+### 📝 Flujo Principal
+
+1. **Acceso a asignaciones:** Jefe accede al módulo de asignaciones diarias
+2. **Selección de vendedor:** Elige vendedor de la lista
+3. **Asignación por tipo:** Para cada tipo de cilindro:
+    - Especifica cantidad a asignar (33, 40, 100 libras)
+    - Sistema valida disponibilidad en inventario
+4. **Confirmación:** Revisa resumen de asignación total
+5. **Registro:** Sistema procesa la asignación:
+    - Coloca cilindros en estado STANDBY
+    - Crea card en panel "En Ruta"
+    - Mantiene inventario principal intacto
+6. **Repetir:** Proceso se repite para cada vendedor
+
+### 🔄 Flujos Alternativos
+
+- **A1 - Stock insuficiente:** Sistema alerta y sugiere cantidad máxima disponible
+- **A2 - Vendedor inactivo:** Sistema marca vendedor como no disponible
+- **A3 - Reasignación:** Jefe puede modificar asignación antes de confirmar
+
+### ✅ Postcondiciones
+
+- Cards "En Ruta" creados para cada vendedor
+- Cilindros en estado STANDBY (no afectan inventario principal)
+- Registro de asignaciones guardado
+
+### ⚠️ Excepciones
+
+- **E1:** Vendedor sin asignación - Alerta para completar
+- **E2:** Asignación excede inventario - Solicitar ajuste
+- **E3:** Error al crear card - Reintentar operación
+
+---
+
+## CU-J003: Monitorear Panel "En Ruta"
+
+### 📊 Información General
+
+- **Actor Principal:** Jefe
+- **Nivel:** Objetivo del Usuario
+- **Frecuencia:** Continua (durante el día)
+- **Prioridad:** ALTA
+
+### 🎯 Objetivo
+
+Supervisar en tiempo real la actividad diaria de todos los vendedores a través de cards informativos que se actualizan automáticamente.
+
+### ✅ Precondiciones
+
+- Asignaciones diarias completadas
+- Vendedores iniciaron actividades
+- Conexión activa al sistema
+
+### 📝 Flujo Principal
+
+1. **Acceso al panel:** Jefe accede a "En Ruta" en dashboard
+2. **Visualización de cards:** Para cada vendedor ve:
+    - **Identificación:** Nombre y ruta asignada
+    - **Control de cilindros:**
+        - Cantidad asignada por tipo
+        - Cantidad vendida en tiempo real
+        - Cantidad restante
+        - Progreso visual (barras de porcentaje)
+    - **Actividad financiera:**
+        - Total ventas del día
+        - Total gastos del día
+        - Margen del día (ganancia neta)
+3. **Monitoreo automático:** Cards se actualizan instantáneamente con cada:
+    - Venta registrada por vendedor
+    - Gasto reportado por vendedor
+4. **Análisis visual:** Código de colores:
+    - 🟢 Verde: Metas cumplidas o en buen progreso
+    - 🟡 Amarillo: Alertas o progreso lento
+    - 🔴 Rojo: Problemas o muy por debajo de expectativas
+
+### 🔄 Flujos Alternativos
+
+- **A1 - Vendedor sin actividad:** Card muestra alerta de inactividad
+- **A2 - Gastos excesivos:** Margen negativo se resalta en rojo
+- **A3 - Meta diaria cumplida:** Card muestra indicador de éxito
+
+### ✅ Postcondiciones
+
+- Situación operativa del día totalmente visible
+- Decisiones informadas basadas en datos en tiempo real
+- Identificación temprana de problemas
+
+### ⚠️ Excepciones
+
+- **E1:** Card no actualiza - Verificar conexión del vendedor
+- **E2:** Datos inconsistentes - Validar con vendedor
+- **E3:** Sistema sobrecargado - Optimizar consultas
+
+---
+
+## CU-J004: Registrar Llegada de Camión
+
+### 📊 Información General
+
+- **Actor Principal:** Jefe
+- **Nivel:** Objetivo del Usuario
+- **Frecuencia:** Según llegadas de proveedores
+- **Prioridad:** ALTA
+
+### 🎯 Objetivo
+
+Registrar el reabastecimiento de inventario cuando llega el camión proveedor, actualizando automáticamente inventario y costos.
+
+### ✅ Precondiciones
+
+- Camión proveedor ha llegado físicamente
+- Factura o documentos de entrega disponibles
+- Jefe presente para verificar cantidades
+
+### 📝 Flujo Principal
+
+1. **Acceso al registro:** Jefe accede al módulo "Llegadas de Camión"
+2. **Registro de cilindros llenos recibidos:** Por cada tipo:
+    - 33 libras: cantidad exacta recibida
+    - 40 libras: cantidad exacta recibida
+    - 100 libras: cantidad exacta recibida
+3. **Registro de cilindros vacíos entregados:** Por marca y color:
+    - Especifica cantidad entregada al proveedor
+4. **Captura de información financiera crítica:**
+    - **Valor unitario del día:** Precio por cilindro que cobra el proveedor
+    - **Valor total de la factura:** Monto total de la compra
+    - **Flete:** Costo de transporte (se anota pero no se descuenta del sistema)
+5. **Confirmación y procesamiento:** Sistema ejecuta automáticamente:
+    - Suma cilindros llenos al inventario
+    - Resta cilindros vacíos del inventario
+    - Actualiza precio de compra unitario
+    - Recalcula rentabilidad para ventas futuras
+    - Genera reporte de la transacción
+
+### 🔄 Flujos Alternativos
+
+- **A1 - Cantidades no coinciden:** Sistema permite ajuste con nota explicativa
+- **A2 - Precio cambió significativamente:** Sistema solicita confirmación
+- **A3 - Factura posterior:** Permite registro parcial y completar después
+
+### ✅ Postcondiciones
+
+- Inventario actualizado con nuevos cilindros
+- Costos unitarios actualizados
+- Rentabilidad recalculada automáticamente
+- Reporte de llegada generado
+
+### ⚠️ Excepciones
+
+- **E1:** Cantidad negativa - Validar y corregir
+- **E2:** Precio unitario cero - Solicitar confirmación
+- **E3:** Error de cálculo - Verificar y recalcular
+
+---
+
+## CU-J005: Generar Reportes Financieros
+
+### 📊 Información General
+
+- **Actor Principal:** Jefe
+- **Nivel:** Objetivo del Usuario
+- **Frecuencia:** Según necesidad (diario/semanal/mensual)
+- **Prioridad:** ALTA
+
+### 🎯 Objetivo
+
+Generar reportes detallados de ingresos, costos, rentabilidad y desempeño para análisis financiero y toma de decisiones.
+
+### ✅ Precondiciones
+
+- Datos de ventas y gastos disponibles
+- Períodos de análisis definidos
+- Jefe autenticado con permisos completos
+
+### 📝 Flujo Principal
+
+1. **Acceso a reportes:** Jefe accede al módulo de reportes
+2. **Selección de tipo de reporte:**
+    - **Financiero:** Ingresos, costos, márgenes
+    - **Operativo:** Ventas por vendedor, productos
+    - **Desempeño:** Cumplimiento de metas, eficiencia
+3. **Configuración de parámetros:**
+    - **Período:** Diario, semanal, mensual, personalizado
+    - **Vendedor:** Todos o específico
+    - **Tipo de producto:** Todos o específico
+4. **Generación:** Sistema procesa y presenta:
+    - **Resumen ejecutivo** con KPIs principales
+    - **Gráficos** de tendencias y comparativas
+    - **Tablas detalladas** con datos específicos
+    - **Análisis automático** de variaciones y patrones
+5. **Exportación** (opcional): Descarga en PDF o Excel
+
+### 🔄 Flujos Alternativos
+
+- **A1 - Período sin datos:** Sistema informa y sugiere período alternativo
+- **A2 - Reporte personalizado:** Jefe define métricas específicas
+- **A3 - Comparativo histórico:** Contrasta con períodos anteriores
+
+### ✅ Postcondiciones
+
+- Reporte generado con información actualizada
+- Análisis disponible para toma de decisiones
+- Archivo exportado si fue solicitado
+
+### ⚠️ Excepciones
+
+- **E1:** Datos incompletos - Indicar qué información falta
+- **E2:** Período muy amplio - Sugerir segmentación
+- **E3:** Error de exportación - Reintentar o cambiar formato
+
+---
+
+## CU-J006: Configurar y Seguir Metas
+
+### 📊 Información General
+
+- **Actor Principal:** Jefe
+- **Nivel:** Objetivo del Usuario
+- **Frecuencia:** Configuración: periódica / Seguimiento: continuo
+- **Prioridad:** MEDIA
+
+### 🎯 Objetivo
+
+Establecer metas de ventas (en kilogramos) para el negocio en general y para vendedores individuales, con seguimiento automático del progreso.
+
+### ✅ Precondiciones
+
+- Histórico de ventas para referencia
+- Estrategia comercial definida
+- Vendedores activos en el sistema
+
+### 📝 Flujo Principal
+
+1. **Acceso a metas:** Jefe accede al módulo de gestión de metas
+2. **Selección de tipo:**
+    - **Meta general:** Para todo el negocio
+    - **Meta individual:** Por vendedor específico
+3. **Configuración de parámetros:**
+    - **Período:** Semanal, mensual, semestral, anual
+    - **Cantidad objetivo:** En kilogramos de gas
+    - **Fechas:** Inicio y fin del período
+4. **Conversión automática:** Sistema configura conversión:
+    - 33 libras = 15 kg
+    - 40 libras = 18 kg
+    - 100 libras = 45 kg
+5. **Seguimiento en tiempo real:**
+    - **Barras de progreso** visuales
+    - **Porcentaje de cumplimiento**
+    - **Proyección** basada en tendencia actual
+    - **Alertas** de cumplimiento o retraso
+
+### 🔄 Flujos Alternativos
+
+- **A1 - Meta muy alta:** Sistema alerta basado en histórico
+- **A2 - Ajuste de meta:** Permite modificación durante el período
+- **A3 - Meta cumplida anticipadamente:** Sistema felicita y sugiere nueva meta
+
+### ✅ Postcondiciones
+
+- Metas establecidas y activas
+- Sistema de seguimiento automático operando
+- Vendedores informados de sus objetivos
+
+### ⚠️ Excepciones
+
+- **E1:** Meta negativa - Validar y corregir
+- **E2:** Período inválido - Solicitar fechas correctas
+- **E3:** Vendedor inactivo - Alertar y ajustar
+
+---
+
+## CU-J007: Gestionar Precios Personalizados
+
+### 📊 Información General
+
+- **Actor Principal:** Jefe
+- **Nivel:** Sub-función
+- **Frecuencia:** Según necesidad comercial
+- **Prioridad:** MEDIA
+
+### 🎯 Objetivo
+
+Configurar precios especiales por cliente y gestionar la lista maestra de precios personalizados.
+
+### ✅ Precondiciones
+
+- Lista de clientes disponible
+- Precios estándar definidos
+- Estrategia comercial de precios establecida
+
+### 📝 Flujo Principal
+
+1. **Acceso a gestión de precios:** Jefe accede al módulo de clientes
+2. **Selección de cliente:**
+    - Buscar cliente existente, o
+    - Crear nuevo cliente
+3. **Configuración de precios por tipo:**
+    - Cilindro 33 libras: precio personalizado
+    - Cilindro 40 libras: precio personalizado
+    - Cilindro 100 libras: precio personalizado
+4. **Validación comercial:**
+    - Sistema muestra precio estándar vs. personalizado
+    - Calcula impacto en margen de ganancia
+    - Alerta si precio está por debajo del costo
+5. **Aplicación automática:** Una vez configurado:
+    - Vendedores ven precio especial al seleccionar cliente
+    - Sistema aplica precio automáticamente
+    - Historial de cambios se mantiene
+
+### 🔄 Flujos Alternativos
+
+- **A1 - Cliente sin precios especiales:** Usa precios estándar automáticamente
+- **A2 - Precio promocional temporal:** Permite configurar fecha de expiración
+- **A3 - Modificación masiva:** Ajuste porcentual a múltiples clientes
+
+### ✅ Postcondiciones
+
+- Precios personalizados configurados y activos
+- Sistema aplica automáticamente en ventas
+- Cambios registrados en historial
+
+### ⚠️ Excepciones
+
+- **E1:** Precio por debajo del costo - Alerta y confirmación
+- **E2:** Cliente duplicado - Verificar y fusionar si es necesario
+- **E3:** Error de cálculo - Validar y recalcular
+
+---
+
+## CU-J008: Autorizar Ediciones de Vendedores
+
+### 📊 Información General
+
+- **Actor Principal:** Jefe
+- **Nivel:** Sub-función
+- **Frecuencia:** Según solicitudes de vendedores
+- **Prioridad:** MEDIA
+
+### 🎯 Objetivo
+
+Aprobar o rechazar solicitudes de edición de registros de ventas o gastos realizadas por vendedores.
+
+### ✅ Precondiciones
+
+- Vendedor ha solicitado permiso de edición
+- Registro original existe en el sistema
+- Jefe tiene permisos de autorización
+
+### 📝 Flujo Principal
+
+1. **Notificación de solicitud:** Sistema notifica al jefe sobre solicitud pendiente
+2. **Revisión de la solicitud:** Jefe ve:
+    - **Datos originales** del registro
+    - **Cambios propuestos** por el vendedor
+    - **Justificación** de la modificación
+    - **Vendedor solicitante** y fecha/hora
+3. **Análisis de la solicitud:**
+    - Verificar consistencia de los datos
+    - Evaluar justificación presentada
+    - Considerar impacto en reportes e inventario
+4. **Decisión:**
+    - **Aprobar:** Sistema permite la edición automáticamente
+    - **Rechazar:** Sistema notifica al vendedor con razón
+5. **Registro de la autorización:** Queda registrado:
+    - Decisión tomada (aprobada/rechazada)
+    - Timestamp de la autorización
+    - Comentarios del jefe (opcional)
+
+### 🔄 Flujos Alternativos
+
+- **A1 - Solicitud incompleta:** Sistema solicita más información al vendedor
+- **A2 - Edición mayor:** Jefe puede solicitar confirmación adicional del vendedor
+- **A3 - Autorización condicional:** Jefe aprueba con modificaciones específicas
+
+### ✅ Postcondiciones
+
+- Solicitud procesada (aprobada o rechazada)
+- Vendedor notificado de la decisión
+- Registro auditado con información completa
+- Si fue aprobada: edición ejecutada automáticamente
+
+### ⚠️ Excepciones
+
+- **E1:** Registro ya no existe - Informar impossibilidad de edición
+- **E2:** Cambio afecta inventario crítico - Solicitar verificación adicional
+- **E3:** Vendedor no disponible - Procesar solicitud con nota explicativa
+
+---
+
+## 📊 MATRIZ DE COMPLEJIDAD Y PRIORIDAD
+
+| Caso de Uso | Prioridad | Complejidad | Dependencias |
+| --- | --- | --- | --- |
+| CU-J003: Monitorear "En Ruta" | ALTA | ALTA | CU-J002 |
+| CU-J001: Gestionar Inventario | ALTA | MEDIA | Base de datos |
+| CU-J004: Registrar Llegada Camión | ALTA | ALTA | CU-J001 |
+| CU-J002: Asignar Cilindros Diarios | ALTA | MEDIA | CU-J001 |
+| CU-J005: Generar Reportes | ALTA | ALTA | Todos los anteriores |
+| CU-J006: Configurar Metas | MEDIA | MEDIA | CU-J005 |
+| CU-J007: Gestionar Precios | MEDIA | BAJA | Base de clientes |
+| CU-J008: Autorizar Ediciones | MEDIA | ALTA | Sistema de permisos |
+
+---
+
+## 🎯 ORDEN DE IMPLEMENTACIÓN SUGERIDO
+
+### 🔥 Fase 1 - Base Operativa
+
+1. CU-J001: Gestionar Inventario
+2. CU-J002: Asignar Cilindros Diarios
+
+### ⚡ Fase 2 - Control Diario
+
+1. CU-J003: Monitorear "En Ruta"
+2. CU-J004: Registrar Llegada Camión
+
+### 📊 Fase 3 - Análisis y Control
+
+1. CU-J005: Generar Reportes Financieros
+2. CU-J007: Gestionar Precios Personalizados
+
+### 🎯 Fase 4 - Funciones Avanzadas
+
+1. CU-J006: Configurar y Seguir Metas
+2. CU-J008: Autorizar Ediciones de Vendedores
+
+Casos de uso - sistema (Creo que faltan algunos, crea los que faltan):
+
+## **CU-013: Actualizar Inventario:**
+
+Maneja automáticamente todos los cambios de inventario según el tipo de transacción
+
+```mermaid
+---
+config:
+  layout: dagre
+---
+flowchart TD
+    A["🔄 Sistema recibe transacción"] --> B{"¿Tipo de transacción?"}
+    B -- Venta Intercambio --> C["📦 -1 Cilindro Lleno"]
+    C --> D["🔴 +1 Cilindro Vacío"]
+    D --> E["💾 Actualiza BD inventario_full"]
+    E --> F["💾 Actualiza BD inventory_empty"]
+    B -- Venta Completa --> G["📦 -1 Cilindro Lleno"]
+    G --> H["💾 Actualiza BD inventory_full"]
+    B -- Venta Vacíos --> I["🔴 -1 Cilindro Vacío"]
+    I --> J["💾 Actualiza BD inventory_empty"]
+    B -- Compra Vacíos --> K["🔴 +1 Cilindro Vacío"]
+    K --> L["💾 Actualiza BD inventory_empty"]
+    B -- Llegada Camión --> M["📦 +X Cilindros Llenos"]
+    M --> N["🔴 -Y Cilindros Vacíos"]
+    N --> O["💾 Actualiza ambas tablas"]
+    F --> P["⚡ Notifica cambios en tiempo real"]
+    H --> P
+    J --> P
+    L --> P
+    O --> P
+    P --> Q["📊 Actualiza dashboard jefe"]
+    Q --> R["✅ Inventario sincronizado"]
+
+```
+
+## **CU-014: Calcular Rentabilidad**
+
+Calcula automáticamente ganancias considerando precios de compra/venta y gastos
+
+```mermaid
+
+flowchart TD
+    A[💰 Sistema recibe nueva venta] --> B[📊 Obtiene precio de compra actual]
+    B --> C[💵 Obtiene precio de venta registrado]
+    
+    C --> D[🧮 Calcula ganancia por unidad]
+    D --> E[💰 Ganancia = Precio Venta - Precio Compra]
+    
+    E --> F{¿Hay gastos del vendedor?}
+    F -->|Sí| G[💸 Resta gastos operativos]
+    F -->|No| H[📈 Ganancia bruta = Ganancia neta]
+    
+    G --> I[📊 Ganancia neta = Ganancia - Gastos]
+    H --> J[💾 Actualiza registro de rentabilidad]
+    I --> J
+    
+    J --> K[📈 Actualiza margen diario vendedor]
+    K --> L[📊 Actualiza margen total negocio]
+    
+    L --> M{¿Nuevo precio de compra?}
+    M -->|Sí| N[🔄 Recalcula todas las ganancias futuras]
+    M -->|No| O[✅ Cálculo completado]
+    
+    N --> P[💾 Actualiza costos en BD]
+    P --> Q[⚡ Notifica cambio de rentabilidad]
+    Q --> O
+```
+
+## CU-015: Resetear Datos Diarios
+
+Proceso automático a medianoche o (al finalizar dia) que resetea datos del día y devuelve cilindros no vendidos

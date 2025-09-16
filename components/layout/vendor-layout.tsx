@@ -13,15 +13,14 @@ import {
   Clock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/use-auth';
-import { logOut } from '@/actions/auth';
+import { useSupabaseAuth } from '@/hooks/use-supabase-auth';
 
 interface VendorLayoutProps {
   children: ReactNode;
 }
 
 export default function VendorLayout({ children }: VendorLayoutProps) {
-  const { authState } = useAuth();
+  const { authState, logout } = useSupabaseAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -78,7 +77,9 @@ export default function VendorLayout({ children }: VendorLayoutProps) {
           </div>
           <div className="text-right">
             <p className="text-sm font-medium text-foreground">
-              {authState.user?.full_name}
+              {authState.user?.user_metadata?.full_name ||
+                authState.user?.email?.split('@')[0] ||
+                'Usuario'}
             </p>
             <p className="text-xs text-muted-foreground">Vendedor</p>
           </div>
@@ -113,17 +114,15 @@ export default function VendorLayout({ children }: VendorLayoutProps) {
             );
           })}
 
-          <form action={logOut} className="contents">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex flex-col items-center py-3 h-auto text-muted-foreground hover:text-foreground"
-              type="submit"
-            >
-              <LogOut className="h-5 w-5 mb-1" />
-              <span className="text-xs">Salir</span>
-            </Button>
-          </form>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex flex-col items-center py-3 h-auto text-muted-foreground hover:text-foreground"
+            onClick={logout}
+          >
+            <LogOut className="h-5 w-5 mb-1" />
+            <span className="text-xs">Salir</span>
+          </Button>
         </div>
       </div>
     </div>

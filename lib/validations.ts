@@ -213,3 +213,198 @@ export type InventoryAlertUpdateData = z.infer<
   typeof inventoryAlertUpdateSchema
 >;
 export type InventoryOperationData = z.infer<typeof inventoryOperationSchema>;
+
+// =====================================================
+// ESQUEMAS DE VALIDACIÓN PARA TRANSACCIONES
+// =====================================================
+
+// Esquema para items de venta
+export const saleItemSchema = z.object({
+  product_type: z.enum(['33lb', '40lb', '100lb'], {
+    errorMap: () => ({ message: 'Tipo de producto no válido' }),
+  }),
+  quantity: z
+    .number()
+    .int()
+    .min(1, 'La cantidad debe ser al menos 1')
+    .max(100, 'La cantidad no puede ser mayor a 100'),
+  unit_cost: z
+    .number()
+    .min(0, 'El costo unitario no puede ser negativo')
+    .max(999999.99, 'El costo unitario es demasiado alto'),
+  total_cost: z
+    .number()
+    .min(0, 'El costo total no puede ser negativo')
+    .max(999999.99, 'El costo total es demasiado alto'),
+});
+
+// Esquema para ventas
+export const saleSchema = z
+  .object({
+    customer_name: z
+      .string()
+      .min(1, 'El nombre del cliente es requerido')
+      .min(2, 'El nombre debe tener al menos 2 caracteres')
+      .max(100, 'El nombre es demasiado largo')
+      .regex(
+        /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+        'El nombre solo puede contener letras y espacios'
+      ),
+    customer_phone: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || /^[\d\s\-\+\(\)]+$/.test(val),
+        'Formato de teléfono inválido'
+      ),
+    customer_location: z
+      .string()
+      .min(1, 'La ubicación del cliente es requerida')
+      .min(5, 'La ubicación debe tener al menos 5 caracteres')
+      .max(200, 'La ubicación es demasiado larga'),
+    items: z
+      .array(saleItemSchema)
+      .min(1, 'Debe agregar al menos un tipo de cilindro')
+      .max(10, 'No puede agregar más de 10 tipos de cilindros diferentes'),
+    sale_type: z.enum(
+      ['intercambio', 'completa', 'venta_vacios', 'compra_vacios'],
+      {
+        errorMap: () => ({ message: 'Tipo de venta no válido' }),
+      }
+    ),
+    payment_method: z.enum(['efectivo', 'transferencia', 'credito'], {
+      errorMap: () => ({ message: 'Método de pago no válido' }),
+    }),
+  })
+  .refine(
+    (data) => {
+      // Verificar que cada item tenga el total_cost correcto
+      return data.items.every(
+        (item) =>
+          Math.abs(item.total_cost - item.quantity * item.unit_cost) < 0.01
+      );
+    },
+    {
+      message:
+        'El costo total de cada item debe ser igual a cantidad × costo unitario',
+      path: ['items'],
+    }
+  );
+
+// Esquema para gastos
+export const expenseSchema = z.object({
+  type: z.enum(['gasolina', 'comida', 'reparaciones', 'imprevistos', 'otros'], {
+    errorMap: () => ({ message: 'Tipo de gasto no válido' }),
+  }),
+  amount: z
+    .number()
+    .min(0.01, 'El monto debe ser mayor a 0')
+    .max(999999.99, 'El monto es demasiado alto'),
+  description: z
+    .string()
+    .min(1, 'La descripción es requerida')
+    .min(5, 'La descripción debe tener al menos 5 caracteres')
+    .max(500, 'La descripción es demasiado larga'),
+  receipt_url: z
+    .string()
+    .url('URL de recibo inválida')
+    .optional()
+    .or(z.literal('')),
+});
+
+// Esquema para clientes
+export const customerSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'El nombre del cliente es requerido')
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(100, 'El nombre es demasiado largo')
+    .regex(
+      /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+      'El nombre solo puede contener letras y espacios'
+    ),
+  phone: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[\d\s\-\+\(\)]+$/.test(val),
+      'Formato de teléfono inválido'
+    ),
+  location: z
+    .string()
+    .min(1, 'La ubicación es requerida')
+    .min(5, 'La ubicación debe tener al menos 5 caracteres')
+    .max(200, 'La ubicación es demasiado larga'),
+  custom_prices: z.record(z.string(), z.number().min(0)).optional().default({}),
+});
+
+// Esquema para llegadas de camión
+export const truckArrivalSchema = z.object({
+  cylinders_received: z.record(z.string(), z.number().int().min(0)),
+  cylinders_delivered: z.record(
+    z.string(),
+    z.record(z.string(), z.number().int().min(0))
+  ),
+  unit_cost: z
+    .number()
+    .min(0, 'El costo unitario no puede ser negativo')
+    .max(999999.99, 'El costo unitario es demasiado alto'),
+  total_invoice: z
+    .number()
+    .min(0, 'El total de la factura no puede ser negativo')
+    .max(999999.99, 'El total de la factura es demasiado alto'),
+  freight_cost: z
+    .number()
+    .min(0, 'El costo de flete no puede ser negativo')
+    .max(999999.99, 'El costo de flete es demasiado alto')
+    .default(0),
+});
+
+// Esquema para asignaciones diarias
+export const dailyAssignmentSchema = z.object({
+  vendor_id: z.string().uuid('ID de vendedor inválido'),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato de fecha inválido'),
+  assigned_cylinders: z.record(z.string(), z.number().int().min(0)),
+  status: z.enum(['active', 'completed', 'cancelled']).default('active'),
+});
+
+// Esquema para metas
+export const goalSchema = z
+  .object({
+    type: z.enum(['general', 'individual'], {
+      errorMap: () => ({ message: 'Tipo de meta no válido' }),
+    }),
+    vendor_id: z.string().uuid('ID de vendedor inválido').optional(),
+    period: z.enum(['semanal', 'mensual', 'semestral', 'anual'], {
+      errorMap: () => ({ message: 'Período no válido' }),
+    }),
+    target_kg: z
+      .number()
+      .min(0.1, 'La meta debe ser mayor a 0 kg')
+      .max(999999.99, 'La meta es demasiado alta'),
+    start_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato de fecha inválido'),
+    end_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato de fecha inválido'),
+    status: z.enum(['active', 'completed', 'cancelled']).default('active'),
+  })
+  .refine(
+    (data) => {
+      // La fecha de inicio debe ser anterior a la fecha de fin
+      return new Date(data.start_date) < new Date(data.end_date);
+    },
+    {
+      message: 'La fecha de inicio debe ser anterior a la fecha de fin',
+      path: ['end_date'],
+    }
+  );
+
+// Tipos inferidos para transacciones
+export type SaleData = z.infer<typeof saleSchema>;
+export type ExpenseData = z.infer<typeof expenseSchema>;
+export type CustomerData = z.infer<typeof customerSchema>;
+export type TruckArrivalData = z.infer<typeof truckArrivalSchema>;
+export type DailyAssignmentData = z.infer<typeof dailyAssignmentSchema>;
+export type GoalData = z.infer<typeof goalSchema>;
