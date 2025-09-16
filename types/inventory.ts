@@ -7,8 +7,13 @@
 // =====================================================
 
 export type CylinderType = '33lb' | '40lb' | '100lb';
-export type CylinderBrand = 'Roscogas' | 'Otro';
-export type CylinderColor = 'Azul' | 'Rojo' | 'Verde' | 'Amarillo' | 'Otro';
+export type CylinderBrand =
+  | 'Roscogas'
+  | 'Gasan'
+  | 'Gaspais'
+  | 'Vidagas'
+  | 'Otro';
+export type CylinderColor = 'Naranja' | 'Azul' | 'Verde Oscuro' | 'Verde Claro';
 export type InventoryType = 'full' | 'empty';
 
 // =====================================================
@@ -190,17 +195,39 @@ export const CYLINDER_WEIGHTS: Record<CylinderType, number> = {
 };
 
 export const CYLINDER_TYPES: CylinderType[] = ['33lb', '40lb', '100lb'];
-export const CYLINDER_BRANDS: CylinderBrand[] = ['Roscogas', 'Otro'];
-export const CYLINDER_COLORS: CylinderColor[] = [
-  'Azul',
-  'Rojo',
-  'Verde',
-  'Amarillo',
+export const CYLINDER_BRANDS: CylinderBrand[] = [
+  'Roscogas',
+  'Gasan',
+  'Gaspais',
+  'Vidagas',
   'Otro',
+];
+export const CYLINDER_COLORS: CylinderColor[] = [
+  'Naranja',
+  'Azul',
+  'Verde Oscuro',
+  'Verde Claro',
 ];
 
 // =====================================================
-// 11. FUNCIONES DE UTILIDAD
+// 11. MAPEO DE MARCAS A COLORES
+// =====================================================
+
+export const BRAND_TO_COLOR: Record<CylinderBrand, CylinderColor> = {
+  'Roscogas': 'Naranja',
+  'Gasan': 'Azul',
+  'Gaspais': 'Verde Oscuro',
+  'Vidagas': 'Verde Claro',
+  'Otro': 'Naranja', // Por defecto
+};
+
+// Función para obtener el color de una marca
+export function getColorByBrand(brand: CylinderBrand): CylinderColor {
+  return BRAND_TO_COLOR[brand];
+}
+
+// =====================================================
+// 12. FUNCIONES DE UTILIDAD
 // =====================================================
 
 export const convertLbsToKg = (lbs: CylinderType): number => {

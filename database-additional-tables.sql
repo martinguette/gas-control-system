@@ -400,9 +400,18 @@ ON CONFLICT DO NOTHING;
 
 -- Insertar inventario inicial de cilindros vacíos
 INSERT INTO public.inventory_empty (type, brand, color, quantity) VALUES
-  ('33lb', 'Roscogas', 'Azul', 0),
-  ('40lb', 'Roscogas', 'Azul', 0),
-  ('100lb', 'Roscogas', 'Azul', 0)
+  ('33lb', 'Roscogas', 'Naranja', 0),
+  ('40lb', 'Roscogas', 'Naranja', 0),
+  ('100lb', 'Roscogas', 'Naranja', 0),
+  ('33lb', 'Gasan', 'Azul', 0),
+  ('40lb', 'Gasan', 'Azul', 0),
+  ('100lb', 'Gasan', 'Azul', 0),
+  ('33lb', 'Gaspais', 'Verde Oscuro', 0),
+  ('40lb', 'Gaspais', 'Verde Oscuro', 0),
+  ('100lb', 'Gaspais', 'Verde Oscuro', 0),
+  ('33lb', 'Vidagas', 'Verde Claro', 0),
+  ('40lb', 'Vidagas', 'Verde Claro', 0),
+  ('100lb', 'Vidagas', 'Verde Claro', 0)
 ON CONFLICT DO NOTHING;
 
 -- =====================================================

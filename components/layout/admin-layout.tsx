@@ -16,6 +16,7 @@ import {
   Package,
   Menu,
   X,
+  Activity,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
@@ -35,6 +36,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: '/dashboard/admin',
       icon: Dashboard,
       label: 'Dashboard',
+    },
+    {
+      href: '/dashboard/admin/en-ruta',
+      icon: Activity,
+      label: 'En Ruta',
     },
     {
       href: '/dashboard/admin/inventory',
