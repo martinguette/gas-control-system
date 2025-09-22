@@ -479,32 +479,82 @@ export function EnhancedSaleForm({ onSuccess }: EnhancedSaleFormProps) {
                       <FormField
                         control={form.control}
                         name={`items.${index}.unit_cost`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Precio Unitario</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                {...field}
-                                onChange={(e) => {
-                                  const unitCost =
-                                    parseFloat(e.target.value) || 0;
-                                  field.onChange(unitCost);
-                                  const quantity = form.getValues(
-                                    `items.${index}.quantity`
-                                  );
-                                  form.setValue(
-                                    `items.${index}.total_cost`,
-                                    unitCost * quantity
-                                  );
-                                }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                        render={({ field }) => {
+                          const productType = form.getValues(
+                            `items.${index}.product_type`
+                          );
+                          const customPrice =
+                            selectedCustomer?.custom_prices[productType];
+                          const inventoryPrice =
+                            inventoryPrices[
+                              productType as keyof typeof inventoryPrices
+                            ];
+                          const defaultPrice =
+                            customPrice || inventoryPrice || 0;
+
+                          return (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2">
+                                💰 Precio Unitario
+                                {customPrice && (
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
+                                    Personalizado
+                                  </Badge>
+                                )}
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  placeholder=""
+                                  value={field.value || ''}
+                                  onChange={(e) => {
+                                    const unitCost =
+                                      parseFloat(e.target.value) || 0;
+                                    field.onChange(unitCost);
+                                    const quantity = form.getValues(
+                                      `items.${index}.quantity`
+                                    );
+                                    form.setValue(
+                                      `items.${index}.total_cost`,
+                                      unitCost * quantity
+                                    );
+                                  }}
+                                  onFocus={(e) => {
+                                    // Si el campo está vacío, cargar precio por defecto
+                                    if (!field.value && defaultPrice > 0) {
+                                      field.onChange(defaultPrice);
+                                      const quantity = form.getValues(
+                                        `items.${index}.quantity`
+                                      );
+                                      form.setValue(
+                                        `items.${index}.total_cost`,
+                                        defaultPrice * quantity
+                                      );
+                                    }
+                                  }}
+                                  className="text-right"
+                                  inputMode="decimal"
+                                />
+                              </FormControl>
+                              {customPrice && (
+                                <div className="text-xs text-green-600">
+                                  Precio personalizado: ${customPrice}
+                                </div>
+                              )}
+                              {!customPrice && inventoryPrice && (
+                                <div className="text-xs text-gray-500">
+                                  Precio estándar: ${inventoryPrice}
+                                </div>
+                              )}
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
                       />
 
                       {/* Total y Botón Eliminar */}

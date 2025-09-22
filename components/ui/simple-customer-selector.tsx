@@ -229,6 +229,28 @@ export function SimpleCustomerSelector({
 
               {/* Información del Cliente */}
               <div className="space-y-3">
+                {/* Nombre del Cliente */}
+                <div>
+                  <Label className="text-xs font-medium text-gray-600">
+                    <User className="h-3 w-3 inline mr-1" />
+                    Nombre del Cliente *
+                  </Label>
+                  {isEditing ? (
+                    <Input
+                      value={selectedCustomer.name}
+                      onChange={(e) =>
+                        updateCustomerField('name', e.target.value)
+                      }
+                      placeholder="Nombre completo del cliente"
+                      className="text-sm h-8"
+                    />
+                  ) : (
+                    <div className="text-sm text-gray-700 p-2 bg-white rounded border">
+                      {selectedCustomer.name}
+                    </div>
+                  )}
+                </div>
+
                 {/* Datos Básicos */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
@@ -273,41 +295,18 @@ export function SimpleCustomerSelector({
                   </div>
                 </div>
 
-                {/* Precios Personalizados */}
+                {/* Indicador de precios personalizados */}
                 {Object.keys(selectedCustomer.custom_prices).length > 0 && (
-                  <div className="p-3 bg-green-50 border border-green-200 rounded">
-                    <div className="flex items-center gap-2 mb-2">
-                      <DollarSign className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-800">
-                        Precios Personalizados
+                  <div className="p-2 bg-green-50 border border-green-200 rounded">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="h-3 w-3 text-green-600" />
+                      <span className="text-xs text-green-700">
+                        ✅ Este cliente tiene precios personalizados
                       </span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {Object.entries(selectedCustomer.custom_prices).map(
-                        ([type, price]) => (
-                          <div key={type} className="text-xs">
-                            <Label className="text-gray-600">{type}</Label>
-                            {isEditing ? (
-                              <Input
-                                type="number"
-                                step="0.01"
-                                value={price}
-                                onChange={(e) =>
-                                  updateCustomPrice(
-                                    type,
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                                className="text-xs h-8"
-                              />
-                            ) : (
-                              <div className="text-sm font-medium text-green-700 p-1 bg-white rounded border">
-                                ${price}
-                              </div>
-                            )}
-                          </div>
-                        )
-                      )}
+                    <div className="text-xs text-gray-600 mt-1">
+                      Los precios se aplicarán automáticamente en "Productos y
+                      Detalles"
                     </div>
                   </div>
                 )}
