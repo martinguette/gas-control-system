@@ -349,6 +349,26 @@ export function EnhancedSaleForm({ onSuccess }: EnhancedSaleFormProps) {
                       : 'Datos del cliente'}
                   </div>
 
+                  <FormField
+                    control={form.control}
+                    name="customer_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1">
+                          <User className="h-3 w-3" />
+                          Nombre del Cliente *
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Nombre completo del cliente"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
