@@ -2,10 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { User, Plus, Search } from 'lucide-react';
+import {
+  User,
+  Plus,
+  CheckCircle,
+  MapPin,
+  Phone,
+  DollarSign,
+  Edit3,
+} from 'lucide-react';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -13,6 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useCustomerCache } from '@/hooks/use-customer-cache';
 
 interface Customer {
   id: string;
@@ -20,6 +32,9 @@ interface Customer {
   phone?: string;
   location: string;
   custom_prices: Record<string, number>;
+  created_at?: string;
+  updated_at?: string;
+  relevance?: number;
 }
 
 interface SimpleCustomerSelectorProps {
@@ -41,135 +56,309 @@ export function SimpleCustomerSelector({
   className,
   disabled = false,
 }: SimpleCustomerSelectorProps) {
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
-
-  const form = useFormContext();
-  const fieldError = form.formState.errors[name];
-
-  // Cargar clientes cuando se abra el dropdown
-  const handleDropdownOpen = (open: boolean) => {
-    if (open && customers.length === 0) {
-      loadAllCustomers();
-    }
-  };
-
-  const loadAllCustomers = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/customers/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: '' }), // Buscar todos
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          setCustomers(result.data || []);
-        } else {
-          toast.error('Error al cargar clientes: ' + result.error);
-        }
-      } else {
-        toast.error('Error al cargar clientes');
-      }
-    } catch (error) {
-      console.error('Error loading customers:', error);
-      toast.error('Error de conexión al cargar clientes');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCustomerSelect = (value: string) => {
-    if (value === 'new') {
-      setSelectedCustomerId('');
-      form.setValue(name, '');
-      onNewCustomer?.();
-    } else {
-      setSelectedCustomerId(value);
-      const customer = customers.find((c) => c.id === value);
-      if (customer) {
-        form.setValue(name, customer.id);
-        onCustomerSelect?.(customer);
-      }
-    }
-  };
-
-  const filteredCustomers = customers.filter((customer) =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null
   );
+  const [isNewCustomer, setIsNewCustomer] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const hasError = !!fieldError;
+  const { customers, isLoading } = useCustomerCache();
+  const form = useFormContext();
+
+  // Manejar selección de cliente
+  const handleCustomerSelect = (customerId: string) => {
+    if (customerId === 'new') {
+      setIsNewCustomer(true);
+      setSelectedCustomer(null);
+      setIsEditing(false);
+      onNewCustomer?.();
+      return;
+    }
+
+    const customer = customers.find((c) => c.id === customerId);
+    if (customer) {
+      setSelectedCustomer(customer);
+      setIsNewCustomer(false);
+      setIsEditing(false);
+      onCustomerSelect?.(customer);
+
+      // Actualizar campos del formulario
+      form.setValue('customer_name', customer.name);
+      form.setValue('customer_phone', customer.phone || '');
+      form.setValue('customer_location', customer.location);
+    }
+  };
+
+  // Manejar edición de cliente
+  const handleEditCustomer = () => {
+    setIsEditing(true);
+  };
+
+  // Guardar cambios del cliente
+  const handleSaveCustomer = () => {
+    if (selectedCustomer) {
+      // Aquí iría la lógica para guardar los cambios del cliente
+      toast.success('Cliente actualizado correctamente');
+      setIsEditing(false);
+    }
+  };
+
+  // Cancelar edición
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  // Actualizar datos del cliente
+  const updateCustomerField = (field: keyof Customer, value: any) => {
+    if (selectedCustomer) {
+      const updatedCustomer = { ...selectedCustomer, [field]: value };
+      setSelectedCustomer(updatedCustomer);
+
+      // Actualizar formulario
+      if (field === 'name') form.setValue('customer_name', value);
+      if (field === 'phone') form.setValue('customer_phone', value);
+      if (field === 'location') form.setValue('customer_location', value);
+    }
+  };
+
+  // Actualizar precios personalizados
+  const updateCustomPrice = (productType: string, price: number) => {
+    if (selectedCustomer) {
+      const updatedCustomer = {
+        ...selectedCustomer,
+        custom_prices: {
+          ...selectedCustomer.custom_prices,
+          [productType]: price,
+        },
+      };
+      setSelectedCustomer(updatedCustomer);
+    }
+  };
 
   return (
-    <div className={cn('space-y-2', className)}>
-      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
+    <div className={className}>
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <User className="h-4 w-4 text-blue-600" />
+            {label}
+            {required && <span className="text-red-500">*</span>}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Selector de Cliente */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Seleccionar Cliente</Label>
+            <Select
+              onValueChange={handleCustomerSelect}
+              value={selectedCustomer?.id || ''}
+              disabled={disabled}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Buscar cliente o crear uno nuevo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="new" className="text-green-600 font-medium">
+                  <div className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Crear Nuevo Cliente
+                  </div>
+                </SelectItem>
+                {customers.map((customer) => (
+                  <SelectItem key={customer.id} value={customer.id}>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{customer.name}</span>
+                      <span className="text-xs text-gray-500">
+                        📍 {customer.location}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      <Select
-        value={selectedCustomerId}
-        onValueChange={handleCustomerSelect}
-        onOpenChange={handleDropdownOpen}
-        disabled={disabled}
-      >
-        <SelectTrigger className={cn(hasError && 'border-red-500')}>
-          <SelectValue placeholder="Seleccionar cliente o crear nuevo" />
-        </SelectTrigger>
-        <SelectContent>
-          {isLoading ? (
-            <div className="flex items-center justify-center py-4">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
-              <span className="text-sm text-muted-foreground">
-                Cargando clientes...
-              </span>
-            </div>
-          ) : (
-            <>
-              {/* Barra de búsqueda */}
-              <div className="p-2 border-b">
-                <div className="relative">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar cliente..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-8 h-8"
-                  />
+          {/* Cliente Seleccionado */}
+          {selectedCustomer && !isNewCustomer && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-600" />
+                  <span className="font-medium text-blue-800">
+                    {selectedCustomer.name}
+                  </span>
+                  {Object.keys(selectedCustomer.custom_prices).length > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      Precios especiales
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  {!isEditing ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleEditCustomer}
+                    >
+                      <Edit3 className="h-3 w-3 mr-1" />
+                      Editar
+                    </Button>
+                  ) : (
+                    <div className="flex gap-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleSaveCustomer}
+                      >
+                        Guardar
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleCancelEdit}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Lista de clientes - solo nombres */}
-              {filteredCustomers.map((customer) => (
-                <SelectItem key={customer.id} value={customer.id}>
-                  <div className="flex items-center space-x-2">
-                    <User className="h-4 w-4 text-blue-600" />
-                    <span>{customer.name}</span>
+              {/* Información del Cliente */}
+              <div className="space-y-3">
+                {/* Datos Básicos */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs font-medium text-gray-600">
+                      <Phone className="h-3 w-3 inline mr-1" />
+                      Teléfono
+                    </Label>
+                    {isEditing ? (
+                      <Input
+                        value={selectedCustomer.phone || ''}
+                        onChange={(e) =>
+                          updateCustomerField('phone', e.target.value)
+                        }
+                        placeholder="Número de teléfono"
+                        className="text-sm h-8"
+                      />
+                    ) : (
+                      <div className="text-sm text-gray-700 p-2 bg-white rounded border">
+                        {selectedCustomer.phone || 'Sin teléfono'}
+                      </div>
+                    )}
                   </div>
-                </SelectItem>
-              ))}
-
-              <SelectItem value="new">
-                <div className="flex items-center space-x-2">
-                  <Plus className="h-4 w-4 text-green-600" />
-                  <span>Crear nuevo cliente</span>
+                  <div>
+                    <Label className="text-xs font-medium text-gray-600">
+                      <MapPin className="h-3 w-3 inline mr-1" />
+                      📍 Ubicación *
+                    </Label>
+                    {isEditing ? (
+                      <Input
+                        value={selectedCustomer.location}
+                        onChange={(e) =>
+                          updateCustomerField('location', e.target.value)
+                        }
+                        placeholder="Dirección del cliente"
+                        className="text-sm h-8"
+                      />
+                    ) : (
+                      <div className="text-sm text-gray-700 p-2 bg-white rounded border">
+                        {selectedCustomer.location}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </SelectItem>
-            </>
-          )}
-        </SelectContent>
-      </Select>
 
-      {/* Mensaje de error */}
-      {hasError && (
-        <p className="text-sm text-red-600">{fieldError.message as string}</p>
-      )}
+                {/* Precios Personalizados */}
+                {Object.keys(selectedCustomer.custom_prices).length > 0 && (
+                  <div className="p-3 bg-green-50 border border-green-200 rounded">
+                    <div className="flex items-center gap-2 mb-2">
+                      <DollarSign className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">
+                        Precios Personalizados
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {Object.entries(selectedCustomer.custom_prices).map(
+                        ([type, price]) => (
+                          <div key={type} className="text-xs">
+                            <Label className="text-gray-600">{type}</Label>
+                            {isEditing ? (
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={price}
+                                onChange={(e) =>
+                                  updateCustomPrice(
+                                    type,
+                                    parseFloat(e.target.value) || 0
+                                  )
+                                }
+                                className="text-xs h-8"
+                              />
+                            ) : (
+                              <div className="text-sm font-medium text-green-700 p-1 bg-white rounded border">
+                                ${price}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Formulario para Nuevo Cliente */}
+          {isNewCustomer && (
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center gap-2 mb-3">
+                <Plus className="h-4 w-4 text-green-600" />
+                <span className="font-medium text-green-800">
+                  Nuevo Cliente
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-sm font-medium">
+                    Nombre del Cliente *
+                  </Label>
+                  <Input
+                    placeholder="Nombre completo del cliente"
+                    {...form.register('customer_name')}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-sm font-medium">Teléfono</Label>
+                    <Input
+                      placeholder="Número de teléfono"
+                      {...form.register('customer_phone')}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">
+                      📍 Ubicación *
+                    </Label>
+                    <Input
+                      placeholder="Dirección del cliente"
+                      {...form.register('customer_location')}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

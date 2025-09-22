@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { EnhancedCustomerSelector } from '@/components/ui/enhanced-customer-selector';
+import { SimpleCustomerSelector } from '@/components/ui/simple-customer-selector';
 import { ConnectionStatus } from '@/components/ui/connection-status';
 import { saleSchema, saleItemSchema } from '@/lib/validations';
 import { SaleFormData, SaleItem } from '@/types';
@@ -331,106 +331,13 @@ export function EnhancedSaleForm({ onSuccess }: EnhancedSaleFormProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <EnhancedCustomerSelector
-                name="customer_name"
+              <SimpleCustomerSelector
+                name="customer_id"
                 label="Cliente"
                 required
                 onCustomerSelect={handleCustomerSelect}
                 onNewCustomer={handleNewCustomer}
-                showCustomerDetails={true}
               />
-
-              {/* Campos de cliente (solo para nuevos clientes o cuando no hay selección) */}
-              {(isNewCustomer || !selectedCustomer) && (
-                <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                  <div className="text-sm font-medium text-gray-700">
-                    {isNewCustomer
-                      ? 'Datos del nuevo cliente'
-                      : 'Datos del cliente'}
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="customer_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1">
-                          <User className="h-3 w-3" />
-                          Nombre del Cliente *
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Nombre completo del cliente"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="customer_phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center gap-1">
-                            <Phone className="h-3 w-3" />
-                            Teléfono
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Número de teléfono"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="customer_location"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            Ubicación *
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Dirección o ubicación"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Información del cliente seleccionado */}
-              {selectedCustomer && (
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-center gap-2 text-green-800">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="font-medium">Cliente seleccionado</span>
-                  </div>
-                  <div className="mt-2 text-sm text-green-700">
-                    <div>📞 {selectedCustomer.phone || 'Sin teléfono'}</div>
-                    <div>📍 {selectedCustomer.location}</div>
-                    {Object.keys(selectedCustomer.custom_prices).length > 0 && (
-                      <div className="text-xs text-green-600 mt-1">
-                        ✅ Precios personalizados disponibles
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
 
