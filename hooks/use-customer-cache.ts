@@ -9,6 +9,9 @@ interface Customer {
   phone?: string;
   location: string;
   custom_prices: Record<string, number>;
+  created_at?: string;
+  updated_at?: string;
+  relevance?: number;
 }
 
 interface UseCustomerCacheReturn {
@@ -16,14 +19,18 @@ interface UseCustomerCacheReturn {
   isLoading: boolean;
   isOffline: boolean;
   lastUpdated: Date | null;
-  refreshCustomers: () => Promise<void>;
+  refreshCustomers: (searchTerm?: string) => Promise<void>;
+  searchCustomers: (searchTerm: string) => Promise<Customer[]>;
   addCustomer: (customer: Customer) => void;
   updateCustomer: (customer: Customer) => void;
+  syncPendingData: () => Promise<void>;
 }
 
 const CACHE_KEY = 'gas-control-customers-cache';
 const CACHE_EXPIRY_KEY = 'gas-control-customers-cache-expiry';
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+const PENDING_SALES_KEY = 'gas-control-pending-sales';
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutos
+const OFFLINE_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas para modo offline
 
 export function useCustomerCache(): UseCustomerCacheReturn {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -76,60 +83,106 @@ export function useCustomerCache(): UseCustomerCacheReturn {
     }
   }, []);
 
-  const refreshCustomers = useCallback(async () => {
-    setIsLoading(true);
-    setIsOffline(false);
+  const refreshCustomers = useCallback(
+    async (searchTerm: string = '') => {
+      setIsLoading(true);
+      setIsOffline(false);
 
-    try {
-      console.log('🔄 Actualizando clientes desde servidor...');
-      const response = await fetch('/api/customers/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: '' }),
-      });
+      try {
+        console.log('🔄 Actualizando clientes desde servidor...', {
+          searchTerm,
+        });
+        const response = await fetch('/api/customers/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: searchTerm,
+            limit: searchTerm ? 20 : 100, // Menos resultados para búsquedas específicas
+          }),
+        });
 
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          const customersData = result.data || [];
-          setCustomers(customersData);
-          saveToCache(customersData);
-          console.log('✅ Clientes actualizados:', customersData.length);
-        } else {
-          console.error('❌ Error en respuesta:', result.error);
-          // Si falla, intentar cargar desde cache
-          if (customers.length === 0) {
-            loadFromCache();
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            const customersData = result.data || [];
+
+            if (searchTerm) {
+              // Para búsquedas, no actualizar el cache completo
+              return customersData;
+            } else {
+              // Para carga completa, actualizar cache
+              setCustomers(customersData);
+              saveToCache(customersData);
+              console.log('✅ Clientes actualizados:', customersData.length);
+            }
+          } else {
+            console.error('❌ Error en respuesta:', result.error);
+            throw new Error(result.error);
           }
+        } else {
+          console.error('❌ Error HTTP:', response.status);
+          throw new Error(`HTTP ${response.status}`);
         }
-      } else {
-        console.error('❌ Error HTTP:', response.status);
+      } catch (error) {
+        console.error('❌ Error de conexión:', error);
+        setIsOffline(true);
+
         // Si falla, intentar cargar desde cache
         if (customers.length === 0) {
-          loadFromCache();
-        }
-      }
-    } catch (error) {
-      console.error('❌ Error de conexión:', error);
-      setIsOffline(true);
-
-      // Si falla, intentar cargar desde cache
-      if (customers.length === 0) {
-        const cacheLoaded = loadFromCache();
-        if (!cacheLoaded) {
-          toast.error('Sin conexión y sin datos en cache');
+          const cacheLoaded = loadFromCache();
+          if (!cacheLoaded) {
+            toast.error('Sin conexión y sin datos en cache');
+          } else {
+            toast.warning('Modo offline - usando datos en cache');
+          }
         } else {
-          toast.warning('Modo offline - usando datos en cache');
+          toast.warning('Sin conexión - usando datos en cache');
         }
-      } else {
-        toast.warning('Sin conexión - usando datos en cache');
+
+        throw error;
+      } finally {
+        setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [customers.length, loadFromCache, saveToCache]);
+    },
+    [customers.length, loadFromCache, saveToCache]
+  );
+
+  // Nueva función para búsqueda específica
+  const searchCustomers = useCallback(
+    async (searchTerm: string): Promise<Customer[]> => {
+      if (!searchTerm.trim()) {
+        return customers;
+      }
+
+      try {
+        // Primero buscar en cache local
+        const localResults = customers.filter(
+          (customer) =>
+            customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            customer.phone?.includes(searchTerm) ||
+            customer.location.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        if (localResults.length > 0) {
+          console.log(
+            '🔍 Resultados encontrados en cache local:',
+            localResults.length
+          );
+          return localResults;
+        }
+
+        // Si no hay resultados locales, buscar en servidor
+        const serverResults = await refreshCustomers(searchTerm);
+        return serverResults || [];
+      } catch (error) {
+        console.error('❌ Error en búsqueda:', error);
+        return [];
+      }
+    },
+    [customers, refreshCustomers]
+  );
 
   const addCustomer = useCallback(
     (customer: Customer) => {
@@ -155,13 +208,50 @@ export function useCustomerCache(): UseCustomerCacheReturn {
     [saveToCache]
   );
 
+  // Función para sincronizar datos pendientes
+  const syncPendingData = useCallback(async () => {
+    try {
+      console.log('🔄 Sincronizando datos pendientes...');
+
+      const response = await fetch('/api/sync/offline', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'sync_pending_sales',
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          const { processed, failed } = result.data;
+          console.log('✅ Sincronización completada:', { processed, failed });
+
+          if (processed > 0) {
+            toast.success(`${processed} ventas sincronizadas`);
+          }
+          if (failed > 0) {
+            toast.warning(`${failed} ventas fallaron al sincronizar`);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error sincronizando datos:', error);
+      toast.error('Error al sincronizar datos pendientes');
+    }
+  }, []);
+
   return {
     customers,
     isLoading,
     isOffline,
     lastUpdated,
     refreshCustomers,
+    searchCustomers,
     addCustomer,
     updateCustomer,
+    syncPendingData,
   };
 }

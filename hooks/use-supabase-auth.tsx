@@ -39,14 +39,14 @@ export const SupabaseAuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserRole = async (userId: string) => {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('profiles')
         .select('role')
         .eq('id', userId)
         .single();
 
       if (error) {
         console.error('Error fetching user role:', error);
-        // Si no existe en la tabla users, usar rol por defecto
+        // Si no existe en la tabla profiles, usar rol por defecto
         return 'vendedor';
       }
 
