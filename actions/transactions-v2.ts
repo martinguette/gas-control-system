@@ -114,6 +114,16 @@ export async function createSale(formData: SaleFormData) {
     }
 
     // Crear la venta usando la nueva función
+    console.log('🛒 Llamando a create_sale_with_items con datos:', {
+      p_vendor_id: user.id,
+      p_customer_name: saleData.customer_name,
+      p_sale_type: saleData.sale_type,
+      p_payment_method: saleData.payment_method,
+      p_items: saleData.items,
+      p_customer_phone: saleData.customer_phone || null,
+      p_customer_location: saleData.customer_location,
+    });
+
     const { data: saleId, error: saleError } = await supabase.rpc(
       'create_sale_with_items',
       {

@@ -52,10 +52,21 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('❌ API Sales - Error general:', error);
+    console.error(
+      '❌ API Sales - Error stack:',
+      error instanceof Error ? error.stack : 'No stack available'
+    );
+    console.error(
+      '❌ API Sales - Error message:',
+      error instanceof Error ? error.message : String(error)
+    );
+
     return NextResponse.json(
       {
         success: false,
-        error: 'Error interno del servidor',
+        error: `Error interno del servidor: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
       },
       { status: 500 }
     );
