@@ -128,10 +128,16 @@ export async function createSale(formData: SaleFormData) {
     );
 
     if (saleError) {
-      console.error('Error creating sale:', saleError);
+      console.error('❌ Error creating sale:', saleError);
+      console.error('❌ Error details:', {
+        message: saleError.message,
+        details: saleError.details,
+        hint: saleError.hint,
+        code: saleError.code,
+      });
       return {
         success: false,
-        error: 'Error al registrar la venta. Inténtalo de nuevo.',
+        error: `Error al registrar la venta: ${saleError.message}`,
       };
     }
 
