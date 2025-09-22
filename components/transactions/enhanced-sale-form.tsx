@@ -50,6 +50,7 @@ import {
   WifiOff,
   Clock,
   CheckCircle,
+  RefreshCw,
 } from 'lucide-react';
 
 // Constantes para las opciones del formulario

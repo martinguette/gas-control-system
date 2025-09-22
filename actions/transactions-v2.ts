@@ -66,7 +66,7 @@ export async function createSale(formData: SaleFormData) {
         .from('inventory_full')
         .select('quantity, unit_cost')
         .eq('type', item.product_type)
-        .single();
+        .maybeSingle();
 
       console.log('📦 Resultado consulta inventario:', {
         inventory,
@@ -88,7 +88,7 @@ export async function createSale(formData: SaleFormData) {
         );
         return {
           success: false,
-          error: `No existe registro de inventario para cilindros ${item.product_type}`,
+          error: `No existe registro de inventario para cilindros ${item.product_type}. Por favor, contacta al administrador para configurar el inventario.`,
         };
       }
 
