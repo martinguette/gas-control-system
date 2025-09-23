@@ -509,13 +509,13 @@ export function EnhancedSaleForm({ onSuccess }: EnhancedSaleFormProps) {
                               <FormControl>
                                 <Input
                                   type="number"
-                                  step="0.01"
+                                  step="1"
                                   min="0"
                                   placeholder=""
                                   value={field.value || ''}
                                   onChange={(e) => {
                                     const unitCost =
-                                      parseFloat(e.target.value) || 0;
+                                      parseInt(e.target.value) || 0;
                                     field.onChange(unitCost);
                                     const quantity = form.getValues(
                                       `items.${index}.quantity`
@@ -528,28 +528,29 @@ export function EnhancedSaleForm({ onSuccess }: EnhancedSaleFormProps) {
                                   onFocus={(e) => {
                                     // Si el campo está vacío, cargar precio por defecto
                                     if (!field.value && defaultPrice > 0) {
-                                      field.onChange(defaultPrice);
+                                      field.onChange(Math.round(defaultPrice));
                                       const quantity = form.getValues(
                                         `items.${index}.quantity`
                                       );
                                       form.setValue(
                                         `items.${index}.total_cost`,
-                                        defaultPrice * quantity
+                                        Math.round(defaultPrice) * quantity
                                       );
                                     }
                                   }}
                                   className="text-right"
-                                  inputMode="decimal"
+                                  inputMode="numeric"
                                 />
                               </FormControl>
                               {customPrice && (
                                 <div className="text-xs text-green-600">
-                                  Precio personalizado: ${customPrice}
+                                  Precio personalizado: $
+                                  {Math.round(customPrice)}
                                 </div>
                               )}
                               {!customPrice && inventoryPrice && (
                                 <div className="text-xs text-gray-500">
-                                  Precio estándar: ${inventoryPrice}
+                                  Precio estándar: ${Math.round(inventoryPrice)}
                                 </div>
                               )}
                               <FormMessage />
