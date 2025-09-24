@@ -616,6 +616,7 @@ export async function createCustomer(customerData: {
   name: string;
   phone?: string;
   location?: string;
+  custom_prices?: Record<string, number>;
 }) {
   const supabase = await createClient();
 
@@ -651,7 +652,7 @@ export async function createCustomer(customerData: {
         name: customerData.name.trim(),
         phone: customerData.phone?.trim() || null,
         location: customerData.location?.trim() || null,
-        custom_prices: {},
+        custom_prices: customerData.custom_prices || {},
       })
       .select()
       .single();

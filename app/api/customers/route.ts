@@ -4,7 +4,7 @@ import { createCustomer, updateCustomer } from '@/actions/transactions-v2';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, phone, location } = body;
+    const { name, phone, location, custom_prices } = body;
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return NextResponse.json(
@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
       name: name.trim(),
       phone: phone?.trim() || undefined,
       location: location?.trim() || undefined,
+      custom_prices: custom_prices || {},
     });
 
     if (!result.success) {

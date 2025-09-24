@@ -67,6 +67,7 @@ export function CustomerTester({ onCustomerCreated }: CustomerTesterProps) {
 
     try {
       console.log('👤 Creando cliente:', data);
+      console.log('💰 Precios personalizados:', customPrices);
 
       const response = await fetch('/api/customers', {
         method: 'POST',
@@ -90,7 +91,16 @@ export function CustomerTester({ onCustomerCreated }: CustomerTesterProps) {
       if (result.success) {
         const newCustomer = result.data;
         setCreatedCustomers((prev) => [...prev, newCustomer]);
-        toast.success('Cliente creado exitosamente');
+
+        // Mostrar notificación con precios personalizados
+        const customPricesCount = Object.keys(customPrices).length;
+        if (customPricesCount > 0) {
+          toast.success(
+            `Cliente creado con ${customPricesCount} precio(s) personalizado(s)`
+          );
+        } else {
+          toast.success('Cliente creado exitosamente');
+        }
 
         form.reset();
         setCustomPrices({});
