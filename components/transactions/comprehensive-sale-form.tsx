@@ -324,6 +324,18 @@ export function ComprehensiveSaleForm({
       // Si no hay cliente seleccionado pero hay nombre, crear nuevo cliente
       if (!selectedCustomer && data.customer_name) {
         console.log('👤 Creando nuevo cliente...');
+
+        // Recopilar precios personalizados de los items
+        const customPrices: Record<string, number> = {};
+        data.items.forEach((item) => {
+          const standardPrice = inventoryPrices[item.product_type] || 0;
+          if (item.unit_cost !== standardPrice && item.unit_cost > 0) {
+            customPrices[item.product_type] = item.unit_cost;
+          }
+        });
+
+        console.log('💰 Precios personalizados recopilados:', customPrices);
+
         const createCustomerResponse = await fetch('/api/customers', {
           method: 'POST',
           headers: {
@@ -333,7 +345,7 @@ export function ComprehensiveSaleForm({
             name: data.customer_name,
             phone: data.customer_phone,
             location: data.customer_location,
-            custom_prices: {},
+            custom_prices: customPrices,
           }),
         });
 
@@ -342,7 +354,16 @@ export function ComprehensiveSaleForm({
           if (createResult.success) {
             console.log('✅ Cliente creado exitosamente');
             customerId = createResult.data.id;
-            toast.success('Cliente creado exitosamente');
+
+            // Mostrar notificación con precios personalizados
+            const customPricesCount = Object.keys(customPrices).length;
+            if (customPricesCount > 0) {
+              toast.success(
+                `Cliente creado con ${customPricesCount} precio(s) personalizado(s)`
+              );
+            } else {
+              toast.success('Cliente creado exitosamente');
+            }
           }
         }
       }
