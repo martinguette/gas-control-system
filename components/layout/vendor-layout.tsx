@@ -11,6 +11,7 @@ import {
   Fuel,
   Receipt,
   Clock,
+  TestTube,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSupabaseAuth } from '@/hooks/use-supabase-auth';
@@ -46,9 +47,9 @@ export default function VendorLayout({ children }: VendorLayoutProps) {
       label: 'Historial',
     },
     {
-      href: '/dashboard/vendor/reports',
-      icon: BarChart3,
-      label: 'Reportes',
+      href: '/dashboard/vendor/test-sales',
+      icon: TestTube,
+      label: 'Pruebas',
     },
   ];
 

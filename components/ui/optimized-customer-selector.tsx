@@ -65,13 +65,17 @@ export function OptimizedCustomerSelector({
   const handleCustomerSelect = (value: string) => {
     if (value === 'new') {
       setSelectedCustomerId('');
-      form.setValue(name, '');
+      if (name) {
+        form.setValue(name, '');
+      }
       onNewCustomer?.();
     } else {
       setSelectedCustomerId(value);
       const customer = customers.find((c) => c.id === value);
       if (customer) {
-        form.setValue(name, customer.name); // Usar el nombre en lugar del ID
+        if (name) {
+          form.setValue(name, customer.name); // Usar el nombre en lugar del ID
+        }
         onCustomerSelect?.(customer);
       }
     }
