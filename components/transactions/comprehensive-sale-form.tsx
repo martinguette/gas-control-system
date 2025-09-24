@@ -189,6 +189,13 @@ export function ComprehensiveSaleForm({
         form.setValue(`items.${index}.total_cost`, customPrice * quantity);
       }
     });
+
+    // Mostrar notificación si el cliente tiene precios personalizados
+    if (Object.keys(customer.custom_prices).length > 0) {
+      toast.success(
+        `Cliente seleccionado con precios personalizados aplicados`
+      );
+    }
   };
 
   // Crear nuevo cliente
@@ -209,6 +216,13 @@ export function ComprehensiveSaleForm({
     form.setValue(`items.${index}.unit_cost`, price);
     const quantity = form.getValues(`items.${index}.quantity`);
     form.setValue(`items.${index}.total_cost`, price * quantity);
+
+    // Mostrar notificación si se aplicó precio personalizado
+    if (selectedCustomer?.custom_prices[productType]) {
+      toast.info(
+        `Precio personalizado aplicado: $${price} para ${productType}`
+      );
+    }
   };
 
   // Manejar cambio de cantidad
@@ -225,7 +239,8 @@ export function ComprehensiveSaleForm({
 
   // Agregar nuevo item
   const addItem = () => {
-    const defaultPrice = inventoryPrices['33lb'] || 0;
+    const defaultPrice =
+      selectedCustomer?.custom_prices['33lb'] || inventoryPrices['33lb'] || 0;
     append({
       product_type: '33lb',
       quantity: 1,
