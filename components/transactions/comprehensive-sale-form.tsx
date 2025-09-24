@@ -170,7 +170,7 @@ export function ComprehensiveSaleForm({
   }, [inventoryPrices, selectedCustomer, items, form]);
 
   // Seleccionar cliente existente
-  const handleCustomerSelect = (customer: Customer) => {
+  const handleCustomerSelect = (customer: any) => {
     setSelectedCustomer(customer);
     setIsNewCustomer(false);
 
@@ -235,6 +235,12 @@ export function ComprehensiveSaleForm({
   const handleUnitCostChange = (index: number, unitCost: number) => {
     const quantity = form.getValues(`items.${index}.quantity`);
     form.setValue(`items.${index}.total_cost`, unitCost * quantity);
+
+    // Si hay un cliente seleccionado, actualizar automáticamente su precio personalizado
+    if (selectedCustomer && unitCost > 0) {
+      const productType = form.getValues(`items.${index}.product_type`);
+      updateCustomerCustomPrice(selectedCustomer.id, productType, unitCost);
+    }
   };
 
   // Agregar nuevo item
@@ -281,6 +287,60 @@ export function ComprehensiveSaleForm({
       ...prev,
       [index]: false,
     }));
+  };
+
+  // Actualizar precio personalizado del cliente automáticamente
+  const updateCustomerCustomPrice = async (
+    customerId: string,
+    productType: string,
+    newPrice: number
+  ) => {
+    try {
+      // Actualizar el estado local del cliente seleccionado
+      if (selectedCustomer) {
+        const updatedCustomer = {
+          ...selectedCustomer,
+          custom_prices: {
+            ...selectedCustomer.custom_prices,
+            [productType]: newPrice,
+          },
+        };
+        setSelectedCustomer(updatedCustomer);
+      }
+
+      // Actualizar en la base de datos
+      const response = await fetch('/api/customers', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: customerId,
+          name: selectedCustomer?.name,
+          phone: selectedCustomer?.phone,
+          location: selectedCustomer?.location,
+          custom_prices: {
+            ...selectedCustomer?.custom_prices,
+            [productType]: newPrice,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        console.log(
+          `✅ Precio personalizado actualizado: ${productType} = $${newPrice}`
+        );
+        toast.success(
+          `Precio personalizado actualizado para ${productType}: $${newPrice}`
+        );
+      } else {
+        console.error('❌ Error actualizando precio personalizado');
+        toast.error('Error al actualizar precio personalizado');
+      }
+    } catch (error) {
+      console.error('❌ Error en updateCustomerCustomPrice:', error);
+      toast.error('Error al actualizar precio personalizado');
+    }
   };
 
   // Obtener precio para mostrar
@@ -430,7 +490,6 @@ export function ComprehensiveSaleForm({
                     name="customer_name"
                     label="Cliente"
                     onCustomerSelect={handleCustomerSelect}
-                    selectedCustomer={selectedCustomer}
                   />
                   <Button
                     type="button"
