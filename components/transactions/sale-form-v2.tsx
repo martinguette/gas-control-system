@@ -708,115 +708,125 @@ export function SaleFormV2({ onSuccess }: SaleFormProps) {
 
             <Separator />
 
-            {/* Método de Pago - Solo después de seleccionar tipo de venta */}
-            {showSaleTypeSelection && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <DollarSign className="h-4 w-4 text-green-600" />
-                  <h3 className="font-medium text-sm text-gray-900">
-                    Método de Pago
-                  </h3>
+            {/* Método de Pago - Solo después de agregar cilindros */}
+            {showSaleTypeSelection &&
+              ((selectedSaleType === 'intercambio' &&
+                exchangeItems.length > 0) ||
+                (selectedSaleType !== 'intercambio' && items.length > 0)) && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <DollarSign className="h-4 w-4 text-green-600" />
+                    <h3 className="font-medium text-sm text-gray-900">
+                      Método de Pago
+                    </h3>
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="payment_method"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Método de Pago *</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="text-sm">
+                              <SelectValue placeholder="Selecciona el método" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {PAYMENT_METHODS.map((method) => (
+                              <SelectItem
+                                key={method.value}
+                                value={method.value}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span>{method.icon}</span>
+                                  <span>{method.label}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
+              )}
 
-                <FormField
-                  control={form.control}
-                  name="payment_method"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Método de Pago *</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="text-sm">
-                            <SelectValue placeholder="Selecciona el método" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {PAYMENT_METHODS.map((method) => (
-                            <SelectItem key={method.value} value={method.value}>
-                              <div className="flex items-center gap-2">
-                                <span>{method.icon}</span>
-                                <span>{method.label}</span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            )}
-
-            {/* Resumen de la Transacción */}
-            {showSaleTypeSelection && (
-              <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                <h4 className="font-medium text-sm text-gray-900">
-                  Resumen de la Transacción
-                </h4>
-                <div className="text-sm text-gray-600 space-y-1">
-                  {selectedSaleType === 'intercambio' ? (
-                    // Resumen para intercambio
-                    <div className="space-y-2">
-                      <div className="text-blue-700">
-                        <p className="font-medium">Tipo: Intercambio</p>
-                        <p className="text-xs">
-                          Se entregarán{' '}
-                          {exchangeItems.reduce(
-                            (sum, item) => sum + item.quantity,
-                            0
-                          )}{' '}
-                          cilindros llenos
-                        </p>
+            {/* Resumen de la Transacción - Solo después de agregar cilindros */}
+            {showSaleTypeSelection &&
+              ((selectedSaleType === 'intercambio' &&
+                exchangeItems.length > 0) ||
+                (selectedSaleType !== 'intercambio' && items.length > 0)) && (
+                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                  <h4 className="font-medium text-sm text-gray-900">
+                    Resumen de la Transacción
+                  </h4>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    {selectedSaleType === 'intercambio' ? (
+                      // Resumen para intercambio
+                      <div className="space-y-2">
+                        <div className="text-blue-700">
+                          <p className="font-medium">Tipo: Intercambio</p>
+                          <p className="text-xs">
+                            Se entregarán{' '}
+                            {exchangeItems.reduce(
+                              (sum, item) => sum + item.quantity,
+                              0
+                            )}{' '}
+                            cilindros llenos
+                          </p>
+                        </div>
+                        {exchangeItems.map((item, index) => {
+                          const cylinderType = CYLINDER_TYPES.find(
+                            (type) => type.value === item.product_type
+                          );
+                          return (
+                            <div key={index} className="flex justify-between">
+                              <span>
+                                {item.quantity}x {cylinderType?.label}{' '}
+                                (Roscogas)
+                              </span>
+                              <span className="font-medium">
+                                ${item.total_cost.toFixed(2)}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
-                      {exchangeItems.map((item, index) => {
-                        const cylinderType = CYLINDER_TYPES.find(
-                          (type) => type.value === item.product_type
-                        );
-                        return (
-                          <div key={index} className="flex justify-between">
-                            <span>
-                              {item.quantity}x {cylinderType?.label} (Roscogas)
-                            </span>
-                            <span className="font-medium">
-                              ${item.total_cost.toFixed(2)}
-                            </span>
-                          </div>
-                        );
-                      })}
+                    ) : (
+                      // Resumen para otros tipos de venta
+                      <div>
+                        {items.map((item, index) => {
+                          const cylinderType = CYLINDER_TYPES.find(
+                            (type) => type.value === item.product_type
+                          );
+                          return (
+                            <div key={index} className="flex justify-between">
+                              <span>
+                                {item.quantity}x {cylinderType?.label}
+                              </span>
+                              <span className="font-medium">
+                                ${item.total_cost.toFixed(2)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                    <div className="flex justify-between border-t pt-2">
+                      <span className="font-medium">Total a Cobrar:</span>
+                      <span className="font-bold text-green-600 text-base">
+                        ${totalAmount.toFixed(2)}
+                      </span>
                     </div>
-                  ) : (
-                    // Resumen para otros tipos de venta
-                    <div>
-                      {items.map((item, index) => {
-                        const cylinderType = CYLINDER_TYPES.find(
-                          (type) => type.value === item.product_type
-                        );
-                        return (
-                          <div key={index} className="flex justify-between">
-                            <span>
-                              {item.quantity}x {cylinderType?.label}
-                            </span>
-                            <span className="font-medium">
-                              ${item.total_cost.toFixed(2)}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                  <div className="flex justify-between border-t pt-2">
-                    <span className="font-medium">Total a Cobrar:</span>
-                    <span className="font-bold text-green-600 text-base">
-                      ${totalAmount.toFixed(2)}
-                    </span>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Botones de Acción */}
             <div className="flex gap-3 pt-4">

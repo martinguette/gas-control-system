@@ -135,260 +135,178 @@ export function ExchangeFlowSimple({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Card para Agregar Cilindro Vacío */}
-      <Card className="border-blue-200 bg-blue-50">
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-2">
-            <Package className="h-4 w-4 text-blue-600" />
-            <CardTitle className="text-base text-blue-800">
-              Agregar Cilindro Vacío
-            </CardTitle>
-          </div>
-          <CardDescription className="text-blue-600">
-            Registra los cilindros vacíos que el cliente te entrega
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
-            <div>
-              <FormLabel className="text-xs text-blue-700">Marca</FormLabel>
-              <Select value={currentBrand} onValueChange={setCurrentBrand}>
-                <SelectTrigger className="text-sm border-blue-200">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CYLINDER_BRANDS.map((brand) => (
-                    <SelectItem key={brand.value} value={brand.value}>
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{
-                            backgroundColor:
-                              brand.color === 'Naranja'
-                                ? '#f97316'
-                                : brand.color === 'Azul'
-                                ? '#3b82f6'
-                                : brand.color === 'Verde Oscuro'
-                                ? '#166534'
-                                : brand.color === 'Verde Claro'
-                                ? '#22c55e'
-                                : '#6b7280',
-                          }}
-                        />
-                        <span>{brand.label}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {brand.color}
-                        </Badge>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+    <div className="space-y-4">
+      {/* Formulario Simple para Agregar Cilindro Vacío */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+        <h3 className="text-sm font-medium text-blue-800 mb-3">
+          Cilindros Vacíos que Recibes del Cliente
+        </h3>
 
-            <div>
-              <FormLabel className="text-xs text-blue-700">Tipo</FormLabel>
-              <Select value={currentType} onValueChange={setCurrentType}>
-                <SelectTrigger className="text-sm border-blue-200">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CYLINDER_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      <div className="flex items-center justify-between w-full">
-                        <span>{type.label}</span>
-                        <Badge variant="outline" className="ml-2 text-xs">
-                          {type.weight}kg
-                        </Badge>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <FormLabel className="text-xs text-blue-700">Cantidad</FormLabel>
-              <Input
-                type="number"
-                min="1"
-                max="100"
-                value={currentQuantity}
-                onChange={(e) =>
-                  setCurrentQuantity(parseInt(e.target.value) || 1)
-                }
-                className="text-sm border-blue-200"
-              />
-            </div>
-
-            <div>
-              <Button
-                type="button"
-                onClick={addEmptyCylinder}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Agregar Cilindro Vacío
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Resumen de Cilindros Vacíos Agregados */}
-      {emptyCylinders.length > 0 && (
-        <Card className="border-gray-200 bg-gray-50">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-gray-600" />
-              <CardTitle className="text-base text-gray-800">
-                Cilindros Vacíos Recibidos ({emptyCylinders.length})
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {emptyCylinders.map((cylinder) => (
-                <Card
-                  key={cylinder.id}
-                  className="p-3 bg-white border-gray-200"
-                >
-                  <div className="flex items-center justify-between">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-end">
+          <div>
+            <label className="text-xs text-blue-700 block mb-1">Marca</label>
+            <Select value={currentBrand} onValueChange={setCurrentBrand}>
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CYLINDER_BRANDS.map((brand) => (
+                  <SelectItem key={brand.value} value={brand.value}>
                     <div className="flex items-center gap-2">
                       <div
-                        className="w-4 h-4 rounded-full"
+                        className="w-3 h-3 rounded-full"
                         style={{
                           backgroundColor:
-                            getBrandColor(cylinder.brand) === 'Naranja'
+                            brand.color === 'Naranja'
                               ? '#f97316'
-                              : getBrandColor(cylinder.brand) === 'Azul'
+                              : brand.color === 'Azul'
                               ? '#3b82f6'
-                              : getBrandColor(cylinder.brand) === 'Verde Oscuro'
+                              : brand.color === 'Verde Oscuro'
                               ? '#166534'
-                              : getBrandColor(cylinder.brand) === 'Verde Claro'
+                              : brand.color === 'Verde Claro'
                               ? '#22c55e'
                               : '#6b7280',
                         }}
                       />
-                      <div>
-                        <p className="text-sm font-medium text-gray-800">
-                          {cylinder.brand} {cylinder.type}
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          {cylinder.quantity} unidades
-                        </p>
-                      </div>
+                      <span>{brand.label}</span>
                     </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeEmptyCylinder(cylinder.id)}
-                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 border-red-200"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      {/* Flecha de Proceso */}
+          <div>
+            <label className="text-xs text-blue-700 block mb-1">Tipo</label>
+            <Select value={currentType} onValueChange={setCurrentType}>
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CYLINDER_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="text-xs text-blue-700 block mb-1">Cantidad</label>
+            <Input
+              type="number"
+              min="1"
+              max="100"
+              value={currentQuantity}
+              onChange={(e) =>
+                setCurrentQuantity(parseInt(e.target.value) || 1)
+              }
+              className="h-9 text-sm"
+            />
+          </div>
+
+          <div>
+            <Button
+              type="button"
+              onClick={addEmptyCylinder}
+              className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white text-sm"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Agregar
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Resumen de Cilindros Vacíos - Cards Pequeños */}
       {emptyCylinders.length > 0 && (
-        <div className="flex justify-center">
-          <div className="flex items-center gap-2 text-blue-600">
-            <ArrowRight className="h-5 w-5" />
-            <span className="text-sm font-medium">Cálculo Automático</span>
-            <ArrowRight className="h-5 w-5" />
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h3 className="text-sm font-medium text-gray-800 mb-3">
+            Cilindros Vacíos Recibidos ({emptyCylinders.length})
+          </h3>
+
+          <div className="flex flex-wrap gap-2">
+            {emptyCylinders.map((cylinder) => (
+              <div
+                key={cylinder.id}
+                className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm"
+              >
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{
+                    backgroundColor:
+                      getBrandColor(cylinder.brand) === 'Naranja'
+                        ? '#f97316'
+                        : getBrandColor(cylinder.brand) === 'Azul'
+                        ? '#3b82f6'
+                        : getBrandColor(cylinder.brand) === 'Verde Oscuro'
+                        ? '#166534'
+                        : getBrandColor(cylinder.brand) === 'Verde Claro'
+                        ? '#22c55e'
+                        : '#6b7280',
+                  }}
+                />
+                <span className="text-sm text-gray-800">
+                  {cylinder.brand} {cylinder.type}
+                </span>
+                <Badge variant="outline" className="text-xs">
+                  {cylinder.quantity}
+                </Badge>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeEmptyCylinder(cylinder.id)}
+                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* Sección de Llenos a Entregar */}
+      {/* Información de Cilindros Llenos a Entregar */}
       {calculatedItems.length > 0 && (
-        <Card className="border-green-200 bg-green-50">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-green-600" />
-              <CardTitle className="text-base text-green-800">
-                Cilindros Llenos a Entregar
-              </CardTitle>
-            </div>
-            <CardDescription className="text-green-600">
-              Calculados automáticamente basados en los vacíos recibidos
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-3">
-              {calculatedItems.map((item, index) => {
-                const cylinderType = CYLINDER_TYPES.find(
-                  (type) => type.value === item.product_type
-                );
-                return (
-                  <Card key={index} className="p-3 bg-white border-green-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-6 h-6 rounded-full"
-                          style={{ backgroundColor: '#f97316' }} // Naranja para Roscogas
-                        />
-                        <div>
-                          <p className="font-medium text-green-800">
-                            {item.quantity}x {cylinderType?.label}
-                          </p>
-                          <p className="text-xs text-green-600">
-                            Roscogas - Naranja
-                          </p>
-                        </div>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className="text-green-700 border-green-300"
-                      >
-                        {item.quantity} unidades
-                      </Badge>
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
+        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+          <h3 className="text-sm font-medium text-green-800 mb-3">
+            Cilindros Llenos a Entregar (Roscogas)
+          </h3>
 
-            {/* Resumen de Llenos */}
-            <div className="bg-green-100 p-3 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <Calculator className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium text-green-800">
-                  Resumen de Llenos a Entregar
-                </span>
-              </div>
-              <div className="text-sm text-green-700">
-                <p>
-                  Total de cilindros llenos:{' '}
-                  <strong>{getTotalFullCylinders()}</strong>
-                </p>
-                <p className="text-xs mt-1">
-                  Todos los cilindros llenos son marca <strong>Roscogas</strong>{' '}
-                  (color naranja)
-                </p>
-              </div>
-            </div>
+          <div className="space-y-2">
+            {calculatedItems.map((item, index) => {
+              const cylinderType = CYLINDER_TYPES.find(
+                (type) => type.value === item.product_type
+              );
+              return (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 bg-white px-3 py-2 rounded-lg border border-green-200"
+                >
+                  <div
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: '#f97316' }} // Naranja para Roscogas
+                  />
+                  <span className="text-sm text-green-800">
+                    {item.quantity}x {cylinderType?.label}
+                  </span>
+                  <Badge variant="outline" className="text-xs text-green-700">
+                    Roscogas
+                  </Badge>
+                </div>
+              );
+            })}
+          </div>
 
-            {/* Validación de Consistencia */}
-            {getTotalEmptyCylinders() !== getTotalFullCylinders() && (
-              <div className="bg-yellow-100 border border-yellow-300 p-3 rounded-lg">
-                <p className="text-sm text-yellow-800">
-                  ⚠️ Advertencia: La cantidad de vacíos recibidos (
-                  {getTotalEmptyCylinders()}) no coincide con la cantidad de
-                  llenos a entregar ({getTotalFullCylinders()})
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          <div className="mt-3 pt-3 border-t border-green-200">
+            <p className="text-sm text-green-700">
+              Total: <strong>{getTotalFullCylinders()}</strong> cilindros llenos
+              a entregar
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );
