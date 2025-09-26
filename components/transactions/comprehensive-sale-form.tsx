@@ -133,16 +133,9 @@ export function ComprehensiveSaleForm({
       customer_name: '',
       customer_phone: '',
       customer_location: '',
-      items: [
-        {
-          product_type: '33lb',
-          quantity: 1,
-          unit_cost: 0,
-          total_cost: 0,
-        },
-      ],
-      sale_type: 'intercambio',
-      payment_method: 'efectivo',
+      items: [],
+      sale_type: undefined,
+      payment_method: undefined,
       exchange_empties: [],
     },
   });
@@ -290,13 +283,11 @@ export function ComprehensiveSaleForm({
 
   // Agregar nuevo item
   const addItem = () => {
-    const defaultPrice =
-      selectedCustomer?.custom_prices['33lb'] || inventoryPrices['33lb'] || 0;
     append({
-      product_type: '33lb',
+      product_type: '' as any, // Sin preselección
       quantity: 1,
-      unit_cost: defaultPrice,
-      total_cost: defaultPrice,
+      unit_cost: 0,
+      total_cost: 0,
     });
   };
 
