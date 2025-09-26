@@ -334,6 +334,41 @@ const roleBasedRouting = {
 };
 ```
 
+### **🎯 Reglas de Dropdowns y Selección - CRÍTICO**
+
+```typescript
+// ✅ DO: NUNCA preseleccionar en dropdowns
+const dropdownRules = {
+  // ❌ DON'T: Preseleccionar valores en dropdowns
+  brand: '', // Siempre vacío inicialmente
+  type: '', // Siempre vacío inicialmente
+  paymentMethod: '', // Siempre vacío inicialmente
+
+  // ✅ DO: Solo preseleccionar cantidades ≥ 1
+  quantity: 1, // Cantidad mínima válida
+
+  // ✅ DO: Placeholders obligatorios
+  placeholders: {
+    brand: 'Selecciona la marca',
+    type: 'Selecciona el tipo',
+    paymentMethod: 'Selecciona el método de pago',
+  },
+
+  // ✅ DO: Validación antes de agregar
+  validation: {
+    requireSelection: 'brand && type && quantity >= 1',
+    disableButton: '!brand || !type',
+  },
+};
+
+// ✅ DO: Botones deshabilitados hasta selección completa
+const buttonStates = {
+  addEmptyCylinder: 'disabled: !currentBrand || !currentType',
+  addFullCylinder: 'disabled: !productType',
+  submitSale: 'disabled: !paymentMethod',
+};
+```
+
 ## 📊 **Sistema de Metas**
 
 ### **Unidad de Medida: Kilogramos**

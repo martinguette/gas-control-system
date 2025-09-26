@@ -59,13 +59,17 @@ export function ExchangeFlowSimple({
 }: ExchangeFlowSimpleProps) {
   const [emptyCylinders, setEmptyCylinders] = useState<EmptyCylinder[]>([]);
   const [calculatedItems, setCalculatedItems] = useState<any[]>([]);
-  const [currentBrand, setCurrentBrand] = useState('Roscogas');
-  const [currentType, setCurrentType] = useState('33lb');
+  const [currentBrand, setCurrentBrand] = useState('');
+  const [currentType, setCurrentType] = useState('');
   const [currentQuantity, setCurrentQuantity] = useState(1);
   const { setValue } = useFormContext<SaleFormData>();
 
   // Función para agregar un cilindro vacío
   const addEmptyCylinder = () => {
+    if (!currentBrand || !currentType) {
+      return; // No agregar si no están seleccionados
+    }
+
     const newEmpty: EmptyCylinder = {
       id: Date.now().toString(),
       brand: currentBrand,
@@ -75,8 +79,8 @@ export function ExchangeFlowSimple({
     setEmptyCylinders([...emptyCylinders, newEmpty]);
 
     // Resetear valores para el siguiente cilindro
-    setCurrentBrand('Roscogas');
-    setCurrentType('33lb');
+    setCurrentBrand('');
+    setCurrentType('');
     setCurrentQuantity(1);
   };
 
@@ -160,7 +164,7 @@ export function ExchangeFlowSimple({
   const addFullCylinder = () => {
     const newItem = {
       id: `manual-${Date.now()}-${Math.random()}`,
-      product_type: '33lb' as '33lb' | '40lb' | '100lb',
+      product_type: '' as any, // Sin preselección
       quantity: 1,
       unit_cost: 0,
       total_cost: 0,
@@ -171,7 +175,7 @@ export function ExchangeFlowSimple({
   // Actualizar items calculados cuando cambien
   useEffect(() => {
     onCalculatedItems(calculatedItems);
-  }, [calculatedItems, onCalculatedItems]);
+  }, [calculatedItems]);
 
   return (
     <div className="space-y-4">
@@ -186,7 +190,7 @@ export function ExchangeFlowSimple({
             <label className="text-xs text-blue-700 block mb-1">Marca</label>
             <Select value={currentBrand} onValueChange={setCurrentBrand}>
               <SelectTrigger className="h-9 text-sm">
-                <SelectValue />
+                <SelectValue placeholder="Selecciona la marca" />
               </SelectTrigger>
               <SelectContent>
                 {CYLINDER_BRANDS.map((brand) => (
@@ -219,7 +223,7 @@ export function ExchangeFlowSimple({
             <label className="text-xs text-blue-700 block mb-1">Tipo</label>
             <Select value={currentType} onValueChange={setCurrentType}>
               <SelectTrigger className="h-9 text-sm">
-                <SelectValue />
+                <SelectValue placeholder="Selecciona el tipo" />
               </SelectTrigger>
               <SelectContent>
                 {CYLINDER_TYPES.map((type) => (
@@ -249,7 +253,8 @@ export function ExchangeFlowSimple({
             <Button
               type="button"
               onClick={addEmptyCylinder}
-              className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white text-sm"
+              disabled={!currentBrand || !currentType}
+              className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               <Plus className="h-4 w-4 mr-1" />
               Agregar
@@ -348,7 +353,7 @@ export function ExchangeFlowSimple({
                         }
                       >
                         <SelectTrigger className="h-9 text-sm">
-                          <SelectValue />
+                          <SelectValue placeholder="Selecciona el tipo" />
                         </SelectTrigger>
                         <SelectContent>
                           {CYLINDER_TYPES.map((type) => (
