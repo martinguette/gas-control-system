@@ -835,8 +835,8 @@ export function ComprehensiveSaleForm({
                       variant="outline"
                       onClick={() =>
                         appendEmpty({
-                          brand: 'Roscogas',
-                          product_type: '33lb',
+                          brand: '',
+                          product_type: '',
                           quantity: 1,
                         } as any)
                       }
