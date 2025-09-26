@@ -888,7 +888,6 @@ export function ComprehensiveSaleForm({
                         size="sm"
                         onClick={() => removeItem(index)}
                         className="text-red-600 hover:text-red-700"
-                        disabled={selectedSaleType === 'intercambio'}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -909,7 +908,6 @@ export function ComprehensiveSaleForm({
                               handleProductTypeChange(index, value);
                             }}
                             value={field.value}
-                            disabled={selectedSaleType === 'intercambio'}
                           >
                             <FormControl>
                               <SelectTrigger>
@@ -947,7 +945,6 @@ export function ComprehensiveSaleForm({
                                 field.onChange(value);
                                 handleQuantityChange(index, value);
                               }}
-                              disabled={selectedSaleType === 'intercambio'}
                             />
                           </FormControl>
                           <FormMessage />
@@ -1069,7 +1066,6 @@ export function ComprehensiveSaleForm({
                                     ? 'bg-green-50 border-green-200'
                                     : ''
                                 }
-                                disabled={selectedSaleType === 'intercambio'}
                               />
                             </FormControl>
                             <FormMessage />
@@ -1116,9 +1112,7 @@ export function ComprehensiveSaleForm({
                 variant="outline"
                 onClick={addItem}
                 className="w-full"
-                disabled={
-                  fields.length >= 10 || selectedSaleType === 'intercambio'
-                }
+                disabled={fields.length >= 10}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Agregar Otro Producto
