@@ -96,8 +96,9 @@ export function ExchangeFlowSimple({
       return acc;
     }, {} as Record<string, number>);
 
-    // Crear items de entrega
+    // Crear items de entrega con IDs únicos
     const items = Object.entries(groupedByType).map(([type, quantity]) => ({
+      id: `${type}-${Date.now()}-${Math.random()}`, // ID único para cada item
       product_type: type as '33lb' | '40lb' | '100lb',
       quantity,
       unit_cost: 0, // Se calculará con precios del inventario
@@ -133,6 +134,44 @@ export function ExchangeFlowSimple({
   const getTotalFullCylinders = () => {
     return calculatedItems.reduce((sum, item) => sum + item.quantity, 0);
   };
+
+  // Función para actualizar un cilindro lleno
+  const updateFullCylinder = (id: string, field: string, value: any) => {
+    setCalculatedItems((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          const updated = { ...item, [field]: value };
+          if (field === 'quantity' || field === 'unit_cost') {
+            updated.total_cost = updated.quantity * updated.unit_cost;
+          }
+          return updated;
+        }
+        return item;
+      })
+    );
+  };
+
+  // Función para eliminar un cilindro lleno
+  const removeFullCylinder = (id: string) => {
+    setCalculatedItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  // Función para agregar un cilindro lleno manualmente
+  const addFullCylinder = () => {
+    const newItem = {
+      id: `manual-${Date.now()}-${Math.random()}`,
+      product_type: '33lb' as '33lb' | '40lb' | '100lb',
+      quantity: 1,
+      unit_cost: 0,
+      total_cost: 0,
+    };
+    setCalculatedItems((prev) => [...prev, newItem]);
+  };
+
+  // Actualizar items calculados cuando cambien
+  useEffect(() => {
+    onCalculatedItems(calculatedItems);
+  }, [calculatedItems, onCalculatedItems]);
 
   return (
     <div className="space-y-4">
@@ -268,43 +307,140 @@ export function ExchangeFlowSimple({
         </div>
       )}
 
-      {/* Información de Cilindros Llenos a Entregar */}
+      {/* Cilindros Llenos a Entregar - Editables */}
       {calculatedItems.length > 0 && (
         <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-          <h3 className="text-sm font-medium text-green-800 mb-3">
-            Cilindros Llenos a Entregar (Roscogas)
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-green-800">
+              Cilindros Llenos a Entregar (Roscogas)
+            </h3>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addFullCylinder}
+              className="text-xs bg-green-100 text-green-700 hover:bg-green-200"
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Agregar Lleno
+            </Button>
+          </div>
 
-          <div className="space-y-2">
-            {calculatedItems.map((item, index) => {
+          <div className="space-y-3">
+            {calculatedItems.map((item) => {
               const cylinderType = CYLINDER_TYPES.find(
                 (type) => type.value === item.product_type
               );
               return (
                 <div
-                  key={index}
-                  className="flex items-center gap-3 bg-white px-3 py-2 rounded-lg border border-green-200"
+                  key={item.id}
+                  className="bg-white p-3 rounded-lg border border-green-200"
                 >
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: '#f97316' }} // Naranja para Roscogas
-                  />
-                  <span className="text-sm text-green-800">
-                    {item.quantity}x {cylinderType?.label}
-                  </span>
-                  <Badge variant="outline" className="text-xs text-green-700">
-                    Roscogas
-                  </Badge>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-end">
+                    <div>
+                      <label className="text-xs text-green-700 block mb-1">
+                        Tipo
+                      </label>
+                      <Select
+                        value={item.product_type}
+                        onValueChange={(value) =>
+                          updateFullCylinder(item.id, 'product_type', value)
+                        }
+                      >
+                        <SelectTrigger className="h-9 text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CYLINDER_TYPES.map((type) => (
+                            <SelectItem key={type.value} value={type.value}>
+                              {type.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs text-green-700 block mb-1">
+                        Cantidad
+                      </label>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="100"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          updateFullCylinder(
+                            item.id,
+                            'quantity',
+                            parseInt(e.target.value) || 1
+                          )
+                        }
+                        className="h-9 text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs text-green-700 block mb-1">
+                        Precio Unitario
+                      </label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={item.unit_cost}
+                        onChange={(e) =>
+                          updateFullCylinder(
+                            item.id,
+                            'unit_cost',
+                            parseFloat(e.target.value) || 0
+                          )
+                        }
+                        className="h-9 text-sm"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <label className="text-xs text-green-700 block mb-1">
+                          Total
+                        </label>
+                        <div className="h-9 px-3 py-2 text-sm border border-green-200 rounded-md bg-green-50 flex items-center">
+                          ${item.total_cost.toFixed(2)}
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFullCylinder(item.id)}
+                        className="h-9 w-9 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               );
             })}
           </div>
 
           <div className="mt-3 pt-3 border-t border-green-200">
-            <p className="text-sm text-green-700">
-              Total: <strong>{getTotalFullCylinders()}</strong> cilindros llenos
-              a entregar
-            </p>
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-green-700">
+                Total: <strong>{getTotalFullCylinders()}</strong> cilindros
+                llenos
+              </p>
+              <p className="text-sm font-medium text-green-800">
+                Total:{' '}
+                <strong>
+                  $
+                  {calculatedItems
+                    .reduce((sum, item) => sum + item.total_cost, 0)
+                    .toFixed(2)}
+                </strong>
+              </p>
+            </div>
           </div>
         </div>
       )}
