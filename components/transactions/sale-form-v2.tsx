@@ -33,7 +33,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { OptimizedCustomerSelector } from '@/components/ui/optimized-customer-selector';
 import { ConnectionStatus } from '@/components/ui/connection-status';
-import { ExchangeFlow } from '@/components/transactions/exchange-flow';
+import { ExchangeFlowSimple } from '@/components/transactions/exchange-flow-simple';
 import { saleSchema, saleItemSchema } from '@/lib/validations';
 import { SaleFormData, SaleItem } from '@/types';
 import { useInventoryPrices } from '@/hooks/use-inventory-prices';
@@ -548,7 +548,9 @@ export function SaleFormV2({ onSuccess }: SaleFormProps) {
 
             {/* Flujo de Intercambio */}
             {selectedSaleType === 'intercambio' && showSaleTypeSelection && (
-              <ExchangeFlow onCalculatedItems={handleExchangeItemsCalculated} />
+              <ExchangeFlowSimple
+                onCalculatedItems={handleExchangeItemsCalculated}
+              />
             )}
 
             {/* Items de la Venta - Solo para tipos que no sean intercambio */}
