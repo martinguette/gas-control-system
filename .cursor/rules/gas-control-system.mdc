@@ -83,10 +83,36 @@ const emptyCylinders = {
 ```typescript
 // ✅ DO: Implementar estos 4 tipos exactos
 type SaleType =
-  | 'intercambio' // -1 lleno, +1 vacío (80% de ventas)
+  | 'intercambio' // -1 lleno, +1 vacío (80% de ventas) - FLUJO ESPECIAL
   | 'completa' // -1 lleno únicamente
   | 'venta_vacios' // -1 vacío
   | 'compra_vacios'; // +1 vacío
+
+// ✅ DO: Flujo específico para intercambio - CRÍTICO
+interface ExchangeFlow {
+  step1: 'select_customer'; // Seleccionar o crear cliente
+  step2: 'select_sale_type'; // Seleccionar tipo de venta INMEDIATAMENTE después del cliente
+  step3: 'register_empty_cylinders'; // Registrar vacíos recibidos (marca, tipo, cantidad)
+  step4: 'auto_calculate_full_cylinders'; // Calcular automáticamente llenos a entregar
+  step5: 'validate_consistency'; // Validar que suma vacíos = suma llenos
+  step6: 'process_exchange'; // Procesar intercambio y actualizar inventario
+}
+
+// ✅ DO: Estructura para vacíos recibidos en intercambio
+interface EmptyCylinderReceived {
+  brand: 'Roscogas' | 'Gasan' | 'Gaspais' | 'Vidagas';
+  type: '33lb' | '40lb' | '100lb';
+  quantity: number;
+  color: string; // Se asigna automáticamente según marca
+}
+
+// ✅ DO: Cálculo automático de llenos a entregar
+interface FullCylinderToDeliver {
+  type: '33lb' | '40lb' | '100lb';
+  quantity: number; // Calculado automáticamente
+  brand: 'Roscogas'; // Siempre Roscogas para llenos
+  color: 'Naranja'; // Siempre naranja para Roscogas
+}
 ```
 
 ## 🛣️ **Panel "En Ruta" - Funcionalidad Central**

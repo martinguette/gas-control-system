@@ -577,39 +577,68 @@ Este documento detalla todos los casos de uso específicos para el panel de vent
 
 ### CU-V019: Gestionar Cilindros Vacíos (Intercambio)
 
-**Descripción:** Manejar cilindros vacíos en transacciones de intercambio.
+**Descripción:** Manejar cilindros vacíos en transacciones de intercambio con flujo específico.
 
-**Flujo Principal (actualizado):**
+**Flujo Principal (ACTUALIZADO - CRÍTICO):**
 
-1. Tras seleccionar/crear cliente, vendedor selecciona tipo de venta "intercambio"
-2. Sistema muestra sección para registrar vacíos recibidos (marca, tipo, cantidad)
-3. Vendedor captura todos los vacíos entregados por el cliente
-4. Sistema agrupa por tipo y calcula automáticamente los cilindros llenos a entregar
-5. Sistema bloquea edición manual de items (tipo, cantidad, unit_cost) para mantener consistencia
-6. Sistema valida que la suma de vacíos recibidos sea igual a la suma de items a entregar
-7. Sistema registra el intercambio y actualiza inventario: -llenos por tipo, +vacíos por marca y tipo
+1. **Selección de Cliente:** Vendedor selecciona cliente existente o crea uno nuevo
+2. **Selección de Tipo de Venta:** Inmediatamente después del cliente, vendedor selecciona "intercambio"
+3. **Registro de Vacíos Recibidos:** Sistema muestra sección específica para capturar vacíos del cliente:
+   - Marca del cilindro vacío (Roscogas, Gasan, Gaspais, Vidagas)
+   - Tipo de cilindro (33lb, 40lb, 100lb)
+   - Cantidad de cada combinación marca-tipo
+   - Botón "Agregar Vacío" para múltiples entradas
+4. **Cálculo Automático de Llenos:** Sistema calcula automáticamente los cilindros llenos a entregar:
+   - Agrupa vacíos por tipo (suma cantidades por 33lb, 40lb, 100lb)
+   - Genera items de entrega con las cantidades calculadas
+   - Todos los llenos son marca Roscogas (color naranja)
+5. **Bloqueo de Edición Manual:** Durante intercambio, vendedor NO puede:
+   - Modificar tipos de cilindros en items de entrega
+   - Modificar cantidades de items de entrega
+   - Agregar items manualmente
+6. **Validación de Consistencia:** Sistema valida que:
+   - Suma de vacíos recibidos = suma de llenos a entregar
+   - Todos los llenos son marca Roscogas
+   - No hay discrepancias en cantidades
+7. **Actualización de Inventario:** Sistema actualiza:
+   - Inventario llenos: -cantidades por tipo (solo Roscogas)
+   - Inventario vacíos: +cantidades por marca y tipo recibidos
 
-**Marcas y Colores:**
+**Ejemplo Práctico:**
 
-- Roscogas → Naranja
-- Gasan → Azul
-- Gaspais → Verde Oscuro
-- Vidagas → Verde Claro
+- Cliente entrega: 1 Roscogas 33lb, 2 Gaspais 40lb, 1 Vidagas 100lb, 1 Gasan 40lb
+- Sistema calcula: 1×33lb + 3×40lb + 1×100lb = 5 cilindros llenos a entregar
+- Items generados: 1×33lb Roscogas, 3×40lb Roscogas, 1×100lb Roscogas
+- Inventario: -5 llenos Roscogas, +1 vacío Roscogas 33lb, +2 vacíos Gaspais 40lb, +1 vacío Vidagas 100lb, +1 vacío Gasan 40lb
 
-**Criterios de Aceptación (actualizados):**
+**Marcas y Colores (OBLIGATORIO):**
 
-- ✅ Sección de vacíos recibidos visible al elegir "intercambio"
-- ✅ Captura de marca, tipo y cantidad por cada vacío
-- ✅ Bloqueo de edición manual de items durante intercambio
-- ✅ Suma de vacíos == suma de items a entregar
-- ✅ Actualización de inventario: -llenos, +vacíos por marca/tipo
-- ✅ Ejemplo: 1×33lb, 3×40lb, 1×100lb entregados si vacíos recibidos suman esas cantidades por tipo
+- Roscogas → Naranja (solo para llenos)
+- Gasan → Azul (solo para vacíos)
+- Gaspais → Verde Oscuro (solo para vacíos)
+- Vidagas → Verde Claro (solo para vacíos)
+
+**Criterios de Aceptación (ACTUALIZADOS):**
+
+- ✅ Tipo de venta se pregunta INMEDIATAMENTE después de seleccionar/crear cliente
+- ✅ Sección de vacíos recibidos visible SOLO al elegir "intercambio"
+- ✅ Captura de marca, tipo y cantidad por cada vacío recibido
+- ✅ Botón "Agregar Vacío" para múltiples entradas
+- ✅ Cálculo automático de llenos a entregar (agrupados por tipo)
+- ✅ Bloqueo TOTAL de edición manual de items durante intercambio
+- ✅ Validación: suma de vacíos == suma de llenos a entregar
+- ✅ Todos los llenos son marca Roscogas (color naranja)
+- ✅ Actualización correcta de inventario: -llenos Roscogas, +vacíos por marca/tipo
+- ✅ Interfaz clara que distingue entre vacíos recibidos y llenos a entregar
 
 **Casos de Error:**
 
-- Campos no mostrados
-- Color no asignado
-- Validación fallida
+- Tipo de venta no seleccionado antes de productos
+- Campos de vacíos no mostrados en intercambio
+- Color no asignado automáticamente según marca
+- Validación de consistencia fallida
+- Edición manual permitida durante intercambio
+- Inventario actualizado incorrectamente
 
 ---
 
