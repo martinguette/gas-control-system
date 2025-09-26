@@ -119,16 +119,9 @@ export function SaleFormV2({ onSuccess }: SaleFormProps) {
       customer_name: '',
       customer_phone: '',
       customer_location: '',
-      items: [
-        {
-          product_type: '33lb',
-          quantity: 1,
-          unit_cost: 0,
-          total_cost: 0,
-        },
-      ],
-      sale_type: 'intercambio',
-      payment_method: 'efectivo',
+      items: [],
+      sale_type: undefined,
+      payment_method: undefined,
     },
   });
 
@@ -180,24 +173,13 @@ export function SaleFormV2({ onSuccess }: SaleFormProps) {
   // Agregar nuevo item
   const addItem = () => {
     const newItem = {
-      product_type: '33lb' as const,
+      product_type: '' as any, // Sin preselección
       quantity: 1,
       unit_cost: 0,
       total_cost: 0,
     };
 
-    // Si hay un cliente seleccionado, aplicar precio personalizado si existe
-    if (selectedCustomer && selectedCustomer.custom_prices['33lb']) {
-      newItem.unit_cost = selectedCustomer.custom_prices['33lb'];
-      newItem.total_cost = newItem.quantity * newItem.unit_cost;
-    } else {
-      // Usar precio base del inventario
-      const basePrice = inventoryPrices['33lb'] || 0;
-      if (basePrice > 0) {
-        newItem.unit_cost = basePrice;
-        newItem.total_cost = newItem.quantity * newItem.unit_cost;
-      }
-    }
+    // Los precios se aplicarán cuando se seleccione el tipo de producto
 
     append(newItem);
   };
@@ -515,7 +497,7 @@ export function SaleFormV2({ onSuccess }: SaleFormProps) {
                           field.onChange(value);
                           handleSaleTypeChange(value);
                         }}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="text-sm">
@@ -592,7 +574,7 @@ export function SaleFormV2({ onSuccess }: SaleFormProps) {
                                   field.onChange(value);
                                   handleProductTypeChange(index, value);
                                 }}
-                                defaultValue={field.value}
+                                value={field.value}
                               >
                                 <FormControl>
                                   <SelectTrigger className="text-sm">
@@ -729,7 +711,7 @@ export function SaleFormV2({ onSuccess }: SaleFormProps) {
                         <FormLabel>Método de Pago *</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger className="text-sm">
