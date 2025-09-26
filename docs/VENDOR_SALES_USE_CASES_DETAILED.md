@@ -575,18 +575,19 @@ Este documento detalla todos los casos de uso específicos para el panel de vent
 
 ---
 
-### CU-V019: Gestionar Cilindros Vacíos
+### CU-V019: Gestionar Cilindros Vacíos (Intercambio)
 
 **Descripción:** Manejar cilindros vacíos en transacciones de intercambio.
 
-**Flujo Principal:**
+**Flujo Principal (actualizado):**
 
-1. Vendedor selecciona tipo de venta "intercambio"
-2. Sistema muestra campos para cilindros vacíos
-3. Vendedor selecciona marca de cilindro vacío
-4. Sistema asigna color automáticamente según marca
-5. Sistema valida cilindro vacío
-6. Sistema registra intercambio correctamente
+1. Tras seleccionar/crear cliente, vendedor selecciona tipo de venta "intercambio"
+2. Sistema muestra sección para registrar vacíos recibidos (marca, tipo, cantidad)
+3. Vendedor captura todos los vacíos entregados por el cliente
+4. Sistema agrupa por tipo y calcula automáticamente los cilindros llenos a entregar
+5. Sistema bloquea edición manual de items (tipo, cantidad, unit_cost) para mantener consistencia
+6. Sistema valida que la suma de vacíos recibidos sea igual a la suma de items a entregar
+7. Sistema registra el intercambio y actualiza inventario: -llenos por tipo, +vacíos por marca y tipo
 
 **Marcas y Colores:**
 
@@ -595,13 +596,14 @@ Este documento detalla todos los casos de uso específicos para el panel de vent
 - Gaspais → Verde Oscuro
 - Vidagas → Verde Claro
 
-**Criterios de Aceptación:**
+**Criterios de Aceptación (actualizados):**
 
-- ✅ Campos para cilindros vacíos
-- ✅ Selección de marca
-- ✅ Asignación automática de color
-- ✅ Validación de cilindro vacío
-- ✅ Registro correcto de intercambio
+- ✅ Sección de vacíos recibidos visible al elegir "intercambio"
+- ✅ Captura de marca, tipo y cantidad por cada vacío
+- ✅ Bloqueo de edición manual de items durante intercambio
+- ✅ Suma de vacíos == suma de items a entregar
+- ✅ Actualización de inventario: -llenos, +vacíos por marca/tipo
+- ✅ Ejemplo: 1×33lb, 3×40lb, 1×100lb entregados si vacíos recibidos suman esas cantidades por tipo
 
 **Casos de Error:**
 

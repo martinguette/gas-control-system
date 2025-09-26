@@ -66,6 +66,12 @@ export interface SaleItem {
   total_cost: number;
 }
 
+export interface ExchangeEmptyItem {
+  product_type: '33lb' | '40lb' | '100lb';
+  brand: 'Roscogas' | 'Gasan' | 'Gaspais' | 'Vidagas' | 'Otro';
+  quantity: number;
+}
+
 export interface SaleFormData {
   customer_name: string;
   customer_phone?: string;
@@ -73,6 +79,8 @@ export interface SaleFormData {
   items: SaleItem[]; // Array de items con diferentes tipos de cilindros
   sale_type: 'intercambio' | 'completa' | 'venta_vacios' | 'compra_vacios';
   payment_method: 'efectivo' | 'transferencia' | 'credito';
+  // Para ventas por intercambio, lista de cilindros vacíos recibidos
+  exchange_empties?: ExchangeEmptyItem[];
 }
 
 export interface Expense {

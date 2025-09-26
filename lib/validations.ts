@@ -238,6 +238,21 @@ export const saleItemSchema = z.object({
     .max(999999.99, 'El costo total es demasiado alto'),
 });
 
+// Esquema para cilindros vacíos recibidos en intercambio
+export const exchangeEmptyItemSchema = z.object({
+  product_type: z.enum(['33lb', '40lb', '100lb'], {
+    errorMap: () => ({ message: 'Tipo de producto no válido' }),
+  }),
+  brand: z.enum(['Roscogas', 'Gasan', 'Gaspais', 'Vidagas', 'Otro'], {
+    errorMap: () => ({ message: 'Marca de cilindro no válida' }),
+  }),
+  quantity: z
+    .number()
+    .int()
+    .min(1, 'La cantidad debe ser al menos 1')
+    .max(100, 'La cantidad no puede ser mayor a 100'),
+});
+
 // Esquema para ventas
 export const saleSchema = z
   .object({
@@ -272,6 +287,12 @@ export const saleSchema = z
         errorMap: () => ({ message: 'Tipo de venta no válido' }),
       }
     ),
+    // Para ventas por intercambio: detalle de vacíos recibidos
+    exchange_empties: z
+      .array(exchangeEmptyItemSchema)
+      .min(1, 'Debe registrar al menos un cilindro vacío recibido')
+      .max(10, 'No puede registrar más de 10 entradas de vacíos')
+      .optional(),
     payment_method: z.enum(['efectivo', 'transferencia', 'credito'], {
       errorMap: () => ({ message: 'Método de pago no válido' }),
     }),
@@ -288,6 +309,26 @@ export const saleSchema = z
       message:
         'El costo total de cada item debe ser igual a cantidad × costo unitario',
       path: ['items'],
+    }
+  )
+  .refine(
+    (data) => {
+      // Si es intercambio, debe existir exchange_empties y la suma de cantidades debe ser igual a la suma de cantidades de items
+      if (data.sale_type !== 'intercambio') return true;
+      const totalDelivered = data.items.reduce(
+        (sum, i) => sum + (Number.isFinite(i.quantity) ? i.quantity : 0),
+        0
+      );
+      const totalReceived = (data.exchange_empties || []).reduce(
+        (sum, e) => sum + (Number.isFinite(e.quantity) ? e.quantity : 0),
+        0
+      );
+      return totalReceived > 0 && totalDelivered === totalReceived;
+    },
+    {
+      message:
+        'En intercambio, la cantidad total de vacíos recibidos debe igualar la cantidad total de cilindros llenos entregados',
+      path: ['exchange_empties'],
     }
   );
 

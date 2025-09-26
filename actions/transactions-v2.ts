@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { createClient } from '@/utils/supabase/server';
 import { saleSchema, expenseSchema } from '@/lib/validations';
 import { SaleFormData, ExpenseFormData } from '@/types';
+import { getColorByBrand } from '@/types/inventory';
 
 // =====================================================
 // SERVER ACTIONS PARA TRANSACCIONES V2
@@ -188,14 +189,36 @@ async function updateInventoryForSaleItems(
             item.product_type,
             -item.quantity
           );
-          // Para intercambios, asumimos que los cilindros vacíos son de marca Roscogas (naranja)
-          await updateInventoryEmpty(
-            supabase,
-            item.product_type,
-            'Roscogas',
-            'Naranja',
-            item.quantity
-          );
+          // Para intercambios, ingresar vacíos según detalle recibido
+          // Si no se proporcionó detalle, por compatibilidad mantener Roscogas Naranja
+          if (
+            saleData.exchange_empties &&
+            saleData.exchange_empties.length > 0
+          ) {
+            // Sumar por tipo para esta iteración
+            const emptiesForType = saleData.exchange_empties.filter(
+              (e) => e.product_type === item.product_type
+            );
+            // Actualizar por cada marca
+            for (const empty of emptiesForType) {
+              await updateInventoryEmpty(
+                supabase,
+                empty.product_type,
+                empty.brand,
+                // mapear color por marca si fuera necesario en DB, aquí color derivado por reglas
+                getColorByBrand(empty.brand as any),
+                empty.quantity
+              );
+            }
+          } else {
+            await updateInventoryEmpty(
+              supabase,
+              item.product_type,
+              'Roscogas',
+              'Naranja',
+              item.quantity
+            );
+          }
           break;
 
         case 'completa':
